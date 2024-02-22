@@ -39,4 +39,5 @@
 |`--track-allocation`                   |等价于 `--track-allocation=user`|
 
 !!! compat "Julia 1.1"
-    在 Julia 1.0 中，默认的 `--project=@.` 选项不会在 Git 仓库的根目录中寻找 `Project.toml` 文件。从 Julia 1.1 开始，此选项会在其中寻找该文件。
+    在 Julia 1.0 中，默认的 `--project=@.` 选项不会在 Git 仓库的根目录中寻找 `Project.toml` 文件。
+    从 Julia 1.1 开始，此选项会在其中寻找该文件。
