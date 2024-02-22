@@ -18,6 +18,7 @@ end
 import Markdown
 Markdown.parse(String(take!(io)))
 ```
+
 请阅读 [release notes](NEWS.md) 以了解自上次发行以来发生了什么变化。
 
 ```@eval
@@ -34,9 +35,16 @@ Markdown.parse("""
 
 ### [简介](@id man-introduction)
 
-科学计算对性能一直有着最高的需求，但目前各领域的专家却大量使用较慢的动态语言来开展他们的日常工作。 偏爱动态语言有很多很好的理由，因此我们不会舍弃动态的特性。 幸运的是，现代编程语言设计与编译器技术可以大大消除性能折衷（trade-off），并提供有足够生产力的单一环境进行原型设计，而且能高效地部署性能密集型应用程序。 Julia 语言在这其中扮演了这样一个角色：它是一门灵活的动态语言，适合用于科学计算和数值计算，并且性能可与传统的静态类型语言媲美。
+科学计算对性能一直有着最高的需求，但目前各领域的专家却大量使用较慢的动态语言来开展他们的日常工作。
+偏爱动态语言有很多很好的理由，因此我们不会舍弃动态的特性。
+幸运的是，现代编程语言设计与编译器技术可以大大消除性能折衷（trade-off），
+并提供有足够生产力的单一环境进行原型设计，而且能高效地部署性能密集型应用程序。
+Julia 语言在这其中扮演了这样一个角色：
+它是一门灵活的动态语言，适合用于科学计算和数值计算，并且性能可与传统的静态类型语言媲美。
 
-由于 Julia 的编译器和其它语言比如 Python 或 R 的解释器有所不同，一开始你可能发现 Julia 的性能并不是很突出。 如果你觉得速度有点慢，我们强烈建议在尝试其他功能前，先读一读文档中的[提高性能的窍门](@ref man-performance-tips)部分。 一旦你理解了 Julia 的运作方式后，写出和 C 一样快的代码就是小菜一碟。
+由于 Julia 的编译器和其它语言比如 Python 或 R 的解释器有所不同，一开始你可能发现 Julia 的性能并不是很突出。
+如果你觉得速度有点慢，我们强烈建议在尝试其他功能前，先读一读文档中的[提高性能的窍门](@ref man-performance-tips)部分。
+一旦你理解了 Julia 的运作方式后，写出和 C 一样快的代码就是小菜一碟。
 
 Julia features optional typing, multiple dispatch, and good performance, achieved using type inference
 and [just-in-time (JIT) compilation](https://en.wikipedia.org/wiki/Just-in-time_compilation),
