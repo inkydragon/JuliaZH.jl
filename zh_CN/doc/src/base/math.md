@@ -49,6 +49,8 @@ Base.:(~)
 Base.:(&)
 Base.:(|)
 Base.xor
+Base.nand
+Base.nor
 Base.:(!)
 &&
 ||
@@ -65,8 +67,10 @@ Base.tan(::Number)
 Base.Math.sind
 Base.Math.cosd
 Base.Math.tand
+Base.Math.sincosd
 Base.Math.sinpi
 Base.Math.cospi
+Base.Math.tanpi
 Base.Math.sincospi
 Base.sinh(::Number)
 Base.cosh(::Number)
@@ -153,10 +157,10 @@ Base.copysign
 Base.sign
 Base.signbit
 Base.flipsign
-Base.sqrt(::Real)
+Base.sqrt(::Number)
 Base.isqrt
 Base.Math.cbrt
-Base.real(::Complex)
+Base.real
 Base.imag
 Base.reim
 Base.conj
@@ -175,6 +179,7 @@ Base.nextprod
 Base.invmod
 Base.powermod
 Base.ndigits
+Base.add_sum
 Base.widemul
 Base.Math.evalpoly
 Base.Math.@evalpoly
@@ -204,5 +209,5 @@ The complete list is in the parser code:
 Those that are parsed like `*` (in terms of precedence) include
 `* / ÷ % & ⋅ ∘ × |\\| ∩ ∧ ⊗ ⊘ ⊙ ⊚ ⊛ ⊠ ⊡ ⊓ ∗ ∙ ∤ ⅋ ≀ ⊼ ⋄ ⋆ ⋇ ⋉ ⋊ ⋋ ⋌ ⋏ ⋒ ⟑ ⦸ ⦼ ⦾ ⦿ ⧶ ⧷ ⨇ ⨰ ⨱ ⨲ ⨳ ⨴ ⨵ ⨶ ⨷ ⨸ ⨻ ⨼ ⨽ ⩀ ⩃ ⩄ ⩋ ⩍ ⩎ ⩑ ⩓ ⩕ ⩘ ⩚ ⩜ ⩞ ⩟ ⩠ ⫛ ⊍ ▷ ⨝ ⟕ ⟖ ⟗`
 and those that are parsed like `+` include
-`+ - |\|| ⊕ ⊖ ⊞ ⊟ |++| ∪ ∨ ⊔ ± ∓ ∔ ∸ ≏ ⊎ ⊻ ⊽ ⋎ ⋓ ⧺ ⧻ ⨈ ⨢ ⨣ ⨤ ⨥ ⨦ ⨧ ⨨ ⨩ ⨪ ⨫ ⨬ ⨭ ⨮ ⨹ ⨺ ⩁ ⩂ ⩅ ⩊ ⩌ ⩏ ⩐ ⩒ ⩔ ⩖ ⩗ ⩛ ⩝ ⩡ ⩢ ⩣`
+`+ - |\|| ⊕ ⊖ ⊞ ⊟ |++| ∪ ∨ ⊔ ± ∓ ∔ ∸ ≏ ⊎ ⊻ ⊽ ⋎ ⋓ ⟇ ⧺ ⧻ ⨈ ⨢ ⨣ ⨤ ⨥ ⨦ ⨧ ⨨ ⨩ ⨪ ⨫ ⨬ ⨭ ⨮ ⨹ ⨺ ⩁ ⩂ ⩅ ⩊ ⩌ ⩏ ⩐ ⩒ ⩔ ⩖ ⩗ ⩛ ⩝ ⩡ ⩢ ⩣`
 There are many others that are related to arrows, comparisons, and powers.

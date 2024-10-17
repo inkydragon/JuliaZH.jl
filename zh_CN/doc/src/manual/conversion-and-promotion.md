@@ -181,7 +181,7 @@ For example, this definition states that it's valid to `convert` any `Number` ty
 any other by calling a 1-argument constructor:
 
 ```julia
-convert(::Type{T}, x::Number) where {T<:Number} = T(x)
+convert(::Type{T}, x::Number) where {T<:Number} = T(x)::T
 ```
 
 This means that new `Number` types only need to define constructors, since this
@@ -233,11 +233,11 @@ julia> promote(1 + 2im, 3//4)
 ```
 
 Floating-point values are promoted to the largest of the floating-point argument types. Integer
-values are promoted to the larger of either the native machine word size or the largest integer
-argument type. Mixtures of integers and floating-point values are promoted to a floating-point
-type big enough to hold all the values. Integers mixed with rationals are promoted to rationals.
-Rationals mixed with floats are promoted to floats. Complex values mixed with real values are
-promoted to the appropriate kind of complex value.
+values are promoted to the largest of the integer argument types. If the types are the same size
+but differ in signedness, the unsigned type is chosen. Mixtures of integers and floating-point
+values are promoted to a floating-point type big enough to hold all the values. Integers mixed
+with rationals are promoted to rationals. Rationals mixed with floats are promoted to floats.
+Complex values mixed with real values are promoted to the appropriate kind of complex value.
 
 That is really all there is to using promotions. The rest is just a matter of clever application,
 the most typical "clever" application being the definition of catch-all methods for numeric operations
@@ -319,9 +319,15 @@ julia> promote_type(Int8, Int64)
 Int64
 ```
 
+Note that we do **not** overload `promote_type` directly: we overload `promote_rule` instead.
+`promote_type` uses `promote_rule`, and adds the symmetry.
+Overloading it directly can cause ambiguity errors.
+We overload `promote_rule` to define how things should be promoted, and we use `promote_type`
+to query that.
+
 Internally, `promote_type` is used inside of `promote` to determine what type argument values
-should be converted to for promotion. It can, however, be useful in its own right. The curious
-reader can read the code in [`promotion.jl`](https://github.com/JuliaLang/julia/blob/master/base/promotion.jl),
+should be converted to for promotion. The curious reader can read the code in
+[`promotion.jl`](https://github.com/JuliaLang/julia/blob/master/base/promotion.jl),
 which defines the complete promotion mechanism in about 35 lines.
 
 ### Case Study: Rational Promotions
