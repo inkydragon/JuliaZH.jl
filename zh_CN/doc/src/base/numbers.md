@@ -2,9 +2,6 @@
 
 ## 标准数值类型
 
-<<<<<<< HEAD
-### 抽象数值类型
-=======
 A type tree for all subtypes of `Number` in `Base` is shown below.
 Abstract types have been marked, the rest are concrete types.
 ```
@@ -36,8 +33,7 @@ Number  (Abstract Type)
       └─ Irrational
 ```
 
-### Abstract number types
->>>>>>> cyhan/en-v1.10
+### 抽象数值类型
 
 ```@docs
 Core.Number

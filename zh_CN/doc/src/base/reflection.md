@@ -57,14 +57,10 @@ julia> subtypes(AbstractFloat)
 
 ## DataType 布局
 
-<<<<<<< HEAD:zh_CN/doc/src/devdocs/reflection.md
-用 C 代码接口时，`DataType` 的内部表现非常重要。有几个函数可以检查这些细节。
-=======
 The internal representation of a `DataType` is critically important when interfacing with C code
 and several functions are available to inspect these details. [`isbitstype(T::DataType)`](@ref) returns
 true if `T` is stored with C-compatible alignment. [`fieldoffset(T::DataType, i::Integer)`](@ref)
 returns the (byte) offset for field *i* relative to the start of the type.
->>>>>>> cyhan/en-v1.10:zh_CN/doc/src/base/reflection.md
 
  [`isbits(T::DataType)`](@ref) 如果 `T` 类型是以 C 兼容的对齐方式存储，则为 true。  
  [`fieldoffset(T::DataType, i::Integer)`](@ref) 返回字段 *i* 相对于类型开始的 (字节) 偏移量。

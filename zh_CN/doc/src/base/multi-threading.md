@@ -13,18 +13,7 @@ Base.Threads.threadpoolsize
 Base.Threads.ngcthreads
 ```
 
-<<<<<<< HEAD
-## 同步
-
-```@docs
-Base.Threads.Condition
-Base.Threads.Event
-```
-
-另见 [同步](@ref lib-task-sync) 。
-=======
 See also [Multi-Threading](@ref man-multithreading).
->>>>>>> cyhan/en-v1.10
 
 ## 原子操作
 

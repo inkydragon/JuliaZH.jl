@@ -140,10 +140,7 @@ Base.vcat
 Base.hcat
 Base.hvcat
 Base.hvncat
-<<<<<<< HEAD
-=======
 Base.stack
->>>>>>> cyhan/en-v1.10
 Base.vect
 Base.circshift
 Base.circshift!

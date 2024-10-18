@@ -2,15 +2,8 @@
 
 ## 介绍
 
-<<<<<<< HEAD
-Julia Base 中包含一系列适用于科学及数值计算的函数和宏，但也可以用于通用编程，其它功能则由 Julia 生态圈中的各种库来提供。函数按主题划分如下：
-=======
-Julia Base contains a range of functions and macros appropriate for performing
-scientific and numerical computing, but is also as broad as those of many general purpose programming
-languages.  Additional functionality is available from a growing collection of
-[available packages](https://julialang.org/packages/).
-Functions are grouped by topic below.
->>>>>>> cyhan/en-v1.10
+Julia Base 中包含一系列适用于科学及数值计算的函数和宏，但也可以用于通用编程。
+其它功能则由 Julia 生态圈中的[各种库](https://julialang.org/packages/)来提供。函数按主题划分如下：
 
 一些通用的提示：
 
@@ -69,14 +62,9 @@ However, you can create variables with names:
 Finally:
 `where` is parsed as an infix operator for writing parametric method and type definitions;
 `in` and `isa` are parsed as infix operators;
-<<<<<<< HEAD
-and `outer` is parsed as a keyword when used to modify the scope of a variable in an iteration specification of a `for` loop or `generator` expression.
-Creation of variables named `where`, `in`, `isa` or `outer` is allowed though.
-=======
 `outer` is parsed as a keyword when used to modify the scope of a variable in an iteration specification of a `for` loop;
 and `as` is used as a keyword to rename an identifier brought into scope by `import` or `using`.
 Creation of variables named `where`, `in`, `isa`, `outer` and `as` is allowed, though.
->>>>>>> cyhan/en-v1.10
 
 ```@docs
 module
@@ -455,10 +443,7 @@ Base.nameof(::Module)
 Base.parentmodule
 Base.pathof(::Module)
 Base.pkgdir(::Module)
-<<<<<<< HEAD
-=======
 Base.pkgversion(::Module)
->>>>>>> cyhan/en-v1.10
 Base.moduleroot
 __module__
 __source__
@@ -472,8 +457,6 @@ Base.nameof(::Function)
 Base.functionloc(::Any, ::Any)
 Base.functionloc(::Method)
 Base.@locals
-<<<<<<< HEAD
-=======
 ```
 
 ## Code loading
@@ -485,7 +468,6 @@ Base.require
 Base.compilecache
 Base.isprecompiled
 Base.get_extension
->>>>>>> cyhan/en-v1.10
 ```
 
 ## Internals
