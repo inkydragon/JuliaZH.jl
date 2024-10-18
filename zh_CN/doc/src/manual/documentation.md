@@ -1,13 +1,5 @@
 # [文档](@id man-documentation)
 
-<<<<<<< HEAD
-Julia允许开发者和用户，使用其内置的文档系统更加便捷地为函数、类型以及其他对象编写文档。
- 
-
-基础语法很简单：紧接在对象（函数，宏，类型和实例）之前的字符串都会被认为是对应对象的文档（称作 *docstrings*）。
-注意不要在 docstring 和文档对象之间有空行或者注释。
-这里有个基础的例子：
-=======
 ## Accessing Documentation
 
 Documentation can be accessed at the REPL or in [IJulia](https://github.com/JuliaLang/IJulia.jl)
@@ -27,16 +19,13 @@ environments provide a way to access documentation directly:
 - In [Juno](https://junolab.org) using `Ctrl-J, Ctrl-D` will show the documentation for the object
   under the cursor.
 
-## Writing Documentation
+## 编写文档
 
-Julia enables package developers and users to document functions, types and other objects easily
-via a built-in documentation system.
+Julia 允许开发者和用户，使用其内置的文档系统更加便捷地为函数、类型以及其他对象编写文档。
 
-The basic syntax is simple: any string appearing just before an object
-(function, macro, type or instance) will be interpreted as documenting it (these are called
-*docstrings*). Note that no blank lines or comments may intervene between a docstring and
-the documented object. Here is a basic example:
->>>>>>> cyhan/en-v1.10
+基础语法很简单：紧接在对象（函数，宏，类型和实例）之前的字符串都会被认为是对应对象的文档（称作 *docstrings*）。
+注意不要在 docstring 和文档对象之间有空行或者注释。
+这里有个基础的例子：
 
 ```julia
 "Tell whether there are too foo items in the array."
@@ -118,13 +107,8 @@ function bar(x, y) ...
    ```
 5. 给相关函数提供提示。
 
-<<<<<<< HEAD
-   有时会存在具有功能相联系的函数。为了更易于发现相关函数，请在段落 `See also:` 中为其提供一个小列表。
+   有时会存在具有功能相联系的函数。为了更易于发现相关函数，请在段落 `See also` 中为其提供一个小列表。
     
-=======
-   Sometimes there are functions of related functionality. To increase discoverability please provide
-   a short list of these in a `See also` paragraph.
->>>>>>> cyhan/en-v1.10
 
    ```
    See also [`bar!`](@ref), [`baz`](@ref), [`baaz`](@ref).
@@ -232,24 +216,7 @@ function bar(x, y) ...
     
     
 
-<<<<<<< HEAD
-## 访问文档
-
-文档可以在REPL中访问，也可以在 [IJulia](https://github.com/JuliaLang/IJulia.jl)
-中通过键入`?`紧接函数或者宏的名字并按下`Enter`访问。例如，
-
-```julia
-?cos
-?@time
-?r""
-```
-
-会分别为相应的函数，宏或者字符显示文档。在 [Juno](http://junolab.org) 中，使用 `Ctrl-J, Ctrl-D` 会为光标处的对象显示文档。
-
 ## 函数与方法
-=======
-## Functions & Methods
->>>>>>> cyhan/en-v1.10
 
 在Julia中函数可能有多种实现，被称为方法。虽然通用函数
 一般只有一个目的，Julia允许在必要时可以对方法独立写文档。
@@ -327,12 +294,8 @@ end
 @doc "`subtract(a,b)` subtracts `b` from `a`" subtract
 ```
 
-<<<<<<< HEAD
-写在非顶级块，比如`begin`, `if`, `for`, 和 `let`，中的文档会根据块的评估情况加入文档系统中，例如：
-=======
-Documentation in non-toplevel blocks, such as `begin`, `if`, `for`, and `let`, should be
-added to the documentation system via `@doc` as well. For example:
->>>>>>> cyhan/en-v1.10
+写在非顶级块，比如 `begin`, `if`, `for`, 和 `let`，中的文档可以通过 `@doc` 宏加入文档系统中。
+例如：
 
 ```julia
 if condition()
@@ -341,12 +304,8 @@ if condition()
 end
 ```
 
-<<<<<<< HEAD
-会被加到`f(x)`的文档中，当`condition()`是`true`的时候。注意即使`f(x)`在块的末尾离开了作用域，他的文档还会保留。
-=======
-will add documentation to `f(x)` when `condition()` is `true`. Note that even if `f(x)` goes
-out of scope at the end of a block, its documentation will remain.
->>>>>>> cyhan/en-v1.10
+会被加到 `f(x)` 的文档中，当 `condition()` 是 `true` 的时候。
+注意即使 `f(x)` 在块的末尾离开了作用域，他的文档还会保留。
 
 可以利用元编程来帮助创建文档。当在文档字符串中使用字符串插值时，需要使用额外的 `$` 例如：`$($name)`
 
@@ -378,12 +337,8 @@ x = MyType(1)
 y = MyType(2)
 ```
 
-<<<<<<< HEAD
-`?x` 将显示“Documentation for MyType with value 1”，而`?y` 将显示“Documentation for MyType with value 2”。
-=======
 `?x` will display "Documentation for MyType with value 1" while `?y` will display
 "Documentation for MyType with value 2".
->>>>>>> cyhan/en-v1.10
 
 ## 语法指南
 
@@ -519,13 +474,8 @@ f(x) = x
 end
 ```
 
-<<<<<<< HEAD
-通过在表达式上方放置一个 docstring 来记录 `baremodule` 会自动将 `@doc` 导入到模块中。 当没有记录模块表达式时，必须手动完成这些导入。
-=======
-Documenting a `baremodule` by placing a docstring above the expression automatically imports
-`@doc` into the module. These imports must be done manually when the module expression is not
-documented.
->>>>>>> cyhan/en-v1.10
+通过在表达式上方放置一个 docstring 来记录 `baremodule` 会自动将 `@doc` 导入到模块中。
+当没有记录模块表达式时，必须手动完成这些导入。
 
 ### 全局变量
 

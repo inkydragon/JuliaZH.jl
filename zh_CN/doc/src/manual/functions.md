@@ -46,12 +46,7 @@ julia> ∑(2, 3)
 5
 ```
 
-<<<<<<< HEAD
-## 参数传递行为
-
-Julia 函数参数遵循有时称为 “pass-by-sharing” 的约定，这意味着变量在被传递给函数时其值并不会被复制。函数参数本身充当新的变量绑定（指向变量值的新地址），它们所指向的值与所传递变量的值完全相同。调用者可以看到对函数内可变值（如数组）的修改。这与 Scheme，大多数 Lisps，Python，Ruby 和 Perl 以及其他动态语言中的行为相同。
-=======
-## [Argument Passing Behavior](@id man-argument-passing)
+## [参数传递行为](@id man-argument-passing)
 
 Julia function arguments follow a convention sometimes called "pass-by-sharing", which means that
 values are not copied when they are passed to functions. Function arguments themselves act as
@@ -119,7 +114,6 @@ Argument-type declarations **normally have no impact on performance**: regardles
 * **Clarity:** Type declarations can serve as a form of documentation about the expected arguments.
 
 However, it is a **common mistake to overly restrict the argument types**, which can unnecessarily limit the applicability of the function and prevent it from being re-used in circumstances you did not anticipate.    For example, the `fib(n::Integer)` function above works equally well for `Int` arguments (machine integers) and `BigInt` arbitrary-precision integers (see [BigFloats and BigInts](@ref BigFloats-and-BigInts)), which is especially useful because Fibonacci numbers grow exponentially rapidly and will quickly overflow any fixed-precision type like `Int` (see [Overflow behavior](@ref)).  If we had declared our function as `fib(n::Int)`, however, the application to `BigInt` would have been prevented for no reason.   In general, you should use the most general applicable abstract types for arguments, and **when in doubt, omit the argument types**.  You can always add argument-type specifications later if they become necessary, and you don't sacrifice performance or functionality by omitting them.
->>>>>>> cyhan/en-v1.10
 
 ## 参数类型声明
 
@@ -209,15 +203,7 @@ Int8
 
 这个函数将忽略 `x` 和 `y` 的类型，返回 `Int8` 类型的值。有关返回类型的更多信息，请参见[类型声明](@ref Type-Declarations)。
 
-<<<<<<< HEAD
 返回类型声明在 Julia 中**很少使用**：通常，你应该编写“类型稳定”的函数，Julia 的编译器可以在其中自动推断返回类型。更多信息请参阅 [性能提示](@ref man-performance-tips) 一章。
-=======
-Return type declarations are **rarely used** in Julia: in general, you should
-instead write "type-stable" functions in which Julia's compiler can automatically
-infer the return type.  For more information, see the [Performance Tips](@ref man-performance-tips) chapter.
-
-### Returning nothing
->>>>>>> cyhan/en-v1.10
 
 ### 返回 nothing
 
@@ -230,15 +216,8 @@ function printx(x)
 end
 ```
 
-<<<<<<< HEAD
 这在某种意义上是一个“惯例”，在 Julia 中 `nothing` 不是一个关键字，而是 `Nothing` 类型的一个单例（singleton）。
 也许你已经注意到 `printx` 函数有点不自然，因为 `println` 实际上已经会返回 `nothing`，所以 `return` 语句是多余的。
-=======
-This is a *convention* in the sense that `nothing` is not a Julia keyword
-but only a singleton object of type `Nothing`.
-Also, you may notice that the `printx` function example above is contrived,
-because `println` already returns `nothing`, so that the `return` line is redundant.
->>>>>>> cyhan/en-v1.10
 
 有两种比 `return nothing` 更短的写法：一种是直接写 `return` 这会隐式的返回 `nothing`。
 另一种是在函数的会后一行写上 `nothing`，因为函数会隐式的返回最后一个表达式的值。
@@ -271,19 +250,7 @@ julia> f(1,2,3)
 
 有一些特殊的表达式对应的函数调用没有显示的函数名称，它们是：
 
-<<<<<<< HEAD
-| 表达式        | 函数调用                   |
-|:----------------- |:----------------------- |
-| `[A B C ...]`     | [`hcat`](@ref)          |
-| `[A; B; C; ...]`  | [`vcat`](@ref)          |
-| `[A B; C D; ...]` | [`hvcat`](@ref)         |
-| `A'`              | [`adjoint`](@ref)       |
-| `A[i]`            | [`getindex`](@ref)      |
-| `A[i] = x`        | [`setindex!`](@ref)     |
-| `A.n`             | [`getproperty`](@ref Base.getproperty) |
-| `A.n = x`         | [`setproperty!`](@ref Base.setproperty!) |
-=======
-| Expression            | Calls                   |
+| 表达式                | 函数调用                 |
 |:--------------------- |:----------------------- |
 | `[A B C ...]`         | [`hcat`](@ref)          |
 | `[A; B; C; ...]`      | [`vcat`](@ref)          |
@@ -297,7 +264,6 @@ julia> f(1,2,3)
 
 Note that expressions similar to `[A; B;; C; D;; ...]` but with more than two
 consecutive `;` also correspond to `hvncat` calls.
->>>>>>> cyhan/en-v1.10
 
 ## [匿名函数](@id man-anonymous-functions)
 
@@ -352,12 +318,8 @@ end
 get(()->time(), dict, key)
 ```
 
-<<<<<<< HEAD
-这里对 [`time`](@ref) 的调用，被包裹了它的一个无参数的匿名函数延迟了。该匿名函数只当 `dict` 缺少被请求的键时，才被调用。
-=======
-The call to [`time`](@ref) is delayed by wrapping it in a 0-argument anonymous function
-that is called only if the requested key is absent from `dict`.
->>>>>>> cyhan/en-v1.10
+这里对 [`time`](@ref) 的调用，被包裹了它的一个无参数的匿名函数延迟了。
+只有当请求的键不在 `dict` 中时，才会调用该函数。
 
 ## 元组
 
@@ -396,22 +358,14 @@ julia> x.a
 2
 ```
 
-<<<<<<< HEAD
-具名元组和元组十分类似，区别在于除了一般的下标语法（`x[1]`），还可以使用点运算符语法（`x.a`）通过元素的名字来访问它的元素。
-
-## [解构赋值和多返回值](@id destructuring-assignment)
-
-逗号分隔的变量列表（可选地用括号括起来）可以出现在赋值的左侧：右侧的值通过迭代并依次分配给每个变量来_解构_：
-=======
 The fields of named tuples can be accessed by name using dot syntax (`x.a`) in
 addition to the regular indexing syntax (`x[1]` or `x[:a]`).
 
-## [Destructuring Assignment and Multiple Return Values](@id destructuring-assignment)
+## [解构赋值和多返回值](@id destructuring-assignment)
 
 A comma-separated list of variables (optionally wrapped in parentheses) can appear on the
 left side of an assignment: the value on the right side is _destructured_ by iterating
 over and assigning to each variable in turn:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> (a,b,c) = 1:3
@@ -421,18 +375,9 @@ julia> b
 2
 ```
 
-<<<<<<< HEAD
 右边的值应该是一个至少与左边的变量数量一样长的迭代器（参见[迭代接口](@ref man-interface-iteration)）（迭代器的任何多余元素会被忽略）。
 
 可用于通过返回元组或其他可迭代值从函数返回多个值。例如，以下函数返回两个值：
-=======
-The value on the right should be an iterator (see [Iteration interface](@ref man-interface-iteration))
-at least as long as the number of variables on the left (any excess elements of the
-iterator are ignored).
-
-This can be used to return multiple values from functions by returning a tuple or
-other iterable value. For example, the following function returns two values:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest foofunc
 julia> function foo(a,b)
@@ -448,11 +393,7 @@ julia> foo(2,3)
 (5, 6)
 ```
 
-<<<<<<< HEAD
 解构赋值将每个值提取到一个变量中：
-=======
-Destructuring assignment extracts each value into a variable:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest foofunc
 julia> x, y = foo(2,3)
@@ -465,11 +406,7 @@ julia> y
 6
 ```
 
-<<<<<<< HEAD
 另一个常见用途是交换变量：
-=======
-Another common use is for swapping variables:
->>>>>>> cyhan/en-v1.10
 ```jldoctest foofunc
 julia> y, x = x, y
 (5, 6)
@@ -481,19 +418,11 @@ julia> y
 5
 ```
 
-<<<<<<< HEAD
 如果只需要迭代器元素的一个子集，一个常见的惯例是将忽略的元素分配给一个只包含下划线 `_` 的变量（这是一个无效的变量名，请参阅 [合法的变量名]（@ref man -allowed-variable-names)):
-=======
-If only a subset of the elements of the iterator are required, a common convention is to assign ignored elements to a variable
-consisting of only underscores `_` (which is an otherwise invalid variable name, see
-[Allowed Variable Names](@ref man-allowed-variable-names)):
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> _, _, _, d = 1:10
 1:10
-<<<<<<< HEAD
-=======
 
 julia> d
 4
@@ -618,7 +547,6 @@ julia> b
 ```
 
 ## [Argument destructuring](@id man-argument-destructuring)
->>>>>>> cyhan/en-v1.10
 
 julia> d
 4
@@ -688,9 +616,6 @@ julia> gap(minmax(10, 2))
 
 注意在定义函数 `gap` 时额外的括号。 没有它们，`gap` 函数将会是一个双参数函数，这个例子也会无法正常运行。
 
-<<<<<<< HEAD
-对于匿名函数，解构单个元组需要一个额外的逗号：
-=======
 Similarly, property destructuring can also be used for function arguments:
 
 ```julia-repl
@@ -709,7 +634,7 @@ julia> foo(A(3, 4))
 7
 ```
 
-For anonymous functions, destructuring a single argument requires an extra comma:
+对于匿名函数，解构单个元组需要一个额外的逗号：
 
 ```
 julia> map(((x,y),) -> x + y, [(1,2), (3,4)])
@@ -719,7 +644,6 @@ julia> map(((x,y),) -> x + y, [(1,2), (3,4)])
 ```
 
 ## Varargs Functions
->>>>>>> cyhan/en-v1.10
 
 ```
 julia> map(((x,y),) -> x + y, [(1,2), (3,4)])
@@ -867,12 +791,8 @@ julia> date(2000)
 2000-01-01
 ```
 
-<<<<<<< HEAD
-可选参数实际上只是一种方便的语法，用于编写多种具有不同数量参数的方法定义（请参阅 [可选参数和关键字的参数的注意事项](@ref)）。这可通过调用 `methods` 函数来检查我们的 `Date` 函数示例。
-=======
-Optional arguments are actually just a convenient syntax for writing multiple method definitions
-with different numbers of arguments (see [Note on Optional and keyword Arguments](@ref)).
-This can be checked for our `date` function example by calling the `methods` function:
+可选参数实际上只是一种方便的语法，用于编写多种具有不同数量参数的方法定义（请参阅 [可选参数和关键字的参数的注意事项](@ref)）。
+这可通过调用 `methods` 函数来检查我们的 `date` 函数示例。
 
 ```julia-repl
 julia> methods(date)
@@ -881,7 +801,6 @@ julia> methods(date)
 [2] date(y::Int64, m::Int64) in Main at REPL[1]:1
 [3] date(y::Int64, m::Int64, d::Int64) in Main at REPL[1]:1
 ```
->>>>>>> cyhan/en-v1.10
 
 ## 关键字参数
 
@@ -925,14 +844,9 @@ function f(x; y=0, kwargs...)
 end
 ```
 
-<<<<<<< HEAD
-在 `f` 中，`kwargs` 将是一个在命名元组上的不可变键值迭代器。 具名元组（以及带有`Symbol`键的字典）可以在调用中使用分号作为关键字参数传递，例如 `f(x, z=1; kwargs...)`。
-=======
-Inside `f`, `kwargs` will be an immutable key-value iterator over a named tuple.
-Named tuples (as well as dictionaries with keys of `Symbol`, and other iterators
-yielding two-value collections with symbol as first values) can be passed as
-keyword arguments using a semicolon in a call, e.g. `f(x, z=1; kwargs...)`.
->>>>>>> cyhan/en-v1.10
+在 `f` 中，`kwargs` 将是一个在命名元组上的不可变键值迭代器。
+具名元组（以及带有`Symbol`键的字典, and other iterators yielding two-value collections with symbol as first values）
+可以在调用中使用分号作为关键字参数传递，例如 `f(x, z=1; kwargs...)`。
 
 如果一个关键字参数在方法定义中未指定默认值，那么它就是*必需的*：如果调用者没有为其赋值，那么将会抛出一个 [`UndefKeywordError`](@ref) 异常：
 ```julia
@@ -992,13 +906,12 @@ map([A, B, C]) do x
 end
 ```
 
-<<<<<<< HEAD
-`do x` 语法创建一个带有参数 `x` 的匿名函数，并将其作为第一个参数传递给 [`map`](@ref)。 类似地，`do a,b` 将创建一个有两个参数的匿名函数。 请注意，`do (a,b)` 将创建一个单参数匿名函数，其参数是一个要解构的元组。 一个简单的 `do` 会声明接下来是一个形式为 `() -> ...` 的匿名函数。
-=======
-The `do x` syntax creates an anonymous function with argument `x` and passes it as the first argument
-to [`map`](@ref). Similarly, `do a,b` would create a two-argument anonymous function. Note that `do (a,b)` would create a one-argument anonymous function,
-whose argument is a tuple to be deconstructed. A plain `do` would declare that what follows is an anonymous function of the form `() -> ...`.
->>>>>>> cyhan/en-v1.10
+`do x` 语法创建一个带有参数 `x` 的匿名函数，并将其作为第一个参数传递给 [`map`](@ref)。
+类似地，`do a,b` 将创建一个有两个参数的匿名函数。
+请注意，`do (a,b)` 将创建一个单参数匿名函数，其参数是一个要解构的元组。
+Note that `do (a,b)` would create a one-argument anonymous function,
+whose argument is a tuple to be deconstructed. 
+一个简单的 `do` 会声明接下来是一个形式为 `() -> ...` 的匿名函数。
 
 这些参数如何初始化取决于「外部」函数；在这里，[`map`](@ref) 将会依次将 `x` 设置为 `A`、`B`、`C`，再分别调用调用匿名函数，正如在 `map(func, [A, B, C])` 语法中所发生的。
 
@@ -1074,11 +987,7 @@ julia> (sqrt ∘ sum)(1:10)
 7.416198487095663
 ```
 
-<<<<<<< HEAD
 管道运算符还可以和广播一起使用（`.|>`），这提供了一个有用的链式调用/管道+向量化运算的组合语法（接下来将描述）。
-=======
-The pipe operator can also be used with broadcasting, as `.|>`, to provide a useful combination of the chaining/piping and dot vectorization syntax (described below).
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> ["a", "list", "of", "strings"] .|> [uppercase, reverse, titlecase, length]
@@ -1089,9 +998,6 @@ julia> ["a", "list", "of", "strings"] .|> [uppercase, reverse, titlecase, length
  7
 ```
 
-<<<<<<< HEAD
-## [向量化函数的点语法](@id man-vectorized)
-=======
 When combining pipes with anonymous functions, parentheses must be used if subsequent pipes are not to be parsed as part of the anonymous function's body. Compare:
 
 ```jldoctest
@@ -1105,8 +1011,7 @@ julia> 1:3 .|> x -> x^2 |> sum |> sqrt
  3.0
 ```
 
-## [Dot Syntax for Vectorizing Functions](@id man-vectorized)
->>>>>>> cyhan/en-v1.10
+## [向量化函数的点语法](@id man-vectorized)
 
 在科学计算语言中，通常会有函数的「向量化」版本，它简单地将给定函数 `f(x)` 作用于数组 `A` 的每个元素，接着通过 `f(A)` 生成一个新数组。这种语法便于数据处理，但在其它语言中，向量化通常也是性能所需要的：如果循环很慢，函数的「向量化」版本可以调用由低级语言编写的、快速的库代码。在 Julia 中，向量化函数*不*是性能所必需的，实际上编写自己的循环通常也是有益的（请参阅 [Performance Tips](@ref man-performance-tips)），但它们仍然很方便。因此，*任何* Julia 函数 `f` 能够以元素方式作用于任何数组（或者其它集合），这通过语法 `f.(A)` 实现。例如，`sin` 可以作用于向量 `A` 中的所有元素，如下所示：
 
@@ -1148,22 +1053,10 @@ julia> f.(A, B)
  33.0
 ```
 
-<<<<<<< HEAD
-此外，*嵌套的* `f.(args...)` 调用会被*融合*到一个 `broadcast` 循环中。例如，`sin.(cos.(X))` 等价于 `broadcast(x -> sin(cos(x)), X)`，类似于 `[sin(cos(x)) for x in X]`：在 `X` 上只有一个循环，并且只为结果分配了一个数组。[ 相反，在典型的「向量化」语言中，`sin(cos(X))` 首先会为 `tmp=cos(X)` 分配第一个临时数组，然后在单独的循环中计算 `sin(tmp)`，再分配第二个数组。] 这种循环融合不是可能发生也可能不发生的编译器优化，只要遇到了嵌套的 `f.(args...)` 调用，它就是一个*语法保证*。技术上，一旦遇到「非点」函数调用，融合就会停止；例如，在 `sin.(sort(cos.(X)))` 中，由于插入的 `sort` 函数，`sin` 和 `cos` 无法被合并。
-=======
 Keyword arguments are not broadcasted over, but are simply passed through to each call of
 the function.  For example, `round.(x, digits=3)` is equivalent to `broadcast(x -> round(x, digits=3), x)`.
 
-Moreover, *nested* `f.(args...)` calls are *fused* into a single `broadcast` loop. For example,
-`sin.(cos.(X))` is equivalent to `broadcast(x -> sin(cos(x)), X)`, similar to `[sin(cos(x)) for x in X]`:
-there is only a single loop over `X`, and a single array is allocated for the result. [In contrast,
-`sin(cos(X))` in a typical "vectorized" language would first allocate one temporary array for
-`tmp=cos(X)`, and then compute `sin(tmp)` in a separate loop, allocating a second array.] This
-loop fusion is not a compiler optimization that may or may not occur, it is a *syntactic guarantee*
-whenever nested `f.(args...)` calls are encountered. Technically, the fusion stops as soon as
-a "non-dot" function call is encountered; for example, in `sin.(sort(cos.(X)))` the `sin` and `cos`
-loops cannot be merged because of the intervening `sort` function.
->>>>>>> cyhan/en-v1.10
+此外，*嵌套的* `f.(args...)` 调用会被*融合*到一个 `broadcast` 循环中。例如，`sin.(cos.(X))` 等价于 `broadcast(x -> sin(cos(x)), X)`，类似于 `[sin(cos(x)) for x in X]`：在 `X` 上只有一个循环，并且只为结果分配了一个数组。[ 相反，在典型的「向量化」语言中，`sin(cos(X))` 首先会为 `tmp=cos(X)` 分配第一个临时数组，然后在单独的循环中计算 `sin(tmp)`，再分配第二个数组。] 这种循环融合不是可能发生也可能不发生的编译器优化，只要遇到了嵌套的 `f.(args...)` 调用，它就是一个*语法保证*。技术上，一旦遇到「非点」函数调用，融合就会停止；例如，在 `sin.(sort(cos.(X)))` 中，由于插入的 `sort` 函数，`sin` 和 `cos` 无法被合并。
 
 最后，最大效率通常在向量化操作的输出数组被*预分配*时实现，这样重复调用就不会一次又一次地为结果分配新数组（请参阅 [输出预分配](@ref)）。一个方便的语法是 `X .= ...`，它等价于 `broadcast!(identity, X, ...)`，除了上面提到的，`broadcast!` 循环可与任何嵌套的「点」调用融合。例如，`X .= sin.(Y)` 等价于 `broadcast!(sin, X, Y)`，用 `sin.(Y)` in-place 覆盖 `X`。如果左边是数组索引表达式，例如 `X[2:end] .= sin.(Y)`，那就将 `broadcast!` 转换在一个 `view` 上，例如 `broadcast!(sin, view(X, 2:lastindex(X)), Y)`，这样左侧就被 in-place 更新了。
 

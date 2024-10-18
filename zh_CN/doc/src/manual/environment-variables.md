@@ -54,17 +54,9 @@ $JULIA_BINDIR/../etc/julia/startup.jl
 
 ### `JULIA_PROJECT`
 
-<<<<<<< HEAD
-指示哪个项目应该是初始活动项目的目录路径。 设置这个环境变量和指定`--project`启动选项效果一样，但是`--project`优先级更高。 如果变量设置为 `@.`，那么 Julia 会尝试从当前目录及其父目录中查找包含 `Project.toml` 或 `JuliaProject.toml` 文件的项目目录。 另请参阅有关 [代码加载](@ref code-loading) 的章节。
-=======
-A directory path that indicates which project should be the initial active project.
-Setting this environment variable has the same effect as specifying the `--project`
-start-up option, but `--project` has higher precedence. If the variable is set to `@.`
-(note the trailing dot)
-then Julia tries to find a project directory that contains `Project.toml` or
-`JuliaProject.toml` file from the current directory and its parents. See also
-the chapter on [Code Loading](@ref code-loading).
->>>>>>> cyhan/en-v1.10
+指示哪个项目应该是初始活动项目的目录路径。 设置这个环境变量和指定`--project`启动选项效果一样，但是`--project`优先级更高。
+如果变量设置为 `@.` （注意尾随的点），那么 Julia 会尝试从当前目录及其父目录中查找包含 `Project.toml` 或 `JuliaProject.toml` 文件的项目目录。
+另请参阅有关 [代码加载](@ref code-loading) 的章节。
 
 !!! note
 
@@ -78,7 +70,6 @@ the chapter on [Code Loading](@ref code-loading).
 ```sh
 export JULIA_LOAD_PATH="/foo/bar:$JULIA_LOAD_PATH"
 ```
-<<<<<<< HEAD
 如果已经设置了 `JULIA_LOAD_PATH` 环境变量，那么 `/foo/bar` 将被添加在原有值之前。另一方面，如果 `JULIA_LOAD_PATH` 尚未设置，那么它会被设置为 `/foo/bar:` ，而这将使用 `LOAD_PATH` 的值扩展为 `["/foo/bar", "@", "@v#.#", "@stdlib"]` 。如果 `JULIA_LOAD_PATH` 被设置为空字符串，那么它将被扩展为一个空的 `LOAD_PATH` 数组。换句话说，这个空字符串数组将被认为是零元素的数组，而非是一个空字符串单元素的数组。使用这样的加载行为是为了可以通过环境变量设置空的加载路径。如果你需要使用默认的加载路径，请不要设置这一环境变量，如果它必须有值，那么可将其设置为字符串 `:` 。
 
 !!! note
@@ -90,67 +81,22 @@ export JULIA_LOAD_PATH="/foo/bar:$JULIA_LOAD_PATH"
 `JULIA_DEPOT_PATH` 环境变量用于填充全局的 Julia 变量 [`DEPOT_PATH`](@ref) ，该变量用于控制包管理器以及 Juila 代码加载机制在何处查找包注册表、已安装的包、命名环境、克隆的存储库、缓存的预编译包映像、配置文件和 REPL 历史记录文件的默认位置。
 
 与 shell 使用的 `PATH` 变量不同，但与 `JULIA_LOAD_PATH` 类似， 在 `JULIA_DEPOT_PATH` 中的空条目将会被扩展为 `DEPOT_PATH` 的默认值。这样，无论 `JULIA_DEPOT_PATH` 是否已被设置，均可以使用 shell 脚本轻松地在仓库路径前面或后面添加值。例如要将 `/foo/bar` 添加到 `DEPOT_PATH` 之前，只需要使用下列脚本：
+
 ```sh
 export JULIA_DEPOT_PATH="/foo/bar:$JULIA_DEPOT_PATH"
 ```
+
 如果已经设置了 `JULIA_DEPOT_PATH` 环境变量，那么 `/foo/bar` 将被添加在原有值之前。另一方面，如果 `JULIA_DEPOT_PATH` 尚未设置，那么它会被设置为 `/foo/bar:` ，而这将使 `/foo/bar` 被添加到默认仓库路径之前。如果 `JULIA_DEPOT_PATH` 被设置为空字符串，那么它将扩展为一个空的 `DEPOT_PATH` 数组。换句话说，这个空字符串数组将被认为是零元素的数组，而非是一个空字符串单元素的数组。使用这样的加载行为是为了可以通过环境变量设置空的仓库路径。如果你需要使用默认的仓库路径，请不要设置这一环境变量，如果它必须有值，那么可将其设置为字符串 `:` 。
 
 !!! note
 
     在 Windows 上，路径元素由 `;` 字符分隔，就像 Windows 上的大多数路径列表一样。 将上一段中的 `:` 替换为 `;`。
-=======
-If the `JULIA_LOAD_PATH` environment variable is already set, its old value will be
-prepended with `/foo/bar`. On the other hand, if `JULIA_LOAD_PATH` is not set, then
-it will be set to `/foo/bar:` which will expand to a `LOAD_PATH` value of
-`["/foo/bar", "@", "@v#.#", "@stdlib"]`. If `JULIA_LOAD_PATH` is set to the empty
-string, it expands to an empty `LOAD_PATH` array. In other words, the empty string
-is interpreted as a zero-element array, not a one-element array of the empty string.
-This behavior was chosen so that it would be possible to set an empty load path via
-the environment variable. If you want the default load path, either unset the
-environment variable or if it must have a value, set it to the string `:`.
-
-!!! note
-
-    On Windows, path elements are separated by the `;` character, as is the case with
-    most path lists on Windows. Replace `:` with `;` in the above paragraph.
-
-### `JULIA_DEPOT_PATH`
-
-The `JULIA_DEPOT_PATH` environment variable is used to populate the global Julia
-[`DEPOT_PATH`](@ref) variable, which controls where the package manager, as well
-as Julia's code loading mechanisms, look for package registries, installed
-packages, named environments, repo clones, cached compiled package images,
-configuration files, and the default location of the REPL's history file.
-
-Unlike the shell `PATH` variable but similar to `JULIA_LOAD_PATH`, empty entries in
-`JULIA_DEPOT_PATH` are expanded to the default value of `DEPOT_PATH`. This allows
-easy appending, prepending, etc. of the depot path value in shell scripts regardless
-of whether `JULIA_DEPOT_PATH` is already set or not. For example, to prepend the
-directory `/foo/bar` to `DEPOT_PATH` just do
-```sh
-export JULIA_DEPOT_PATH="/foo/bar:$JULIA_DEPOT_PATH"
-```
-If the `JULIA_DEPOT_PATH` environment variable is already set, its old value will be
-prepended with `/foo/bar`. On the other hand, if `JULIA_DEPOT_PATH` is not set, then
-it will be set to `/foo/bar:` which will have the effect of prepending `/foo/bar` to
-the default depot path. If `JULIA_DEPOT_PATH` is set to the empty string, it expands
-to an empty `DEPOT_PATH` array. In other words, the empty string is interpreted as a
-zero-element array, not a one-element array of the empty string. This behavior was
-chosen so that it would be possible to set an empty depot path via the environment
-variable. If you want the default depot path, either unset the environment variable
-or if it must have a value, set it to the string `:`.
-
-!!! note
-
-    On Windows, path elements are separated by the `;` character, as is the case with
-    most path lists on Windows. Replace `:` with `;` in the above paragraph.
 
 !!! note
     `JULIA_DEPOT_PATH` must be defined before starting julia; defining it in
     `startup.jl` is too late in the startup process; at that point you can instead
     directly modify the `DEPOT_PATH` array, which is populated from the environment
     variable.
->>>>>>> cyhan/en-v1.10
 
 ### `JULIA_HISTORY`
 
@@ -160,16 +106,6 @@ REPL 历史文件中 `REPL.find_hist_file()` 的绝对路径。如果没有设�
 $(DEPOT_PATH[1])/logs/repl_history.jl
 ```
 
-<<<<<<< HEAD
-### `JULIA_PKG_SERVER`
-
-由`Pkg.jl` 使用，用于下载软件包和更新注册表。默认情况下，`Pkg` 使用 `https://pkg.julialang.org` 来获取 Julia 包。你可以使用此环境变量来选择不同的服务器。 此外，你可以禁用 PkgServer 协议的使用，并通过设置直接从它们的主机（GitHub、GitLab 等）访问包：
-```
-export JULIA_PKG_SERVER=""
-```
-
-## 外部应用
-=======
 ### [`JULIA_MAX_NUM_PRECOMPILE_FILES`](@id env-max-num-precompile-files)
 
 Sets the maximum number of different instances of a single package that are to be stored in the precompile cache (default = 10).
@@ -212,10 +148,12 @@ If set to `0`, this will disable automatic precompilation by package actions whi
 
 ### `JULIA_PKG_SERVER`
 
-Specifies the URL of the package registry to use. By default, `Pkg` uses
-`https://pkg.julialang.org` to fetch Julia packages. In addition, you can disable the use of the PkgServer
-protocol, and instead access the packages directly from their hosts (GitHub, GitLab, etc.)
-by setting: ``` export JULIA_PKG_SERVER="" ```
+由`Pkg.jl` 使用，用于下载软件包和更新注册表。默认情况下，`Pkg` 使用 `https://pkg.julialang.org` 来获取 Julia 包。
+你可以使用此环境变量来选择不同的服务器。此外，你可以禁用 PkgServer 协议的使用，并通过设置直接从它们的主机（GitHub、GitLab 等）访问包：
+
+```
+export JULIA_PKG_SERVER=""
+```
 
 ### `JULIA_PKG_SERVER_REGISTRY_PREFERENCE`
 
@@ -267,7 +205,6 @@ Specify hosts whose identity should or should not be verified for specific trans
 Specify the file or directory containing the certificate authority roots. See [`NetworkOptions.ca_roots`](https://github.com/JuliaLang/NetworkOptions.jl#ca_roots)
 
 ## External applications
->>>>>>> cyhan/en-v1.10
 
 ### `JULIA_SHELL`
 
@@ -283,13 +220,9 @@ Julia 用来执行外部命令的 shell 的绝对路径（通过 `Base.repl_cmd(
 
 `$JULIA_EDITOR` 优先于 `$VISUAL`，而后者优先于 `$EDITOR`。如果这些环境变量都没有设置，那么在 Windows 和 OS X 上会设置为 `open`，或者 `/etc/alternatives/editor`（如果存在的话），否则为 `emacs`。
 
-<<<<<<< HEAD
-## 并行
-=======
 To use Visual Studio Code on Windows, set `$JULIA_EDITOR` to `code.cmd`.
 
-## Parallelization
->>>>>>> cyhan/en-v1.10
+## 并行
 
 ### [`JULIA_CPU_THREADS`](@id env-cpu-threads)
 
@@ -301,26 +234,12 @@ To use Visual Studio Code on Windows, set `$JULIA_EDITOR` to `code.cmd`.
 
 ### [`JULIA_NUM_THREADS`](@id JULIA_NUM_THREADS)
 
-<<<<<<< HEAD
 一个无符号 64 位整数 (`uint64_t`)，用于设置 Julia 可用的最大线程数。 如果`$JULIA_NUM_THREADS` 不为正数或未设置，或者无法通过系统调用确定CPU 线程数，则将线程数设置为`1`。
 
 如果`$JULIA_NUM_THREADS` 设置为`auto`，则线程数将设置为CPU线程数。
 
 !!! note
     `JULIA_NUM_THREADS` 必须在启动 julia 之前定义； 启动过程中在`startup.jl` 中定义它是不能奏效的。
-=======
-An unsigned 64-bit integer (`uint64_t`) that sets the maximum number of threads
-available to Julia.  If `$JULIA_NUM_THREADS` is not positive or is not set, or
-if the number of CPU threads cannot be determined through system calls, then the
-number of threads is set to `1`.
-
-If `$JULIA_NUM_THREADS` is set to `auto`, then the number of threads will be set
-to the number of CPU threads.
-
-!!! note
-    `JULIA_NUM_THREADS` must be defined before starting julia; defining it in
-    `startup.jl` is too late in the startup process.
->>>>>>> cyhan/en-v1.10
 
 !!! compat "Julia 1.5"
     在 Julia 1.5 和更高版本中，也可在启动时使用 `-t`/`--threads` 命令行参数指定线程数。
@@ -362,15 +281,8 @@ during image compilation. Defaults to 0.
 
 ## REPL 格式化输出
 
-<<<<<<< HEAD
-决定 REPL 应当如何格式化输出的环境变量。通常，这些变量应当被设置为 [ANSI 终端转义序列](http://ascii-table.com/ansi-escape-sequences.php)。Julia 提供了具有相同功能的高级接口；请参阅 [Julia REPL](@ref) 章节。
-=======
-Environment variables that determine how REPL output should be formatted at the
-terminal. Generally, these variables should be set to [ANSI terminal escape
-sequences](https://en.wikipedia.org/wiki/ANSI_escape_code). Julia provides
-a high-level interface with much of the same functionality; see the section on
-[The Julia REPL](@ref).
->>>>>>> cyhan/en-v1.10
+决定 REPL 应当如何格式化输出的环境变量。通常，这些变量应当被设置为 [ANSI 终端转义序列](https://en.wikipedia.org/wiki/ANSI_escape_code)。
+Julia 提供了具有相同功能的高级接口；请参阅 [Julia REPL](@ref) 章节。
 
 ### `JULIA_ERROR_COLOR`
 
@@ -392,13 +304,6 @@ a high-level interface with much of the same functionality; see the section on
 
 `Base.answer_color()`（默认值：标准，`"\033[0m"`），在终端中，输出应有的格式。
 
-<<<<<<< HEAD
-## 调试和性能分析
-
-### `JULIA_DEBUG`
-
-为文件或模块启动调试日志记录，请参阅 [日志](@ref Logging) 了解更多信息。
-=======
 ## System and Package Image Building
 
 ### [`JULIA_CPU_TARGET`](@id JULIA_CPU_TARGET)
@@ -451,7 +356,6 @@ A few special features are supported:
 ### `JULIA_DEBUG`
 
 Enable debug logging for a file or module, see [`Logging`](@ref man-logging) for more information.
->>>>>>> cyhan/en-v1.10
 
 ### `JULIA_GC_ALLOC_POOL`, `JULIA_GC_ALLOC_OTHER`, `JULIA_GC_ALLOC_PRINT`
 
@@ -496,21 +400,10 @@ Enable debug logging for a file or module, see [`Logging`](@ref man-logging) for
 
 !!! note
 
-<<<<<<< HEAD
     此环境变量仅在使用 JIT 性能分析支持编译 Julia 时有效，使用如下之一：
     * Intel's [VTune™ Amplifier](https://software.intel.com/en-us/vtune)(`USE_INTEL_JITEVENTS` 在配置中设置为`1`), 或
-    * [OProfile](http://oprofile.sourceforge.net/news/)(`USE_OPROFILE_JITEVENTS` 在配置中设置为`1`)。
+    * [OProfile](https://oprofile.sourceforge.io/news/)(`USE_OPROFILE_JITEVENTS` 在配置中设置为`1`)。
     * [Perf](https://perf.wiki.kernel.org) (`USE_PERF_JITEVENTS` 在构建配置中设置为 `1`)。 默认情况下启用此集成。
-=======
-    This environment variable only has an effect if Julia was compiled with JIT
-    profiling support, using either
-    * Intel's [VTune™ Amplifier](https://software.intel.com/en-us/vtune)
-      (`USE_INTEL_JITEVENTS` set to `1` in the build configuration), or
-    * [OProfile](https://oprofile.sourceforge.io/news/) (`USE_OPROFILE_JITEVENTS` set to `1`
-      in the build configuration).
-    * [Perf](https://perf.wiki.kernel.org) (`USE_PERF_JITEVENTS` set to `1`
-      in the build configuration). This integration is enabled by default.
->>>>>>> cyhan/en-v1.10
 
 ### `ENABLE_GDBLISTENER`
 
@@ -519,9 +412,4 @@ Enable debug logging for a file or module, see [`Logging`](@ref man-logging) for
 
 ### `JULIA_LLVM_ARGS`
 
-<<<<<<< HEAD
-传递给 LLVM 后端的参数。
-
-=======
-Arguments to be passed to the LLVM backend.
->>>>>>> cyhan/en-v1.10
+要传递给 LLVM 后端的参数。

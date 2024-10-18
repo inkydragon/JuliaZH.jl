@@ -1,8 +1,5 @@
 # 嵌入 Julia
 
-<<<<<<< HEAD
-正如我们在 [调用 C 和 Fortran 代码](@ref) 中看到的, Julia 有着简单高效的方法来调用 C 编写的函数。但有时恰恰相反，我们需要在 C 中调用 Julia 的函数。这可以将 Julia 代码集成到一个更大的 C/C++ 项目而无需在 C/C++ 中重写所有内容。Julia 有一个 C API 来实现这一目标。几乎所有编程语言都能以某种方式来调用 C 语言的函数，因此 Julia 的 C API 也就能够进行更多语言的桥接。(例如在 Python 或是 C# 中调用 Julia ).
-=======
 As we have seen in [Calling C and Fortran Code](@ref), Julia has a simple and efficient way
 to call functions written in C. But there are situations where the opposite is needed:
 calling Julia functions from C code. This can be used to integrate Julia code into a larger
@@ -11,17 +8,12 @@ this possible. As almost all programming languages have some way to call C funct
 Julia C API can also be used to build further language bridges (e.g. calling Julia from
 Python, Rust or C#). Even though Rust and C++ can use the C embedding API directly, both
 have packages helping with it, for C++ [Jluna](https://github.com/Clemapfel/jluna) is useful.
->>>>>>> cyhan/en-v1.10
 
 ## 高级别嵌入
 
-<<<<<<< HEAD
-__Note__: 本节包含可运行在类 Unix 系统上的、使用 C 编写的嵌入式 Julia 代码。Windows 平台请参阅下一节。
-=======
-__Note__: This section covers embedding Julia code in C on Unix-like operating systems. For
-doing this on Windows, please see the section following this,
+__Note__: 本节包含可运行在类 Unix 系统上的、使用 C 编写的嵌入式 Julia 代码。
+For doing this on Windows, please see the section following this,
 [High-Level Embedding on Windows with Visual Studio](@ref).
->>>>>>> cyhan/en-v1.10
 
 我们从一个简单的 C 程序开始初始化 Julia 并调用一些 Julia 代码：
 
@@ -47,13 +39,8 @@ int main(int argc, char *argv[])
 }
 ```
 
-<<<<<<< HEAD
-为构建这个程序，你必须将 Julia 头文件的路径放入 include 路径并链接 `libjulia` 。例如 Julia 被安装到 `$JULIA_DIR`，则可以用 `gcc` 来编译上面的测试程序 `test.c`：
-=======
-In order to build this program you must add the path to the Julia header to the include path
-and link against `libjulia`. For instance, when Julia is installed to `$JULIA_DIR`, one can
-compile the above test program `test.c` with `gcc` using:
->>>>>>> cyhan/en-v1.10
+为构建这个程序，你必须将 Julia 头文件的路径放入 include 路径并链接 `libjulia` 。
+例如 Julia 被安装到 `$JULIA_DIR`，则可以用 `gcc` 来编译上面的测试程序 `test.c`：
 
 ```
 gcc -o test -fPIC -I$JULIA_DIR/include/julia -L$JULIA_DIR/lib -Wl,-rpath,$JULIA_DIR/lib test.c -ljulia
@@ -61,23 +48,13 @@ gcc -o test -fPIC -I$JULIA_DIR/include/julia -L$JULIA_DIR/lib -Wl,-rpath,$JULIA_
 
 或者，查看 `test/embedding/` 文件夹中 Julia 源代码树中的 `embedding.c` 程序。 文件 `cli/loader_exe.c` 程序是另一个简单的例子，说明如何在链接 `libjulia` 时设置 `jl_options` 选项。
 
-<<<<<<< HEAD
-在调用任何其他 Julia C 函数之前第一件必须要做的事是初始化 Julia，通过调用 `jl_init` 尝试自动确定 Julia 的安装位置来实现。如果需要自定义位置或指定要加载的系统映像，请改用 `jl_init_with_image`。
-=======
-The first thing that must be done before calling any other Julia C function is to
-initialize Julia. This is done by calling `jl_init`, which tries to automatically determine
-Julia's install location. If you need to specify a custom location, or specify which system
-image to load, use `jl_init_with_image` instead.
->>>>>>> cyhan/en-v1.10
+在调用任何其他 Julia C 函数之前第一件必须要做的事是初始化 Julia，通过调用 `jl_init` 尝试自动确定 Julia 的安装位置来实现。
+如果需要自定义位置或指定要加载的系统映像，请改用 `jl_init_with_image`。
 
 测试程序中的第二个语句通过调用 `jl_eval_string` 来执行 Julia 语句。
 
-<<<<<<< HEAD
-在程序结束之前，强烈建议调用 `jl_atexit_hook`。上面的示例程序在 `main` 返回之前进行了调用。
-=======
-Before the program terminates, it is strongly recommended that `jl_atexit_hook` is called.
-The above example program calls this just before returning from `main`.
->>>>>>> cyhan/en-v1.10
+在程序结束之前，强烈建议确保 `jl_atexit_hook` 已调用完成。
+上面的示例程序在 `main` 返回之前进行了调用。
 
 !!! note
     现在，动态链接 `libjulia` 的共享库需要传递选项 `RTLD_GLOBAL` 。比如在 Python 中像这样调用：
@@ -90,26 +67,14 @@ The above example program calls this just before returning from `main`.
     ```
 
 !!! note
-<<<<<<< HEAD
-    如果 Julia 程序需要访问 主可执行文件 中的符号，那么除了下面描述的由 `julia-config.jl` 生成的标记之外，可能还需要在 Linux 上的编译时添加 `-Wl,--export-dynamic` 链接器标志。编译共享库时则不必要。
-=======
-    If the julia program needs to access symbols from the main executable, it may be
-    necessary to add the `-Wl,--export-dynamic` linker flag at compile time on Linux in
-    addition to the ones generated by `julia-config.jl` described below. This is not
-    necessary when compiling a shared library.
->>>>>>> cyhan/en-v1.10
+    如果 Julia 程序需要访问 主可执行文件 中的符号，那么除了下面描述的由 `julia-config.jl` 生成的标记之外，
+    可能还需要在 Linux 上的编译时添加 `-Wl,--export-dynamic` 链接器标志。编译共享库时则不必要。
 
 ### 使用 julia-config 自动确定构建参数
 
-<<<<<<< HEAD
-`julia-config.jl` 创建脚本是为了帮助确定使用嵌入的 Julia 程序所需的构建参数。此脚本使用由其调用的特定 Julia 分发的构建参数和系统配置来导出嵌入程序的必要编译器标志以与该分发交互。此脚本位于 Julia 的 share 目录中。
-=======
-The script `julia-config.jl` was created to aid in determining what build parameters are
-required by a program that uses embedded Julia. This script uses the build parameters and
-system configuration of the particular Julia distribution it is invoked by to export the
-necessary compiler flags for an embedding program to interact with that distribution. This
-script is located in the Julia shared data directory.
->>>>>>> cyhan/en-v1.10
+`julia-config.jl` 创建脚本是为了帮助确定使用嵌入的 Julia 程序所需的构建参数。
+此脚本使用由其调用的特定 Julia 分发的构建参数和系统配置来导出嵌入程序的必要编译器标志以与该分发交互。
+此脚本位于 Julia 的 share 目录中。
 
 #### 例子
 
@@ -127,26 +92,15 @@ int main(int argc, char *argv[])
 
 #### 在命令行中
 
-<<<<<<< HEAD
 命令行脚本简单用法：假设 `julia-config.jl` 位于 `/usr/local/julia/share/julia`，它可以直接在命令行上调用，并采用 3 个标志的任意组合：
-=======
-A simple use of this script is from the command line. Assuming that `julia-config.jl` is
-located in `/usr/local/julia/share/julia`, it can be invoked on the command line directly
-and takes any combination of three flags:
->>>>>>> cyhan/en-v1.10
 
 ```
 /usr/local/julia/share/julia/julia-config.jl
 Usage: julia-config [--cflags|--ldflags|--ldlibs]
 ```
 
-<<<<<<< HEAD
-如果上面的示例源代码保存为文件 `embed_example.c`，则以下命令将其编译为 Linux 和 Windows 上运行的程序（MSYS2 环境），或者如果在 OS/X 上，则用 `clang` 替换 `gcc`。：
-=======
-If the above example source is saved in the file `embed_example.c`, then the following
-command will compile it into an executable program on Linux and Windows (MSYS2 environment).
-On macOS, substitute `clang` for `gcc`.:
->>>>>>> cyhan/en-v1.10
+如果上面的示例源代码保存为文件 `embed_example.c`，则以下命令将其编译为 Linux 和 Windows 上运行的程序（MSYS2 环境），
+或者如果在 macOS 上，则用 `clang` 替换 `gcc`。：
 
 ```
 /usr/local/julia/share/julia/julia-config.jl --cflags --ldflags --ldlibs | xargs gcc embed_example.c
@@ -154,17 +108,11 @@ On macOS, substitute `clang` for `gcc`.:
 
 #### 在 Makefiles 中使用
 
-<<<<<<< HEAD
-但通常来说，嵌入的项目会比上面更复杂，因此一般会提供 makefile 支持。由于使用了 **shell** 宏扩展，我们就假设用 GNU make 。
-另外，尽管很多时候 `julia-config.jl` 会在目录 `/usr/local` 中出现多次，不过也未必如此，但 Julia 也定位 `julia-config.jl`，并且可以使用 makefile 来利用它。上面的示例程序使用 Makefile 来扩展。：
-=======
-In general, embedding projects will be more complicated than the above example, and so the
-following allows general makefile support as well – assuming GNU make because of the use of
-the **shell** macro expansions. Furthermore, although `julia-config.jl` is usually in the
-`/usr/local` directory, if it isn't, then Julia itself can be used to find
-`julia-config.jl`, and the makefile can take advantage of this. The above example is
-extended to use a makefile:
->>>>>>> cyhan/en-v1.10
+通常来说，嵌入的项目会比上面更复杂，因此一般会提供 makefile 支持。
+由于使用了 **shell** 宏扩展，我们就假设用 GNU make 。
+此外，尽管 `julia-config.jl` 通常位于 `/usr/local` 目录中，但如果不在，
+则可以使用 Julia 本身来查找 `julia-config.jl`，而 makefile 可以利用这一点。
+上面的示例已扩展到使用 makefile：
 
 ```makefiles
 JL_SHARE = $(shell julia -e 'print(joinpath(Sys.BINDIR, Base.DATAROOTDIR, "julia"))')
@@ -182,12 +130,8 @@ all: embed_example
 
 如果尚未设置`JULIA_DIR`环境变量，请在启动 Visual Studio 之前使用系统面板添加它。JULIA_DIR 下的`bin` 文件夹应该在系统路径上。
 
-<<<<<<< HEAD
-我们首先打开 Visual Studio 并创建一个新的控制台应用程序项目。 在`stdafx.h`头文件的末尾添加以下几行：
-=======
-We start by opening Visual Studio and creating a new Console Application project. Open the
-'stdafx.h' header file, and add the following lines at the end:
->>>>>>> cyhan/en-v1.10
+我们首先打开 Visual Studio 并创建一个新的控制台应用程序项目。
+在 `stdafx.h` 头文件的末尾添加以下几行：
 
 ```c
 #include <julia.h>
@@ -214,13 +158,7 @@ int main(int argc, char *argv[])
 }
 ```
 
-<<<<<<< HEAD
 下一步是设置项目以查找 Julia 包含的文件和库。 了解 Julia 安装的是 32 位还是 64 位非常重要。 在继续之前删除与 Julia 安装不对应的任何平台配置。
-=======
-The next step is to set up the project to find the Julia include files and the libraries. It's important to
-know whether the Julia installation is 32- or 64-bit. Remove any platform configuration that doesn't correspond
-to the Julia installation before proceeding.
->>>>>>> cyhan/en-v1.10
 
 使用项目属性对话框，转到`C/C++` | `General` 并将 `$(JULIA_DIR)\include\julia\` 添加到 Additional Include Directories 属性。 然后，转到`Linker` | `General` 部分并将 `$(JULIA_DIR)\lib` 添加到 Additional Library Directories 属性。最后，在`Linker`| `Input`下，将`libjulia.dll.a;libopenlibm.dll.a;`添加到库列表中。
 
@@ -228,16 +166,7 @@ to the Julia installation before proceeding.
 
 ## 转换类型
 
-<<<<<<< HEAD
 真正的应用程序不仅仅要执行表达式，还要返回表达式的值给宿主程序。`jl_eval_string` 返回 一个 `jl_value_t*`，它是指向堆分配的 Julia 对象的指针。存储像 [`Float64`](@ref) 这些简单数据类型叫做 `装箱`，然后提取存储的基础类型数据叫 `拆箱`。我们改进的示例程序在 Julia 中计算 2 的平方根，并在 C 中读取回结果，如下所示：
-=======
-Real applications will not only need to execute expressions, but also return their values to
-the host program. `jl_eval_string` returns a `jl_value_t*`, which is a pointer to a
-heap-allocated Julia object. Storing simple data types like [`Float64`](@ref) in this way is
-called `boxing`, and extracting the stored primitive data is called `unboxing`. Our improved
-sample program that calculates the square root of 2 in Julia and reads back the result in C
-has a body that now contains this code:
->>>>>>> cyhan/en-v1.10
 
 ```c
 jl_value_t *ret = jl_eval_string("sqrt(2.0)");
@@ -285,15 +214,6 @@ jl_value_t *jl_call(jl_function_t *f, jl_value_t **args, int32_t nargs)
 
 它的第二个参数 `args` 是 `jl_value_t*` 类型的数组，`nargs` 是参数的个数 
 
-<<<<<<< HEAD
-## 内存管理
-
-正如我们所见，Julia 对象在 C 中表示为指针。这就出现了 谁来负责释放这些对象的问题。
-
-通常，Julia 对象由垃圾收集器（GC）释放，但 GC 不会自动就懂我们正C中保留对Julia值的引用。这意味着 GC 会在你的掌控之外释放对象，从而使指针无效。
-
-GC 只能在分配 Julia 对象时运行。 像 `jl_box_float64` 这样的调用执行分配，分配可能发生在运行 Julia 代码的任何时候。 然而，在 `jl_...` 调用之间使用指针通常是安全的。 但是为了确保值可以在 `jl_...` 调用后留存下来，我们必须告诉 Julia 我们仍然持有对 Julia [root](https://www.cs.purdue.edu/homes/hosking/690M/p611-fenichel.pdf) 的引用，这个过程称为“GC rooting”。把一个值”扎根“将确保垃圾收集器不会意外地将此值识别为未使用并释放该值的内存。 这可以使用 `JL_GC_PUSH` 宏来完成：
-=======
 There is also an alternative, possibly simpler, way of calling Julia functions and that is via [`@cfunction`](@ref).
 Using `@cfunction` allows you to do the type conversions on the Julia side which typically is easier than doing it on
 the C side. The `sqrt` example above would with `@cfunction` be written as:
@@ -305,26 +225,20 @@ double ret = sqrt_jl(2.0);
 
 where we first define a C callable function in Julia, extract the function pointer from it and finally call it.
 
-## Memory Management
+## 内存管理
 
-As we have seen, Julia objects are represented in C as pointers of type `jl_value_t*`. This raises the question of who
-is responsible for freeing these objects.
+正如我们所见，Julia 对象在 C 中表示为类型 `jl_value_t*` 的指针。这就出现了 谁来负责释放这些对象的问题。
 
-Typically, Julia objects are freed by the garbage collector (GC), but the GC does not automatically
-know that we are holding a reference to a Julia value from C. This means the GC can free objects
-out from under you, rendering pointers invalid.
+通常，Julia 对象由垃圾收集器（GC）释放，但 GC 不会自动就懂我们正C中保留对Julia值的引用。
+这意味着 GC 会在你的掌控之外释放对象，从而使指针无效。
 
-The GC will only run when new Julia objects are being allocated. Calls like `jl_box_float64` perform allocation,
-but allocation might also happen at any point in running Julia code.
+GC 会在分配 Julia 对象时运行。像 `jl_box_float64` 这样的调用执行分配，分配可能发生在运行 Julia 代码的任何时候。
 
 When writing code that embeds Julia, it is generally safe to use `jl_value_t*` values in between `jl_...` calls
-(as GC will only get triggered by those calls). But in order to make sure that values can survive
-`jl_...` calls, we have to tell Julia that we still hold a reference to Julia
-[root](https://www.cs.purdue.edu/homes/hosking/690M/p611-fenichel.pdf) values, a process
-called "GC rooting". Rooting a value will ensure that the garbage collector does not accidentally
-identify this value as unused and free the memory backing that value. This can be done using the
-`JL_GC_PUSH` macros:
->>>>>>> cyhan/en-v1.10
+(as GC will only get triggered by those calls).
+但是为了确保值可以在 `jl_...` 调用后留存下来，我们必须告诉 Julia 我们仍然持有对 Julia [root](https://www.cs.purdue.edu/homes/hosking/690M/p611-fenichel.pdf) 的引用，
+这个过程称为“GC rooting”。把一个值”扎根“将确保垃圾收集器不会意外地将此值识别为未使用并释放该值的内存。
+这可以使用 `JL_GC_PUSH` 宏来完成：
 
 ```c
 jl_value_t *ret = jl_eval_string("sqrt(2.0)");
@@ -335,18 +249,15 @@ JL_GC_POP();
 
 `JL_GC_POP` 调用会释放之前的 `JL_GC_PUSH` 建立的引用。 请注意，`JL_GC_PUSH` 将引用存储在 C 堆栈上，因此在退出作用域之前，它必须与一个 `JL_GC_POP` 精确配对。 也就是说，在函数返回之前，或者流程控制以其他方式离开调用了`JL_GC_PUSH` 的块。
 
-<<<<<<< HEAD
-可以使用 `JL_GC_PUSH2`、`JL_GC_PUSH3`、`JL_GC_PUSH4`、`JL_GC_PUSH5` 和 `JL_GC_PUSH6` 宏一次推送多个 Julia 值。 要推送一个 Julia 数组，可以使用 `JL_GC_PUSHARGS` 宏，其用法如下：
-=======
-Several Julia values can be pushed at once using the `JL_GC_PUSH2` to `JL_GC_PUSH6` macros:
-```
+可以使用 `JL_GC_PUSH2` 到 `JL_GC_PUSH6` 宏一次推送多个 Julia 值：
+```c
 JL_GC_PUSH2(&ret1, &ret2);
 // ...
 JL_GC_PUSH6(&ret1, &ret2, &ret3, &ret4, &ret5, &ret6);
 ```
 
-To push an array of Julia values one can use the `JL_GC_PUSHARGS` macro, which can be used as follows:
->>>>>>> cyhan/en-v1.10
+要推送一个 Julia 数组，可以使用 `JL_GC_PUSHARGS` 宏，其用法如下：
+
 
 ```c
 jl_value_t **args;
@@ -357,13 +268,8 @@ args[1] = some_other_value;
 JL_GC_POP();
 ```
 
-<<<<<<< HEAD
-每个作用域必须只有一次对 `JL_GC_PUSH*` 的调用。 因此，如果不能通过一次调用`JL_GC_PUSH*` 一次推送所有变量，或者如果要推送的变量超过 6 个并且使用参数数组不是一种选择，那么可以使用内部块：
-=======
-Each scope must have only one call to `JL_GC_PUSH*`, and should be paired with only a single `JL_GC_POP` call.
-If all necessary variables you want to root cannot be pushed by a one single call to `JL_GC_PUSH*`, or if there are more than 6 variables to be pushed and using an array
-of arguments is not an option, then one can use inner blocks:
->>>>>>> cyhan/en-v1.10
+每个作用域只能调用一次 `JL_GC_PUSH*`，并且只能与一次 `JL_GC_POP` 调用配对。
+如果一次调用 `JL_GC_PUSH*` 无法推送所有需要 root 的变量，或者需要推送的变量超过 6 个，并且不能使用参数数组，那么可以使用内部代码块：
 
 ```c
 jl_value_t *ret1 = jl_eval_string("sqrt(2.0)");
@@ -379,9 +285,6 @@ jl_value_t *ret2 = 0;
 JL_GC_POP();    // This pops ret1.
 ```
 
-<<<<<<< HEAD
-如果需要在函数（或块作用域）之间保存指向变量的指针，则不能使用 `JL_GC_PUSH*`。 在这种情况下，有必要在 Julia 全局作用域内创建并保留对变量的引用。 实现这一点的一种简单方法是使用一个全局的`IdDict`来保存引用，避免 GC 释放。 但是，此方法仅适用于可变类型。
-=======
 Note that it is not necessary to have valid `jl_value_t*` values before calling
 `JL_GC_PUSH*`. It is fine to have a number of them initialized to `NULL`, pass those
 to `JL_GC_PUSH*` and then create the actual Julia values. For example:
@@ -400,7 +303,6 @@ not possible to use `JL_GC_PUSH*`. In this case, it is necessary to create and k
 variable in the Julia global scope. One simple way to accomplish this is to use a global `IdDict` that
 will hold the references, avoiding deallocation by the GC. However, this method will only work
 properly with mutable types.
->>>>>>> cyhan/en-v1.10
 
 ```c
 // This functions shall be executed only once, during the initialization.
@@ -467,14 +369,7 @@ jl_checked_assignment(bp, mod, var, val);
 
 ### 更新 GC 管理对象的字段
 
-<<<<<<< HEAD
 垃圾回收器的运行假设它知道每个年老代对象都指向一个年轻代对象。 任何时候一个指针被更新打破了这个假设，它必须用`jl_gc_wb`（写屏障）函数向回收器发出信号，如下所示：
-=======
-The garbage collector also operates under the assumption that it is aware of every
-older-generation object pointing to a younger-generation one. Any time a pointer is updated
-breaking that assumption, it must be signaled to the collector with the `jl_gc_wb` (write
-barrier) function like so:
->>>>>>> cyhan/en-v1.10
 
 ```c
 jl_value_t *parent = some_old_value, *child = some_young_value;
@@ -482,14 +377,8 @@ jl_value_t *parent = some_old_value, *child = some_young_value;
 jl_gc_wb(parent, child);
 ```
 
-<<<<<<< HEAD
-通常情况下不可能在运行时预测 值是否是旧的，因此 写屏障 必须被插入在所有显式存储之后。一个需要注意的例外是如果 `parent` 对象刚分配，垃圾收集之后并不执行。请记住大多数 `jl_...` 函数有时候都会执行垃圾收集。
-=======
-It is in general impossible to predict which values will be old at runtime, so the write
-barrier must be inserted after all explicit stores. One notable exception is if the `parent`
-object has just been allocated and no garbage collection has run since then. Note that most
-`jl_...` functions can sometimes invoke garbage collection.
->>>>>>> cyhan/en-v1.10
+通常情况下不可能在运行时预测 值是否是旧的，因此 写屏障 必须被插入在所有显式存储之后。
+一个需要注意的例外是如果 `parent` 对象刚分配，垃圾收集之后并不执行。请记住大多数 `jl_...` 函数有时候都会执行垃圾收集。
 
 直接更新数据时，对于指针数组来说 写屏障 也是必需的 例如：
 
@@ -501,11 +390,7 @@ data[0] = some_value;
 jl_gc_wb(some_array, some_value);
 ```
 
-<<<<<<< HEAD
 ### 控制垃圾收集器
-=======
-### Controlling the Garbage Collector
->>>>>>> cyhan/en-v1.10
 
 有一些函数能够控制GC。在正常使用情况下这些不是必要的。
 
@@ -526,12 +411,7 @@ Julia数组用数据类型 `jl_array_t *` 表示。基本上，`jl_array_t` 是�
   * 指向数据块的指针
   * 关于数组长度的信息
 
-<<<<<<< HEAD
 为了让事情比较简单，我们从一维数组开始，创建一个存有 10 个 FLoat64 类型的数组如下所示：
-=======
-To keep things simple, we start with a 1D array. Creating an array containing Float64
-elements of length 10 can be done like this:
->>>>>>> cyhan/en-v1.10
 
 ```c
 jl_value_t* array_type = jl_apply_array_type((jl_value_t*)jl_float64_type, 1);
@@ -547,11 +427,7 @@ jl_array_t *x = jl_ptr_to_array_1d(array_type, existingArray, 10, 0);
 
 最后一个参数是一个布尔值，表示 Julia 是否应该获取数据的所有权。 如果这个参数 不为零，当数组不再被引用时，GC 会在数据的指针上调用 `free` 。
 
-<<<<<<< HEAD
-为了访问 x 的数据，我们可以使用 `jl_array_data`：
-=======
-In order to access the data of `x`, we can use `jl_array_data`:
->>>>>>> cyhan/en-v1.10
+为了访问 `x` 的数据，我们可以使用 `jl_array_data`：
 
 ```c
 double *xData = (double*)jl_array_data(x);
@@ -651,10 +527,6 @@ void jl_errorf(const char *fmt, ...);
 jl_errorf("argument x = %d is too large", x);
 ```
 
-<<<<<<< HEAD
-在这个例子中假定 `x` 是一个整数值。
-
-=======
 where in this example `x` is assumed to be an integer.
 
 
@@ -764,4 +636,3 @@ $ JULIA_NUM_THREADS=2 ./thread_example
 ```
 
 As can be seen, Julia thread 1 corresponds to pthread ID 3bfd9c00, and Julia thread 2 corresponds to ID 23938640, showing that indeed multiple threads are used at the C level, and that we can safely call Julia C API routines from those threads.
->>>>>>> cyhan/en-v1.10

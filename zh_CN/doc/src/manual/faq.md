@@ -18,10 +18,7 @@ Julia 的优势在于好的性能不止被限制在一小部分的内置类型�
 
 另一方面，语言**可迁移性**是极其有用的：我们会在一些时候想要将其他语言的高质量代码迁移到 Julia 中（也可能相反）。这一工作的最佳实践不是翻译器，而是使用简单的跨语言调用。我们对此有许多工作，从内置的 `ccall` （来调用 C 和 Fortran 模块）到[JuliaInterop](https://github.com/JuliaInterop) 包来链接 Julia 和 Python、Matlab、C++ 以及更多语言。
 
-<<<<<<< HEAD
 ## [公共 API](@id man-api)
-=======
-## [Public API](@id man-api)
 
 ### How does Julia define its public API?
 
@@ -49,7 +46,6 @@ Please open an [issue](https://github.com/JuliaLang/julia/issues) or
 existing behavior into a public API.
 
 ## Sessions and the REPL
->>>>>>> cyhan/en-v1.10
 
 ### Julia 如何定义其公共 API？
 
@@ -99,67 +95,35 @@ obj3 = MyModule.someotherfunction(obj2, c)
 
 ### 该如何检查当前文件是否正在以主脚本运行？
 
-当一个文件通过使用 `julia file.jl` 来当做主脚本运行时，有人也希望激活另外的功能例如命令行参数操作。确定文件是以这个方式运行的一个方法是检查 `abspath(PROGRAM_FILE) == @__FILE__` 是不是 `true`。
+当一个文件通过使用 `julia file.jl` 来当做主脚本运行时，有人也希望激活另外的功能例如命令行参数操作。
+确定文件是以这个方式运行的一个方法是检查 `abspath(PROGRAM_FILE) == @__FILE__` 是不是 `true`。
 
-<<<<<<< HEAD
+However, it is recommended to not write files that double as a script and as an importable library.
+If one needs functionality both available as a library and a script, it is better to write is as a library, then import the functionality into a distinct script.
+
 ### [怎样在脚本中捕获 CTRL-C ？](@id catch-ctrl-c)
 
 通过 `julia file.jl` 方式运行的 Julia 脚本，在你尝试按 CTRL-C (SIGINT) 中止它时，并不会抛出 [`InterruptException`](@ref)。如果希望在脚本终止之后运行一些代码，请使用 [`atexit`](@ref)，注意：脚本的中止不一定是由 CTRL-C 导致的。
 另外你也可以通过 `julia -e 'include(popfirst!(ARGS))' file.jl` 命令运行脚本，然后可以通过 [`try`](@ref) 捕获 `InterruptException`。
-=======
-However, it is recommended to not write files that double as a script and as an importable library.
-If one needs functionality both available as a library and a script, it is better to write is as a library, then import the functionality into a distinct script.
-
-### [How do I catch CTRL-C in a script?](@id catch-ctrl-c)
-
-Running a Julia script using `julia file.jl` does not throw
-[`InterruptException`](@ref) when you try to terminate it with CTRL-C
-(SIGINT).  To run a certain code before terminating a Julia script,
-which may or may not be caused by CTRL-C, use [`atexit`](@ref).
-Alternatively, you can use `julia -e 'include(popfirst!(ARGS))'
-file.jl` to execute a script while being able to catch
-`InterruptException` in the [`try`](@ref) block.
 Note that with this strategy [`PROGRAM_FILE`](@ref) will not be set.
->>>>>>> cyhan/en-v1.10
 
-
-<<<<<<< HEAD
 ### 怎样通过 `#!/usr/bin/env` 传递参数给 `julia`？
 
-通过类似 `#!/usr/bin/env julia --startup-file=no` 的方式，使用 shebang 传递选项给 Julia 的方法，可能在像 Linux 这样的平台上无法正常工作。这是因为各平台上 shebang 的参数解析是平台相关的，并且尚未标准化。
-在类 Unix 的环境中，可以通过以 `bash` 脚本作为可执行脚本的开头，并使用 `exec` 代替给 `julia` 传递选项的过程，来可靠的为 `julia` 传递选项。
-=======
 Passing options to `julia` in a so-called shebang line, as in
 `#!/usr/bin/env julia --startup-file=no`, will not work on many
 platforms (BSD, macOS, Linux) where the kernel, unlike the shell, does
 not split arguments at space characters. The option `env -S`, which
 splits a single argument string into multiple arguments at spaces,
 similar to a shell, offers a simple workaround:
->>>>>>> cyhan/en-v1.10
 
 ```julia
 #!/usr/bin/env -S julia --color=yes --startup-file=no
 @show ARGS  # put any Julia code here
 ```
 
-<<<<<<< HEAD
-在以上例子中，位于 `#=` 和 `=#` 之间的代码可以当作一个 `bash` 脚本。
-因为这些代码放在 Julia 的多行注释中，所以 Julia 会忽略它们。
-在 `=#` 之后的 Julia 代码会被 `bash` 忽略，J因为当文件解析到 `exec` 语句时会停止解析，开始执行命令。
-
-!!! note
-    为了在脚本中捕获 [catch CTRL-C](@ref catch-ctrl-c) ，我们可以使用
-    ```julia
-    #!/bin/bash
-    #=
-    exec julia --color=yes --startup-file=no -e 'include(popfirst!(ARGS))' \
-        "${BASH_SOURCE[0]}" "$@"
-    =#
-=======
 !!! note
     Option `env -S` appeared in FreeBSD 6.0 (2005), macOS Sierra (2016)
     and GNU/Linux coreutils 8.30 (2018).
->>>>>>> cyhan/en-v1.10
 
 ### Why doesn't `run` support `*` or pipes for scripting external programs?
 
@@ -293,19 +257,11 @@ julia> x
 
 ### 运算符 `...` 有何作用？
 
-<<<<<<< HEAD
 #### `...` 运算符的两个用法：slurping 和 splatting
-=======
-#### The two uses of the `...` operator: slurping and splatting
->>>>>>> cyhan/en-v1.10
 
 很多 Julia 的新手会对运算符 `...` 的用法感到困惑。让 `...` 用法如此困惑的部分原因是根据上下文它有两种不同的含义。
 
-<<<<<<< HEAD
 #### `...` 在函数定义中将多个参数组合成一个参数
-=======
-#### `...` combines many arguments into one argument in function definitions
->>>>>>> cyhan/en-v1.10
 
 在函数定义的上下文中，`...`运算符用来将多个不同的参数组合成单个参数。`...`运算符的这种将多个不同参数组合成单个参数的用法称为slurping：
 
@@ -327,11 +283,7 @@ Arg #3 = 3
 
 如果Julia是一个使用ASCII字符更加自由的语言的话，slurping运算符可能会写作`<-...`而非`...`。
 
-<<<<<<< HEAD
 #### `...`在函数调用中将一个参数分解成多个不同参数
-=======
-#### `...` splits one argument into many different arguments in function calls
->>>>>>> cyhan/en-v1.10
 
 与在定义函数时表示将多个不同参数组合成一个参数的`...`运算符用法相对，当用在函数调用的上下文中`...`运算符也用来将单个的函数参数分成多个不同的参数。`...`函数的这个用法叫做splatting：
 
@@ -445,23 +397,11 @@ julia> sqrt(-2.0+0im)
 
 ### 怎样限制或计算类型参数？
 
-<<<<<<< HEAD
-[参数类型](@ref Parametric-Types) 的参数可以包含类型或比特值，并且类型本身选择如何使用这些参数。例如，`Array{Float64, 2}` 由类型 `Float64` 参数化以表示其元素类型，并通过整数值 `2` 来表示其维度数。在定义自己的参数类型时，可以使用子类型约束来声明某个参数必须是某个抽象类型的子类型 ([`<:`](@ref)) 或以前的类型参数。但是，没有专用的语法来声明参数必须是给定类型的_值_ — 也就是说，例如，你不能在`struct`定义中直接声明一个维度参数 [`isa`](@ref) `Int`。同样，你不能对类型参数进行计算（包括简单的加法或减法）。相反，这些类型的约束和关系可以通过在类型的 [构造函数](@ref man-constructors) 中计算和强制执行的附加类型参数来表达。
-=======
-The parameters of a [parametric type](@ref Parametric-Types) can hold either
-types or bits values, and the type itself chooses how it makes use of these parameters.
-For example, `Array{Float64, 2}` is parameterized by the type `Float64` to express its
-element type and the integer value `2` to express its number of dimensions.  When
-defining your own parametric type, you can use subtype constraints to declare that a
-certain parameter must be a subtype ([`<:`](@ref)) of some abstract type or a previous
-type parameter.  There is not, however, a dedicated syntax to declare that a parameter
-must be a _value_ of a given type — that is, you cannot directly declare that a
-dimensionality-like parameter [`isa`](@ref) `Int` within the `struct` definition, for
-example.  Similarly, you cannot do computations (including simple things like addition
-or subtraction) on type parameters.  Instead, these sorts of constraints and
-relationships may be expressed through additional type parameters that are computed
-and enforced within the type's [constructors](@ref man-constructors).
->>>>>>> cyhan/en-v1.10
+[参数类型](@ref Parametric-Types) 的参数可以包含类型或比特值，并且类型本身选择如何使用这些参数。
+例如，`Array{Float64, 2}` 由类型 `Float64` 参数化以表示其元素类型，并通过整数值 `2` 来表示其维度数。
+在定义自己的参数类型时，可以使用子类型约束来声明某个参数必须是某个抽象类型的子类型 ([`<:`](@ref)) 或以前的类型参数。
+但是，没有专用的语法来声明参数必须是给定类型的_值_ — 也就是说，例如，你不能在`struct`定义中直接声明一个维度参数 [`isa`](@ref) `Int`。
+同样，你不能对类型参数进行计算（包括简单的加法或减法）。相反，这些类型的约束和关系可以通过在类型的 [构造函数](@ref man-constructors) 中计算和强制执行的附加类型参数来表达。
 
 例如，考虑
 ```julia
@@ -727,10 +667,7 @@ julia> remotecall_fetch(anon_bar, 2)
 1
 ```
 
-<<<<<<< HEAD
-## “method not matched”故障排除：参数类型不变性和`MethodError`
-=======
-## Troubleshooting "method not matched": parametric type invariance and `MethodError`s
+## “method not matched” 故障排除：参数类型不变性和`MethodError`
 
 ### Why doesn't it work to declare `foo(bar::Vector{Real}) = 42` and then call `foo([1])`?
 
@@ -762,7 +699,6 @@ type-invariance (by contrast, Tuple is type-covariant in its parameters). See [P
 Types](@ref man-parametric-composite-types) for more explanation of these.
 
 ### Why does Julia use `*` for string concatenation? Why not `+` or something else?
->>>>>>> cyhan/en-v1.10
 
 ### 为什么声明 `foo(bar::Vector{Real}) = 42` 然后调用 `foo([1])` 不起作用？
 
@@ -778,9 +714,6 @@ Closest candidates are:
   foo(!Matched::Vector{Real}) at none:1
 ```
 
-<<<<<<< HEAD
-这是因为 `Vector{Real}` 不是 `Vector{Int}` 的超类型！ 您可以使用类似 `foo(bar::Vector{T}) where {T<:Real}`（或缩写 `foo(bar::Vector{<:Real})` 如果静态参数函数体中不需要`T`）。`T` 是一个通配符：首先指定它必须是 Real 的子类型，然后指定函数采用具有该类型元素的 Vector 。
-=======
 There are several differences between `using` and `import`
 (see the [Modules section](https://docs.julialang.org/en/v1/manual/modules/#modules)),
 but there is an important difference that may not seem intuitive at first glance,
@@ -788,7 +721,6 @@ and on the surface (i.e. syntax-wise) it may seem very minor. When loading modul
 you need to say `function Foo.bar(...` to extend module `Foo`'s function `bar` with a new method,
 but with `import Foo.bar`, you only need to say `function bar(...` and it automatically extends
 module `Foo`'s function `bar`.
->>>>>>> cyhan/en-v1.10
 
 同样的问题适用于任何复合类型`Comp`，而不仅仅是`Vector`。 如果`Comp` 有一个声明为`Y` 类型的参数，那么另一个带有`X<:Y` 类型参数的类型`Comp2` 不是`Comp` 的子类型。 这是类型不变性（相比之下，元组在其参数中是类型协变的）。 有关这些的更多解释，请参阅 [参数复合类型](@ref man-parametric-composite-types)。
 
@@ -814,14 +746,7 @@ module `Foo`'s function `bar`.
 
 不像其它很多语言（例如 C 和 Java），Julia 对象默认不能为"null"。当一个引用（变量，对象域，或者数组元素）没有被初始化，访问它会立即扔出一个错误。这种情况可以使用函数 [`isdefined`](@ref) 或者 [`isassigned`](@ref Base.isassigned) 检测到。
 
-<<<<<<< HEAD
 一些函数只为了其副作用使用，并不需要返回一个值。在这些情况下，约定的是返回 `nothing` 这个值，这只是 `Nothing` 类型的一个单例对象。这是一个没有域的一般类型；除了这个约定之外没有任何特殊点，REPL 不会为它打印任何东西。有些语言结构不会有值，也产生 `nothing`，例如 `if false; end`。
-=======
-In Julia, `x += y` gets replaced during lowering by `x = x + y`. For arrays, this has the consequence
-that, rather than storing the result in the same location in memory as `x`, it allocates a new
-array to store the result. If you prefer to mutate `x`, use `x .+= y` to update each element
-individually.
->>>>>>> cyhan/en-v1.10
 
 对于类型`T`的值`x`只会有时存在的情况，`Union{T,Nothing}`类型可以用作函数参数，对象域和数组元素的类型，与其他语言中的[`Nullable`, `Option` or `Maybe`](https://en.wikipedia.org/wiki/Nullable_type)相等。如果值本身可以是`nothing`(显然当`T`是`Any`时），`Union{Some{T}, Nothing}`类型更加准确因为`x == nothing`表示值的缺失，`x == Some(nothing)`表示与`nothing`相等的值的存在。[`something`](@ref)函数允许使用默认值的展开的`Some`对象，而非`nothing`参数。注意在使用`Union{T,Nothing}`参数或者域时编译器能够生成高效的代码。
 
@@ -836,6 +761,7 @@ individually.
 ### 为什么当`x`和`y`都是数组时`x += y`还会申请内存？
 
 在 Julia 中，`x += y` 在语法分析中会用 `x = x + y` 代替。对于数组，结果就是它会申请一个新数组来存储结果，而非把结果存在 `x` 同一位置的内存上。
+If you prefer to mutate `x`, use `x .+= y` to update each element individually.
 
 这个行为可能会让一些人吃惊，但是这个结果是经过深思熟虑的。主要原因是Julia中的不可变对象，这些对象一旦新建就不能改变他们的值。实际上，数字是不可变对象，语句`x = 5; x += 1`不会改变`5`的意义，改变的是与`x`绑定的值。对于不可变对象，改变其值的唯一方法是重新赋值。
 
@@ -861,13 +787,7 @@ end
     这个函数会对于可变和不可变的输入有不同的行为。特别地，
     对于不可变的`x`，在调用后（通常）你会得到`y != x`，而对可变的`x`，你会有`y == x`。
 
-<<<<<<< HEAD
-因为支持范用计算被认为比能使用其他方法完成的潜在的性能优化（比如使用显式循环）更加重要，所以像`+=`和`*=`运算符以绑定新值的方式工作。
-=======
-Because supporting generic programming is deemed more important than potential performance optimizations
-that can be achieved by other means (e.g., using broadcasting or explicit loops), operators like `+=` and
-`*=` work by rebinding new values.
->>>>>>> cyhan/en-v1.10
+因为支持范用计算被认为比能使用其他方法完成的潜在的性能优化（比如使用广播或显式循环）更加重要，所以像`+=`和`*=`运算符以绑定新值的方式工作。
 
 ## [异步 IO 与并发同步写入](@id faq-async-io)
 
@@ -917,11 +837,7 @@ julia> @sync for i in 1:3
 
 ## 数组
 
-<<<<<<< HEAD
-### 零维数组和标量之间的有什么差别？
-=======
-### [What are the differences between zero-dimensional arrays and scalars?](@id faq-array-0dim)
->>>>>>> cyhan/en-v1.10
+### [零维数组和标量之间的有什么差别？](@id faq-array-0dim)
 
 零维数组是`Array{T,0}`形式的数组，它与标量的行为相似，但是有很多重要的不同。这值得一提，因为这是使用数组的范用定义来解释也符合逻辑的特殊情况，虽然最开始看起来有些非直觉。下面一行定义了一个零维数组：
 
@@ -974,16 +890,6 @@ Julia 编译并使用自己的 OpenBLAS 副本，当前线程数上限为 8（�
 
 ### 我该如何管理分布式文件系统的预编译缓存？
 
-<<<<<<< HEAD
-在高性能计算 (HPC) 设施中使用 `julia` 时，同时调用 _n_ 个 `julia` 进程最多会创建 _n_ 个预编译缓存文件的临时副本。 如果这是一个问题（缓慢和/或小型分布式文件系统），你可以：
-
-1. 使用 `julia`的 `--compiled-modules=no` 标志来关掉预编译。
-2. 使用 `pushfirst!(DEPOT_PATH, private_path)` 配置一个私有的可写仓库
-   在这里`private_path`是一个路径单独地到这个`julia`进程
-   也可以通过设置环境变量 `JULIA_DEPOT_PATH` 到
-   `$private_path:$HOME/.julia`.
-3. 在scratch里创建到 `~/.julia/compiled`的符号链接。
-=======
 When using Julia in high-performance computing (HPC) facilities with shared filesystems, it is recommended to use a shared
 depot (via the `JULIA_DEPOT_PATH` environment variable). Since Julia v1.10, multiple Julia processes on functionally similar
 workers and using the same depot will coordinate via pidfile locks to only spend effort precompiling on one process while the
@@ -993,31 +899,14 @@ precompiling. If non-interactive the messages are via `@debug`.
 However, due to caching of binary code, the cache rejection since v1.9 is more strict and users may need to set the
 [`JULIA_CPU_TARGET`](@ref JULIA_CPU_TARGET) environment variable appropriately to get a single cache that is usable throughout the HPC
 environment.
->>>>>>> cyhan/en-v1.10
 
 ## Julia 版本发布
 
 ### 你希望使用稳定的、长期支持的或是每日构建版本的Julia？
 
-<<<<<<< HEAD
 Julia 的稳定版是最新发布的 Julia 版本，这是大多数人想要运行的版本。 它具有最新的功能，包括改进的性能。 Julia 的稳定版本根据 [SemVer](https://semver.org/) 版本化为 v1.x.y。 在作为候选版本进行几周的测试后，大约每 4-5 个月就会发布一个与新稳定版本相对应的新 Julia 次要版本。 与 LTS 版本不同，在 Julia 的另一个稳定版本发布后，稳定版本通常不会收到错误修正。 但是，始终可以升级到下一个稳定版本，因为 Julia v1.x 的每个版本都将继续运行为早期版本编写的代码。
 
 如果正在寻找非常稳定的代码库，你可能更喜欢 Julia 的 LTS（长期支持）版本。 Julia 当前的 LTS 版本根据 SemVer 版本为 v1.0.x； 此分支将继续接收错误修复，直到选择新的 LTS 分支，此时 v1.0.x 系列将不再收到常规错误修复，建议除最保守的用户之外的所有用户升级到新的 LTS 版本系列。作为软件包开发人员，你可能更喜欢针对 LTS 版本进行开发，以最大限度地增加可以使用你的软件包的用户数量。 根据 SemVer，为 v1.0 编写的代码将继续适用于所有未来的 LTS 和稳定版本。 一般来说，即使针对 LTS，也可以在最新的 Stable 版本中开发和运行代码，以利用改进的性能； 只要避免使用新功能（例如添加的库函数或新方法）。
-=======
-The Stable version of Julia is the latest released version of Julia, this is the version most people will want to run.
-It has the latest features, including improved performance.
-The Stable version of Julia is versioned according to [SemVer](https://semver.org/) as v1.x.y.
-A new minor release of Julia corresponding to a new Stable version is made approximately every 4-5 months after a few weeks of testing as a release candidate.
-Unlike the LTS version the Stable version will not normally receive bugfixes after another Stable version of Julia has been released.
-However, upgrading to the next Stable release will always be possible as each release of Julia v1.x will continue to run code written for earlier versions.
-
-You may prefer the LTS (Long Term Support) version of Julia if you are looking for a very stable code base.
-The current LTS version of Julia is versioned according to SemVer as v1.6.x;
-this branch will continue to receive bugfixes until a new LTS branch is chosen, at which point the v1.6.x series will no longer received regular bug fixes and all but the most conservative users will be advised to upgrade to the new LTS version series.
-As a package developer, you may prefer to develop for the LTS version, to maximize the number of users who can use your package.
-As per SemVer, code written for v1.0 will continue to work for all future LTS and Stable versions.
-In general, even if targeting the LTS, one can develop and run code in the latest Stable version, to take advantage of the improved performance; so long as one avoids using new features (such as added library functions or new methods).
->>>>>>> cyhan/en-v1.10
 
 如果您想利用该语言的最新更新，您可能更喜欢 Julia 的每日构建版本，并且不介意今天可用的版本是否偶尔无法正常工作。 顾名思义，每日构建版本的发布大约每晚发布一次（取决于构建基础设施的稳定性）。 一般来说，每日构建的发布是相当安全的——你的代码不会着火。 然而，它们可能出现偶尔的版本倒退和问题，直到更彻底的预发布测试才会发现。 你可能希望针对每日构建版本进行测试，以确保在发布之前捕获影响你的用例的版本倒退。
 
