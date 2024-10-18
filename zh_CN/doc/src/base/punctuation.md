@@ -54,7 +54,7 @@
 | `=`         | single equals sign is [assignment](@ref man-variables)                                      |
 | [`==`](@ref)| double equals sign is value equality comparison                                             |
 | [`===`](@ref) | triple equals sign is programmatically identical equality comparison                      |
-| [`=>`](@ref Pair) | right arrow using an equals sign defines a [`Pair`](@ref) typically used to populate [dictionaries](@ref Dictionaries) |
+| [`=>`](@ref Pair) | right arrow using an equals sign defines a [`Pair`](@ref) typically used to populate [dictionaries](@ref 字典) |
 | `->`        | right arrow using a hyphen defines an [anonymous function](@ref man-anonymous-functions) on a single line |
 | [`\|>`](@ref)       | pipe operator passes output from the left argument to input of the right argument, usually a [function](@ref Function-composition-and-piping) |
 | `∘`         | function composition operator (typed with \circ{tab}) combines two functions as though they are a single larger [function](@ref Function-composition-and-piping) |
