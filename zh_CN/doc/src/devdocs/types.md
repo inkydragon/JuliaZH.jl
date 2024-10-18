@@ -61,7 +61,12 @@ f3(A::Array{T}) where {T<:Any} = 3
 f4(A::Array{Any}) = 4
 ```
 
+<<<<<<< HEAD
 如 [Function calls](@ref) 中描述的，函数 `f3` 的签名是元组类型的 `UnionAll` 类型包裹：`Tuple{typeof(f3), Array{T}} where T`。此处除 `f4` 外所有函数都可以被`a = [1,2]`调用；除 `f2` 外所有函数都可以被 `b = Any[1,2]` 调用。
+=======
+The signature - as described in [Function calls](@ref Function-calls) - of `f3` is a `UnionAll` type wrapping a tuple type: `Tuple{typeof(f3), Array{T}} where T`.
+All but `f4` can be called with `a = [1,2]`; all but `f2` can be called with `b = Any[1,2]`.
+>>>>>>> cyhan/en-v1.10
 
 `dump()` 函数可用于进一步查看这些类型：
 
@@ -159,7 +164,6 @@ TypeName
     defs: Nothing nothing
     cache: Nothing nothing
     max_args: Int64 0
-    kwsorter: #undef
     module: Module Core
     : Int64 0
     : Int64 0
@@ -362,6 +366,7 @@ Tuple{Int,Int8,Vector{Any}} <: Tuple{T,T,Vector{Union{Integer,T}}} where T
 
 
 
+<<<<<<< HEAD
 第二个任务通过在变量下界添加一个条件实现。子类型算法在运行过程中会逐渐压缩每个变量的界限（提高下界和降低上界），以保证子类型关系在该变量范围内能继续保持。评估完对角变量合集类型 `UnionAll` 后，可以查看边界的最终值。因为变量必须是具体的，所以如果其下边界不是具体类型的子类型，就会产生矛盾。例如，抽象类型 [`AbstractArray`](@ref) 不可能是一个具体类型的子类型，而具体类型 `Int` 则可以，空类型 `Bottom` 也可以。如果下边界没通过该测试，算法将终止并返回 `false`。
 
 例如，如果 `T` 是 `Union{Int,String}` 的上位类型，则 `Tuple{Int,String}` 将是 `Tuple{T,T} where T` 的子集，即 `Tuple{Int,String} <: Tuple{T,T} where T` 的返回值将为真。但 `Union{Int,String}` 是一个抽象类型，所以上述关系不成立。
@@ -374,6 +379,12 @@ Tuple{Int,Int8,Vector{Any}} <: Tuple{T,T,Vector{Union{Integer,T}}} where T
 
 因为 REPL 中也经常使用子类型代码 -- 这些代码中的断点也经常被触发。所以定义下面函数并在 `jl_breakpoint` 中设定一个断点将非常方便：
 
+=======
+Most operations for dealing with types are found in the files `jltypes.c` and `subtype.c`.
+A good way to start is to watch subtyping in action.
+Build Julia with `make debug` and fire up Julia within a debugger.
+[gdb debugging tips](@ref gdb-debugging-tips) has some tips which may be useful.
+>>>>>>> cyhan/en-v1.10
 
 
 ```julia-repl

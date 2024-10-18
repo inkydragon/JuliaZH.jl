@@ -21,14 +21,20 @@ ccall((@static Sys.iswindows() ? :_fopen : :fopen), ...)
 ```julia
 @static if Sys.islinux()
     linux_specific_thing(a)
+elseif Sys.isapple()
+    apple_specific_thing(a)
 else
     generic_thing(a)
 end
 ```
 
+<<<<<<< HEAD
 在链式嵌套的条件表达式中（包括 `if`/`elseif`/`end`），`@static` 必须在每一层都调用（括号是可选的，但是为了可读性，建议添加）。
+=======
+When nesting conditionals, the `@static` must be repeated for each level
+(parentheses optional, but recommended for readability):
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 @static Sys.iswindows() ? :a : (@static Sys.isapple() ? :b : :c)
 ```
-

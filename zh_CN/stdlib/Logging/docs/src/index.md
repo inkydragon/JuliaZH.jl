@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 # 日志记录
+=======
+```@meta
+EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Logging/docs/src/index.md"
+```
+
+# [Logging](@id man-logging)
+>>>>>>> cyhan/en-v1.10
 
 [`Logging`](@ref Logging.Logging) 模块提供了一个将历史和计算进度记录为事件的日志。事件通过在源代码里插入日志语句产生，例如：
 
@@ -179,8 +187,8 @@ pattern match against the log event stream.
 
 Message filtering can be influenced through the `JULIA_DEBUG` environment
 variable, and serves as an easy way to enable debug logging for a file or
-module. For example, loading julia with `JULIA_DEBUG=loading` will activate
-`@debug` log messages in `loading.jl`:
+module. Loading julia with `JULIA_DEBUG=loading` will activate
+`@debug` log messages in `loading.jl`. For example, in Linux shells:
 
 ```
 $ JULIA_DEBUG=loading julia -e 'using OhMyREPL'
@@ -191,6 +199,9 @@ $ JULIA_DEBUG=loading julia -e 'using OhMyREPL'
 └ @ Base loading.jl:1328
 ...
 ```
+
+On windows, the same can be achieved in `CMD` via first running `set JULIA_DEBUG="loading"` and in `Powershell` via
+`$env:JULIA_DEBUG="loading"`.
 
 Similarly, the environment variable can be used to enable debug logging of
 modules, such as `Pkg`, or module roots (see [`Base.moduleroot`](@ref)). To
@@ -214,6 +225,12 @@ julia> foo()
 
 ```
 
+<<<<<<< HEAD
+=======
+Use a comma separator to enable debug for multiple
+modules: `JULIA_DEBUG=loading,Main`.
+
+>>>>>>> cyhan/en-v1.10
 ## Examples
 
 ### Example: Writing log events to a file

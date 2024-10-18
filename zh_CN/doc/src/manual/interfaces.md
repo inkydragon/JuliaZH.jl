@@ -4,6 +4,7 @@ Julia 的很多能力和扩展性都来自于一些非正式的接口。通过�
 
 ## [迭代](@id man-interface-iteration)
 
+<<<<<<< HEAD
 | 必需方法               |                        | 简短描述                                                                     |
 |:------------------------------ |:---------------------- |:------------------------------------------------------------------------------------- |
 | `iterate(iter)`                |                        | 通常返回由第一项及其初始状态组成的元组，但如果为空，则返回 [`nothing`](@ref)         |
@@ -14,18 +15,38 @@ Julia 的很多能力和扩展性都来自于一些非正式的接口。通过�
 | `eltype(IterType)`             | `Any`                  | 由 `iterate()` 返回元组中第一项的类型。                      |
 | `length(iter)`                 | (*未定义*)          | 项数，如果已知                                                         |
 | `size(iter, [dim])`            | (*未定义*)          | 在各个维度上项数，如果已知                                       |
+=======
+| Required methods               |                        | Brief description                                                                     |
+|:------------------------------ |:---------------------- |:------------------------------------------------------------------------------------- |
+| `iterate(iter)`                |                        | Returns either a tuple of the first item and initial state or [`nothing`](@ref) if empty        |
+| `iterate(iter, state)`         |                        | Returns either a tuple of the next item and next state or `nothing` if no items remain  |
+| **Important optional methods** | **Default definition** | **Brief description**                                                                 |
+| `Base.IteratorSize(IterType)`  | `Base.HasLength()`     | One of `Base.HasLength()`, `Base.HasShape{N}()`, `Base.IsInfinite()`, or `Base.SizeUnknown()` as appropriate |
+| `Base.IteratorEltype(IterType)`| `Base.HasEltype()`     | Either `Base.EltypeUnknown()` or `Base.HasEltype()` as appropriate                    |
+| `eltype(IterType)`             | `Any`                  | The type of the first entry of the tuple returned by `iterate()`                      |
+| `length(iter)`                 | (*undefined*)          | The number of items, if known                                                         |
+| `size(iter, [dim])`            | (*undefined*)          | The number of items in each dimension, if known                                       |
+| `Base.isdone(iter[, state])`   | `missing`              | Fast-path hint for iterator completion. Should be defined for stateful iterators, or else `isempty(iter)` may call `iterate(iter[, state])` and mutate the iterator. |
+>>>>>>> cyhan/en-v1.10
 
 | 由 `IteratorSize(IterType)` 返回的值 | 必需方法                           |
 |:------------------------------------------ |:------------------------------------------ |
+<<<<<<< HEAD
 | `HasLength()`                              | [`length(iter)`](@ref)                     |
 | `HasShape{N}()`                            | `length(iter)` 和 `size(iter, [dim])`    |
 | `IsInfinite()`                             | (*无*)                                   |
 | `SizeUnknown()`                            | (*无*)                                   |
+=======
+| `Base.HasLength()`                         | [`length(iter)`](@ref)                     |
+| `Base.HasShape{N}()`                       | `length(iter)`  and `size(iter, [dim])`    |
+| `Base.IsInfinite()`                        | (*none*)                                   |
+| `Base.SizeUnknown()`                       | (*none*)                                   |
+>>>>>>> cyhan/en-v1.10
 
 | 由 `IteratorEltype(IterType)` 返回的值 | 必需方法   |
 |:-------------------------------------------- |:------------------ |
-| `HasEltype()`                                | `eltype(IterType)` |
-| `EltypeUnknown()`                            | (*none*)           |
+| `Base.HasEltype()`                           | `eltype(IterType)` |
+| `Base.EltypeUnknown()`                       | (*none*)           |
 
 顺序迭代由 [`iterate`](@ref) 函数实现。
 Julia 的迭代器可以从对象外部跟踪迭代状态，而不是在迭代过程中改变对象本身。
@@ -78,19 +99,19 @@ julia> for item in Squares(7)
 49
 ```
 
+<<<<<<< HEAD
 我们可以利用许多内置方法来处理迭代，比如标准库 `Statistics`  中的 [`in`](@ref)，[`mean`](@ref) 和 [`std`](@ref) 。
+=======
+We can use many of the builtin methods that work with iterables,
+like [`in`](@ref) or [`sum`](@ref):
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest squaretype
 julia> 25 in Squares(10)
 true
 
-julia> using Statistics
-
-julia> mean(Squares(100))
-3383.5
-
-julia> std(Squares(100))
-3024.355854282583
+julia> sum(Squares(100))
+338350
 ```
 
 我们可以扩展一些其它的方法，为 Julia 提供有关此可迭代集合的更多信息。我们知道 `Squares` 序列中的元素总是 `Int` 型的。通过扩展 [`eltype`](@ref) 方法，我们可以给 Julia 更多信息来帮助其在更复杂的方法中生成更具体的代码。我们同时也知道该序列中的元素数目，故同样地也可以扩展 [`length`](@ref)：
@@ -190,6 +211,7 @@ julia> Squares(10)[[3,4.,5]]
 
 ## [抽象数组](@id man-interface-array)
 
+<<<<<<< HEAD
 | 需要实现的方法                            |                                        | 简短描述                                                                     |
 |:----------------------------------------------- |:-------------------------------------- |:------------------------------------------------------------------------------------- |
 | `size(A)`                                       |                                        | 返回包含 `A` 各维度大小的元组                                      |
@@ -211,12 +233,46 @@ julia> Squares(10)[[3,4.,5]]
 | `axes(A)`                                    | `map(OneTo, size(A))`                  | 返回有效索引的 `AbstractUnitRange{<:Integer}`                    |
 | `similar(A, ::Type{S}, inds)`              | `similar(A, S, Base.to_shape(inds))`   | 返回使用特殊索引 `inds` 的可变数组（详见下文）                  |
 | `similar(T::Union{Type,Function}, inds)`   | `T(Base.to_shape(inds))`               | 返回类似于 `T` 的使用特殊索引 `inds` 的数组（详见下文）          |
+=======
+| Methods to implement                            |                                        | Brief description                                                                     |
+|:----------------------------------------------- |:-------------------------------------- |:------------------------------------------------------------------------------------- |
+| `size(A)`                                       |                                        | Returns a tuple containing the dimensions of `A`                                      |
+| `getindex(A, i::Int)`                           |                                        | (if `IndexLinear`) Linear scalar indexing                                             |
+| `getindex(A, I::Vararg{Int, N})`                |                                        | (if `IndexCartesian`, where `N = ndims(A)`) N-dimensional scalar indexing             |
+| **Optional methods**                            | **Default definition**                 | **Brief description**                                                                 |
+| `IndexStyle(::Type)`                            | `IndexCartesian()`                     | Returns either `IndexLinear()` or `IndexCartesian()`. See the description below.      |
+| `setindex!(A, v, i::Int)`                       |                                        | (if `IndexLinear`) Scalar indexed assignment                                          |
+| `setindex!(A, v, I::Vararg{Int, N})`            |                                        | (if `IndexCartesian`, where `N = ndims(A)`) N-dimensional scalar indexed assignment   |
+| `getindex(A, I...)`                             | defined in terms of scalar `getindex`  | [Multidimensional and nonscalar indexing](@ref man-array-indexing)                    |
+| `setindex!(A, X, I...)`                            | defined in terms of scalar `setindex!` | [Multidimensional and nonscalar indexed assignment](@ref man-array-indexing)          |
+| `iterate`                                       | defined in terms of scalar `getindex`  | Iteration                                                                             |
+| `length(A)`                                     | `prod(size(A))`                        | Number of elements                                                                    |
+| `similar(A)`                                    | `similar(A, eltype(A), size(A))`       | Return a mutable array with the same shape and element type                           |
+| `similar(A, ::Type{S})`                         | `similar(A, S, size(A))`               | Return a mutable array with the same shape and the specified element type             |
+| `similar(A, dims::Dims)`                        | `similar(A, eltype(A), dims)`          | Return a mutable array with the same element type and size *dims*                     |
+| `similar(A, ::Type{S}, dims::Dims)`             | `Array{S}(undef, dims)`                | Return a mutable array with the specified element type and size                       |
+| **Non-traditional indices**                     | **Default definition**                 | **Brief description**                                                                 |
+| `axes(A)`                                    | `map(OneTo, size(A))`                  | Return a tuple of `AbstractUnitRange{<:Integer}` of valid indices. The axes should be their own axes, that is `axes.(axes(A),1) == axes(A)` should be satisfied. |
+| `similar(A, ::Type{S}, inds)`              | `similar(A, S, Base.to_shape(inds))`   | Return a mutable array with the specified indices `inds` (see below)                  |
+| `similar(T::Union{Type,Function}, inds)`   | `T(Base.to_shape(inds))`               | Return an array similar to `T` with the specified indices `inds` (see below)          |
+>>>>>>> cyhan/en-v1.10
 
 如果一个类型被定义为 `AbstractArray` 的子类型，那它就继承了一大堆丰富的行为，包括构建在单元素访问之上的迭代和多维索引。有关更多支持的方法，请参阅文档 [多维数组](@ref man-multi-dim-arrays) 及 [Julia Base](@ref lib-arrays)。
 
 定义 `AbstractArray` 子类型的关键部分是 [`IndexStyle`](@ref)。由于索引是数组的重要部分且经常出现在 hot loops 中，使索引和索引赋值尽可能高效非常重要。数组数据结构通常以两种方式定义：要么仅使用一个索引（即线性索引）来最高效地访问其元素，要么实际上使用由各个维度确定的索引访问其元素。这两种方式被 Julia 标记为 `IndexLinear()` 和 `IndexCartesian()`。把线性索引转换为多重索引下标通常代价高昂，因此这提供了基于 traits 机制，以便能为所有矩阵类型提供高效的通用代码。
 
+<<<<<<< HEAD
 此区别决定了该类型必须定义的标量索引方法。`IndexLinear()` 很简单：只需定义 `getindex(A::ArrayType, i::Int)`。当数组后用多维索引集进行索引时，回退 `getindex(A::AbstractArray, I...)()` 高效地将该索引转换为线性索引，然后调用上述方法。另一方面，`IndexCartesian()` 数组需要为每个支持的、使用 `ndims(A)` 个 `Int` 索引的维度定义方法。例如，`SparseArrays` 标准库里的 [`SparseMatrixCSC`](@ref) 只支持二维，所以它只定义了 `getindex(A::SparseMatrixCSC, i::Int, j::Int)`。[`setindex!`](@ref) 也是如此。
+=======
+This distinction determines which scalar indexing methods the type must define. `IndexLinear()`
+arrays are simple: just define `getindex(A::ArrayType, i::Int)`.  When the array is subsequently
+indexed with a multidimensional set of indices, the fallback `getindex(A::AbstractArray, I...)`
+efficiently converts the indices into one linear index and then calls the above method. `IndexCartesian()`
+arrays, on the other hand, require methods to be defined for each supported dimensionality with
+`ndims(A)` `Int` indices. For example, [`SparseMatrixCSC`](@ref) from the `SparseArrays` standard
+library module, only supports two dimensions, so it just defines
+`getindex(A::SparseMatrixCSC, i::Int, j::Int)`. The same holds for [`setindex!`](@ref).
+>>>>>>> cyhan/en-v1.10
 
 回到上面的平方数序列，我们可以将它定义为 `AbstractArray{Int, 1}` 的子类型：
 
@@ -314,7 +370,15 @@ julia> A[1:2,:]
  2.0  5.0  8.0
 ```
 
+<<<<<<< HEAD
 在此例中，创建合适的封装数组通过定义 `Base.similar(A::SparseArray, ::Type{T}, dims::Dims) where T` 来实现。（请注意，虽然 `similar` 支持 1 参数和 2 参数形式，但在大多数情况下，你只需要专门定义 3 参数形式。）为此，`SparseArray` 是可变的（支持 `setindex!`）便很重要。为 `SparseArray` 定义 `similar`、`getindex` 和 `setindex!` 也使得该数组能够 [`copy`](@ref) 。
+=======
+In this example it is accomplished by defining `Base.similar(A::SparseArray, ::Type{T}, dims::Dims) where T`
+to create the appropriate wrapped array. (Note that while `similar` supports 1- and 2-argument
+forms, in most case you only need to specialize the 3-argument form.) For this to work it's important
+that `SparseArray` is mutable (supports `setindex!`). Defining `similar`, `getindex` and
+`setindex!` for `SparseArray` also makes it possible to [`copy`](@ref) the array:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest squarevectype
 julia> copy(A)
@@ -390,9 +454,38 @@ V = view(A, [1,2,4], :)   # is not strided, as the spacing between rows is not f
 * 为给定参数集选择合适的输出数组
 * 为给定参数集选择高效的实现
 
+<<<<<<< HEAD
 不是所有类型都支持 `axes` 和索引，但许多类型便于支持广播。[`Base.broadcastable`](@ref) 函数会在每个广播参数上调用，它能返回与广播参数不同的支持 `axes` 和索引的对象。默认情况下，对于所有 `AbstractArray` 和 `Number` 来说这是 identity 函数——因为它们已经支持 `axes` 和索引了。少数其它类型（包括但不限于类型本身、函数、像 [`missing`](@ref) 和 [`nothing`](@ref) 这样的特殊单态类型以及日期）为了能被广播，`Base.broadcastable` 会返回封装在 `Ref` 的参数来充当 0 维「标量」。自定义类型可以类似地指定 `Base.broadcastable` 来定义其形状，但是它们应当遵循 `collect(Base.broadcastable(x)) == collect(x)` 的约定。一个值得注意的例外是 `AbstractString`；字符串是个特例，为了能被广播其表现为标量，尽管它们是其字符的可迭代集合（详见 [字符串](@id man-strings)）。
 
 接下来的两个步骤（选择输出数组和实现）依赖于如何确定给定参数集的唯一解。广播必须接受其参数的所有不同类型，并把它们折叠到一个输出数组和实现。广播称此唯一解为“风格”。每个可广播对象都有自己的首选风格，并使用类似于类型提升的系统将这些风格组合成一个唯一解——“目标风格”。
+=======
+Not all types support `axes` and indexing, but many are convenient to allow in broadcast.
+The [`Base.broadcastable`](@ref) function is called on each argument to broadcast, allowing
+it to return something different that supports `axes` and indexing. By
+default, this is the identity function for all `AbstractArray`s and `Number`s — they already
+support `axes` and indexing.
+
+If a type is intended to act like a "0-dimensional scalar" (a single object) rather than as a
+container for broadcasting, then the following method should be defined:
+```julia
+Base.broadcastable(o::MyType) = Ref(o)
+```
+that returns the argument wrapped in a 0-dimensional [`Ref`](@ref) container.   For example, such a wrapper
+method is defined for types themselves, functions, special singletons like [`missing`](@ref) and [`nothing`](@ref), and dates.
+
+Custom array-like types can specialize
+`Base.broadcastable` to define their shape, but they should follow the convention that
+`collect(Base.broadcastable(x)) == collect(x)`. A notable exception is `AbstractString`;
+strings are special-cased to behave as scalars for the purposes of broadcast even though
+they are iterable collections of their characters (see [Strings](@ref) for more).
+
+The next two steps (selecting the output array and implementation) are dependent upon
+determining a single answer for a given set of arguments. Broadcast must take all the varied
+types of its arguments and collapse them down to just one output array and one
+implementation. Broadcast calls this single answer a "style". Every broadcastable object
+each has its own preferred style, and a promotion-like system is used to combine these
+styles into a single answer — the "destination style".
+>>>>>>> cyhan/en-v1.10
 
 ### 广播风格
 
@@ -447,7 +540,11 @@ Base.showarg(io::IO, A::ArrayAndChar, toplevel) = print(io, typeof(A), " with ch
 
 ```
 
+<<<<<<< HEAD
 你可能想要广播保留“元数据”`char`。为此，我们首先定义
+=======
+You might want broadcasting to preserve the `char` "metadata". First we define
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest ArrayAndChar; output = false
 Base.BroadcastStyle(::Type{<:ArrayAndChar}) = Broadcast.ArrayStyle{ArrayAndChar}()
@@ -584,4 +681,112 @@ SparseVecStyle(::Val{2}) = SparseMatStyle()
 SparseVecStyle(::Val{N}) where N = Broadcast.DefaultArrayStyle{N}()
 ```
 
+<<<<<<< HEAD
 这些规则表明 `SparseVecStyle` 与 0 维或 1 维数组的组合会产生另一个 `SparseVecStyle`，与 2 维数组的组合会产生 `SparseMatStyle`，而与维度更高的数组则回退到任意维密集矩阵的框架中。这些规则允许广播为产生一维或二维输出的操作保持其稀疏表示，但为任何其它维度生成 `Array`。
+=======
+These rules indicate that the combination of a `SparseVecStyle` with 0- or 1-dimensional arrays
+yields another `SparseVecStyle`, that its combination with a 2-dimensional array
+yields a `SparseMatStyle`, and anything of higher dimensionality falls back to the dense arbitrary-dimensional framework.
+These rules allow broadcasting to keep the sparse representation for operations that result
+in one or two dimensional outputs, but produce an `Array` for any other dimensionality.
+
+## [Instance Properties](@id man-instance-properties)
+
+| Methods to implement              | Default definition           | Brief description                                                                     |
+|:--------------------------------- |:---------------------------- |:------------------------------------------------------------------------------------- |
+| `propertynames(x::ObjType, private::Bool=false)` | `fieldnames(typeof(x))`     | Return a tuple of the properties (`x.property`) of an object `x`. If `private=true`, also return property names intended to be kept as private |
+| `getproperty(x::ObjType, s::Symbol)`       | `getfield(x, s)`     | Return property `s` of `x`. `x.s` calls `getproperty(x, :s)`.  |
+| `setproperty!(x::ObjType, s::Symbol, v)`   | `setfield!(x, s, v)` | Set property `s` of `x` to `v`. `x.s = v` calls `setproperty!(x, :s, v)`. Should return `v`.|
+
+Sometimes, it is desirable to change how the end-user interacts with the fields of an object.
+Instead of granting direct access to type fields, an extra layer of abstraction between
+the user and the code can be provided by overloading `object.field`. Properties are what the
+user *sees of* the object, fields what the object *actually is*.
+
+By default, properties and fields are the same. However, this behavior can be changed.
+For example, take this representation of a point in a plane in [polar coordinates](https://en.wikipedia.org/wiki/Polar_coordinate_system):
+
+```jldoctest polartype
+julia> mutable struct Point
+           r::Float64
+           ϕ::Float64
+       end
+
+julia> p = Point(7.0, pi/4)
+Point(7.0, 0.7853981633974483)
+```
+
+As described in the table above dot access `p.r` is the same as `getproperty(p, :r)` which is by default the same as `getfield(p, :r)`:
+
+```jldoctest polartype
+julia> propertynames(p)
+(:r, :ϕ)
+
+julia> getproperty(p, :r), getproperty(p, :ϕ)
+(7.0, 0.7853981633974483)
+
+julia> p.r, p.ϕ
+(7.0, 0.7853981633974483)
+
+julia> getfield(p, :r), getproperty(p, :ϕ)
+(7.0, 0.7853981633974483)
+```
+
+However, we may want users to be unaware that `Point` stores the coordinates as `r` and `ϕ` (fields),
+and instead interact with `x` and `y` (properties). The methods in the first column can be
+defined to add new functionality:
+
+```jldoctest polartype
+julia> Base.propertynames(::Point, private::Bool=false) = private ? (:x, :y, :r, :ϕ) : (:x, :y)
+
+julia> function Base.getproperty(p::Point, s::Symbol)
+           if s === :x
+               return getfield(p, :r) * cos(getfield(p, :ϕ))
+           elseif s === :y
+               return getfield(p, :r) * sin(getfield(p, :ϕ))
+           else
+               # This allows accessing fields with p.r and p.ϕ
+               return getfield(p, s)
+           end
+       end
+
+julia> function Base.setproperty!(p::Point, s::Symbol, f)
+           if s === :x
+               y = p.y
+               setfield!(p, :r, sqrt(f^2 + y^2))
+               setfield!(p, :ϕ, atan(y, f))
+               return f
+           elseif s === :y
+               x = p.x
+               setfield!(p, :r, sqrt(x^2 + f^2))
+               setfield!(p, :ϕ, atan(f, x))
+               return f
+           else
+               # This allow modifying fields with p.r and p.ϕ
+               return setfield!(p, s, f)
+           end
+       end
+```
+
+It is important that `getfield` and `setfield` are used inside `getproperty` and `setproperty!` instead of the dot syntax,
+since the dot syntax would make the functions recursive which can lead to type inference issues. We can now
+try out the new functionality:
+
+```jldoctest polartype
+julia> propertynames(p)
+(:x, :y)
+
+julia> p.x
+4.949747468305833
+
+julia> p.y = 4.0
+4.0
+
+julia> p.r
+6.363961030678928
+```
+
+Finally, it is worth noting that adding instance properties like this is quite
+rarely done in Julia and should in general only be done if there is a good
+reason for doing so.
+>>>>>>> cyhan/en-v1.10

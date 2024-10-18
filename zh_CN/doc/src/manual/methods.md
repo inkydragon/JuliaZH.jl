@@ -14,7 +14,14 @@
     it can be omitted altogether, writing just `meth(arg1,arg2)`, with `this` implied as the receiving
     object.
 !!! note
+<<<<<<< HEAD
     本章中的所有示例都假定是为*相同*模块中的函数定义模块。 如果你想给*另一个*模块中的函数添加方法，你必须`import`它或使用模块名称限定的名称。 请参阅有关 [命名空间管理](@ref namespace-management) 的部分。
+=======
+    All the examples in this chapter assume that you are defining methods for a function in the *same*
+    module. If you want to add methods to a function in *another* module, you have to `import` it or
+    use the name qualified with module names. See the section on [namespace management](@ref
+    namespace-management).
+>>>>>>> cyhan/en-v1.10
 
 ## 定义方法
 
@@ -40,18 +47,33 @@ julia> f(2.0, 3.0)
 ```jldoctest fofxy
 julia> f(2.0, 3)
 ERROR: MethodError: no method matching f(::Float64, ::Int64)
+
 Closest candidates are:
-  f(::Float64, !Matched::Float64) at none:1
+  f(::Float64, !Matched::Float64)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> f(Float32(2.0), 3.0)
 ERROR: MethodError: no method matching f(::Float32, ::Float64)
+
 Closest candidates are:
-  f(!Matched::Float64, ::Float64) at none:1
+  f(!Matched::Float64, ::Float64)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> f(2.0, "3.0")
 ERROR: MethodError: no method matching f(::Float64, ::String)
+
 Closest candidates are:
-  f(::Float64, !Matched::Float64) at none:1
+  f(::Float64, !Matched::Float64)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> f("2.0", "3.0")
 ERROR: MethodError: no method matching f(::String, ::String)
@@ -90,14 +112,25 @@ julia> f(2, 3)
 ```jldoctest fofxy
 julia> f("foo", 3)
 ERROR: MethodError: no method matching f(::String, ::Int64)
+
 Closest candidates are:
-  f(!Matched::Number, ::Number) at none:1
+  f(!Matched::Number, ::Number)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> f()
 ERROR: MethodError: no method matching f()
+
 Closest candidates are:
-  f(!Matched::Float64, !Matched::Float64) at none:1
-  f(!Matched::Number, !Matched::Number) at none:1
+  f(!Matched::Float64, !Matched::Float64)
+   @ Main none:1
+  f(!Matched::Number, !Matched::Number)
+   @ Main none:1
+
+Stacktrace:
+[...]
 ```
 
 可以简单地看到对于函数存在哪些方法，通过在交互式会话中键入函数对象本身：
@@ -111,9 +144,11 @@ f (generic function with 2 methods)
 
 ```jldoctest fofxy
 julia> methods(f)
-# 2 methods for generic function "f":
-[1] f(x::Float64, y::Float64) in Main at none:1
-[2] f(x::Number, y::Number) in Main at none:1
+# 2 methods for generic function "f" from Main:
+ [1] f(x::Float64, y::Float64)
+     @ none:1
+ [2] f(x::Number, y::Number)
+     @ none:1
 ```
 
 这表示`f`有两个方法，一个接受两个`Float64`参数一个接受两个`Number`类型的参数。它也显示了这些方法定义所在的文件和行数：因为这些方法是在REPL中定义的，我们得到了表面上的行数`none:1`.
@@ -125,10 +160,13 @@ julia> f(x,y) = println("Whoa there, Nelly.")
 f (generic function with 3 methods)
 
 julia> methods(f)
-# 3 methods for generic function "f":
-[1] f(x::Float64, y::Float64) in Main at none:1
-[2] f(x::Number, y::Number) in Main at none:1
-[3] f(x, y) in Main at none:1
+# 3 methods for generic function "f" from Main:
+ [1] f(x::Float64, y::Float64)
+     @ none:1
+ [2] f(x::Number, y::Number)
+     @ none:1
+ [3] f(x, y)
+     @ none:1
 
 julia> f("foo", 1)
 Whoa there, Nelly.
@@ -164,7 +202,45 @@ julia> methods(+)
 [180] +(a, b, c, xs...) in Base at operators.jl:424
 ```
 
+<<<<<<< HEAD
 多重分派和灵活的参数类型系统让Julia有能力抽象地表达高层级算法，而与实现细节解耦，也能生成高效而专用的代码来在运行中处理每个情况。
+=======
+Multiple dispatch together with the flexible parametric type system give Julia its ability to
+abstractly express high-level algorithms decoupled from implementation details.
+
+## [Method specializations](@id man-method-specializations)
+
+When you create multiple methods of the same function, this is sometimes called
+"specialization." In this case, you're specializing the *function* by adding additional
+methods to it: each new method is a new specialization of the function.
+As shown above, these specializations are returned by `methods`.
+
+There's another kind of specialization that occurs without programmer intervention:
+Julia's compiler can automatically specialize the *method* for the specific argument types used.
+Such specializations are *not* listed by `methods`, as this doesn't create new `Method`s, but tools like [`@code_typed`](@ref) allow you to inspect such specializations.
+
+For example, if you create a method
+
+```
+mysum(x::Real, y::Real) = x + y
+```
+
+you've given the function `mysum` one new method (possibly its only method), and that method takes any pair of `Real` number inputs. But if you then execute
+
+```julia-repl
+julia> mysum(1, 2)
+3
+
+julia> mysum(1.0, 2.0)
+3.0
+```
+
+Julia will compile `mysum` twice, once for `x::Int, y::Int` and again for `x::Float64, y::Float64`.
+The point of compiling twice is performance: the methods that get called for `+` (which `mysum` uses) vary depending on the specific types of `x` and `y`, and by compiling different specializations Julia can do all the method lookup ahead of time. This allows the program to run much more quickly, since it does not have to bother with method lookup while it is running.
+Julia's automatic specialization allows you to write generic algorithms and expect that the compiler will generate efficient, specialized code to handle each case you need.
+
+In cases where the number of potential specializations might be effectively unlimited, Julia may avoid this default specialization. See [Be aware of when Julia avoids specializing](@ref) for more information.
+>>>>>>> cyhan/en-v1.10
 
 ## [方法歧义](@id man-ambiguities)
 
@@ -184,11 +260,19 @@ julia> g(2, 3.0)
 8.0
 
 julia> g(2.0, 3.0)
-ERROR: MethodError: g(::Float64, ::Float64) is ambiguous. Candidates:
-  g(x::Float64, y) in Main at none:1
-  g(x, y::Float64) in Main at none:1
+ERROR: MethodError: g(::Float64, ::Float64) is ambiguous.
+
+Candidates:
+  g(x, y::Float64)
+    @ Main none:1
+  g(x::Float64, y)
+    @ Main none:1
+
 Possible fix, define
   g(::Float64, ::Float64)
+
+Stacktrace:
+[...]
 ```
 
 这里`g(2.0,3.0)`的调用使用`g(Float64, Any)`和`g(Any, Float64)`都能处理，并且两个都不更加专用。在这样的情况下，Julia会扔出[`MethodError`](@ref)而非任意选择一个方法。你可以通过对交叉情况指定一个合适的方法来避免方法歧义：
@@ -262,8 +346,11 @@ julia> myappend([1,2,3],4)
 
 julia> myappend([1,2,3],2.5)
 ERROR: MethodError: no method matching myappend(::Vector{Int64}, ::Float64)
+
 Closest candidates are:
-  myappend(::Vector{T}, !Matched::T) where T at none:1
+  myappend(::Vector{T}, !Matched::T) where T
+   @ Main none:1
+
 Stacktrace:
 [...]
 
@@ -276,8 +363,11 @@ julia> myappend([1.0,2.0,3.0],4.0)
 
 julia> myappend([1.0,2.0,3.0],4)
 ERROR: MethodError: no method matching myappend(::Vector{Float64}, ::Int64)
+
 Closest candidates are:
-  myappend(::Vector{T}, !Matched::T) where T at none:1
+  myappend(::Vector{T}, !Matched::T) where T
+   @ Main none:1
+
 Stacktrace:
 [...]
 ```
@@ -315,9 +405,15 @@ true
 
 julia> same_type_numeric("foo", 2.0)
 ERROR: MethodError: no method matching same_type_numeric(::String, ::Float64)
+
 Closest candidates are:
-  same_type_numeric(!Matched::T, ::T) where T<:Number at none:1
-  same_type_numeric(!Matched::Number, ::Number) at none:1
+  same_type_numeric(!Matched::T, ::T) where T<:Number
+   @ Main none:1
+  same_type_numeric(!Matched::Number, ::Number)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> same_type_numeric("foo", "bar")
 ERROR: MethodError: no method matching same_type_numeric(::String, ::String)
@@ -431,14 +527,27 @@ julia> fetch(schedule(t, 1))
 ### 从超类型中提取出类型参数
 
 
+<<<<<<< HEAD
 以下是一个正确的代码模板，用于返回具有明确定义的元素类型的 `AbstractArray` 的任意子类型的元素类型 `T`：
+=======
+Here is a correct code template for returning the element-type `T`
+of any arbitrary subtype of `AbstractArray` that has well-defined
+element type:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 abstract type AbstractArray{T, N} end
 eltype(::Type{<:AbstractArray{T}}) where {T} = T
 ```
 
+<<<<<<< HEAD
 使用所谓的三角派发。 请注意，`UnionAll` 类型，对于示例`eltype(AbstractArray{T} where T <: Integer)`，与上述方法不符。 在这种情况下，`Base` 中 `eltype` 的实现为 `Any` 增加了一个回退方法。
+=======
+using so-called triangular dispatch.  Note that `UnionAll` types, for
+example `eltype(AbstractArray{T} where T <: Integer)`, do not match the
+above method. The implementation of `eltype` in `Base` adds a fallback
+method to `Any` for such cases.
+>>>>>>> cyhan/en-v1.10
 
 
 一个常见的错误是试着使用内省来得到元素类型：
@@ -456,14 +565,43 @@ struct BitVector <: AbstractArray{Bool, 1}; end
 这里我们已经创建了一个没有参数的类型`BitVector`，但是元素类型已经完全指定了，`T`等于`Bool`！
 
 
+<<<<<<< HEAD
 另一个错误是尝试使用 `supertype` 沿着类型层次结构向上走：
+=======
+Another mistake is to try to walk up the type hierarchy using
+`supertype`:
+>>>>>>> cyhan/en-v1.10
 ```julia
 eltype_wrong(::Type{AbstractArray{T}}) where {T} = T
 eltype_wrong(::Type{AbstractArray{T, N}}) where {T, N} = T
 eltype_wrong(::Type{A}) where {A<:AbstractArray} = eltype_wrong(supertype(A))
 ```
+<<<<<<< HEAD
 
 虽然这适用于声明的类型，但对于不适用于没有超类型的类型：
+=======
+
+While this works for declared types, it fails for types without
+supertypes:
+
+```julia-repl
+julia> eltype_wrong(Union{AbstractArray{Int}, AbstractArray{Float64}})
+ERROR: MethodError: no method matching supertype(::Type{Union{AbstractArray{Float64,N} where N, AbstractArray{Int64,N} where N}})
+Closest candidates are:
+  supertype(::DataType) at operators.jl:43
+  supertype(::UnionAll) at operators.jl:48
+```
+
+### Building a similar type with a different type parameter
+
+When building generic code, there is often a need for constructing a similar
+object with some change made to the layout of the type, also
+necessitating a change of the type parameters.
+For instance, you might have some sort of abstract array with an arbitrary element type
+and want to write your computation on it with a specific element type.
+We must implement a method for each `AbstractArray{T}` subtype that describes how to compute this type transform.
+There is no general transform of one subtype into another subtype with a different parameter.
+>>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> eltype_wrong(Union{AbstractArray{Int}, AbstractArray{Float64}})
@@ -515,7 +653,20 @@ copy_with_eltype(input, Eltype) = copyto!(similar(input, Eltype), input)
 
 这个样式是通过定义一个范用函数来实现，这个函数为函数参数可能属于的每个trait集合都计算出不同的单例值（或者类型）。如果这个函数是单纯的，这与通常的分派对于性能没有任何影响。
 
+<<<<<<< HEAD
 上一部分中的示例掩盖了 [`map`](@ref) 和 [`promote`](@ref) 的实现细节，这两个都是依据trait来进行运算的。 在迭代矩阵时，例如在 `map` 的实现中，一个重要的问题是使用什么顺序遍历数据。 当 `AbstractArray` 子类型实现 [`Base.IndexStyle`](@ref) trait 时，`map` 等其他函数可以根据此信息进行派发以选择最佳算法（请参阅 [抽象数组接口](@ref man-interface-array））。这意味着每个子类型不需要实现`map`的自定义版本，因为通用定义+trait类将使系统能够选择最快的版本。 下面是 `map` 的一个简单实现，说明了基于 trait 的调度：
+=======
+The example in the previous section glossed over the implementation details of
+[`map`](@ref) and [`promote`](@ref), which both operate in terms of these traits.
+When iterating over a matrix, such as in the implementation of `map`,
+one important question is what order to use to traverse the data.
+When `AbstractArray` subtypes implement the [`Base.IndexStyle`](@ref) trait,
+other functions such as `map` can dispatch on this information to pick
+the best algorithm (see [Abstract Array Interface](@ref man-interface-array)).
+This means that each subtype does not need to implement a custom version of `map`,
+since the generic definitions + trait classes will enable the system to select the fastest version.
+Here is a toy implementation of `map` illustrating the trait-based dispatch:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 map(f, a::AbstractArray, b::AbstractArray) = map(Base.IndexStyle(a, b), f, a, b)
@@ -611,16 +762,26 @@ bar (generic function with 1 method)
 
 julia> bar(1,2,3)
 ERROR: MethodError: no method matching bar(::Int64, ::Int64, ::Int64)
+
 Closest candidates are:
-  bar(::Any, ::Any, ::Any, !Matched::Any) at none:1
+  bar(::Any, ::Any, ::Any, !Matched::Any)
+   @ Main none:1
+
+Stacktrace:
+[...]
 
 julia> bar(1,2,3,4)
 (1, 2, (3, 4))
 
 julia> bar(1,2,3,4,5)
 ERROR: MethodError: no method matching bar(::Int64, ::Int64, ::Int64, ::Int64, ::Int64)
+
 Closest candidates are:
-  bar(::Any, ::Any, ::Any, ::Any) at none:1
+  bar(::Any, ::Any, ::Any, ::Any)
+   @ Main none:1
+
+Stacktrace:
+[...]
 ```
 
 更加有用的是，用一个参数就约束可变参数的方法是可能的。例如：
@@ -856,5 +1017,57 @@ end
 ```
 
 `NoPad` 被置于与其他 padding 类型一致的参数位置上，这保持了分派层级的良好组织，同时降低了歧义的可能性。而且，它扩展了「公开」的 `myfilter` 接口：想要显式控制 padding 的用户可以直接调用 `NoPad` 变量。
+
+## Defining methods in local scope
+
+You can define methods within a [local scope](@ref scope-of-variables), for example
+
+```jldoctest
+julia> function f(x)
+           g(y::Int) = y + x
+           g(y) = y - x
+           g
+       end
+f (generic function with 1 method)
+
+julia> h = f(3);
+
+julia> h(4)
+7
+
+julia> h(4.0)
+1.0
+```
+
+However, you should *not* define local methods conditionally or subject to control flow, as in
+
+```julia
+function f2(inc)
+    if inc
+        g(x) = x + 1
+    else
+        g(x) = x - 1
+    end
+end
+
+function f3()
+    function g end
+    return g
+    g() = 0
+end
+```
+as it is not clear what function will end up getting defined. In the future, it might be an error to define local methods in this manner.
+
+For cases like this use anonymous functions instead:
+
+```julia
+function f2(inc)
+    g = if inc
+        x -> x + 1
+    else
+        x -> x - 1
+    end
+end
+```
 
 [^Clarke61]: Arthur C. Clarke, *Profiles of the Future* (1961): Clarke's Third Law.

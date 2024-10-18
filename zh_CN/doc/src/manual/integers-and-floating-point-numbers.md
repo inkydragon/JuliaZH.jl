@@ -11,15 +11,15 @@ Julia 提供了很丰富的原始数值类型，并基于它们定义了一整�
 | 类型              | 带符号？ | 比特数 | 最小值 | 最大值 |
 |:----------------- |:------- |:-------------- |:-------------- |:------------- |
 | [`Int8`](@ref)    | ✓       | 8              | -2^7           | 2^7 - 1       |
-| [`UInt8`](@ref)   |         | 8              | 0              | 2^8 - 1       |
+| [`UInt8`](@ref)   |         | 8              | 0              | 2^8 - 1       |
 | [`Int16`](@ref)   | ✓       | 16             | -2^15          | 2^15 - 1      |
-| [`UInt16`](@ref)  |         | 16             | 0              | 2^16 - 1      |
+| [`UInt16`](@ref)  |         | 16             | 0              | 2^16 - 1      |
 | [`Int32`](@ref)   | ✓       | 32             | -2^31          | 2^31 - 1      |
-| [`UInt32`](@ref)  |         | 32             | 0              | 2^32 - 1      |
+| [`UInt32`](@ref)  |         | 32             | 0              | 2^32 - 1      |
 | [`Int64`](@ref)   | ✓       | 64             | -2^63          | 2^63 - 1      |
-| [`UInt64`](@ref)  |         | 64             | 0              | 2^64 - 1      |
+| [`UInt64`](@ref)  |         | 64             | 0              | 2^64 - 1      |
 | [`Int128`](@ref)  | ✓       | 128            | -2^127         | 2^127 - 1     |
-| [`UInt128`](@ref) |         | 128            | 0              | 2^128 - 1     |
+| [`UInt128`](@ref) |         | 128            | 0              | 2^128 - 1     |
 | [`Bool`](@ref)    | N/A     | 8              | `false` (0)    | `true` (1)    |
 
   * **浮点类型:**
@@ -150,7 +150,28 @@ julia> typeof(x)
 UInt128
 ```
 
+<<<<<<< HEAD
 二进制、八进制和十六进制的字面量都会产生无符号的整数类型。当字面量不是开头全是 0 时，它们二进制数据项的位数会是最少需要的位数。当开头都是 `0` 时，位数取决于一个字面量需要的最少位数，这里的字面量指的是一个有着同样长度但开头都为 `1` 的数。这样用户就可以控制位数了。那些无法使用 `UInt128` 类型存储下的值无法写成这样的字面量。
+=======
+As for hexadecimal literals, binary and octal literals produce unsigned integer types. The size
+of the binary data item is the minimal needed size, if the leading digit of the literal is not
+`0`. In the case of leading zeros, the size is determined by the minimal needed size for a
+literal, which has the same length but leading digit `1`. It means that:
+
+- `0x1` and `0x12` are `UInt8` literals,
+- `0x123` and `0x1234` are `UInt16` literals,
+- `0x12345` and `0x12345678` are `UInt32` literals,
+- `0x123456789` and `0x1234567890adcdef` are `UInt64` literals, etc.
+
+Even if there are leading zero digits which don’t contribute to the value, they count for
+determining storage size of a literal. So `0x01` is a `UInt8` while `0x0001` is a `UInt16`.
+
+That allows the user to control the size.
+
+Unsigned literals (starting with `0x`) that encode integers too large to be represented as
+`UInt128` values will construct `BigInt` values instead. This is not an unsigned type but
+it is the only built-in type big enough to represent such large integer values.
+>>>>>>> cyhan/en-v1.10
 
 二进制、八进制和十六进制的字面量前面加一个负号 `-`，这样可以产生一个和原字面量有着同样位数而值为原数的补码的数（二补数）：
 
@@ -327,7 +348,13 @@ julia> bitstring(-0.0)
 | `NaN16`   | `NaN32`   | `NaN`     | 不是数（Not a Number）      | 一个不和任何浮点值（包括自己）相等（`==`）的值 |
 
 
+<<<<<<< HEAD
 对于这些非有限浮点值相互之间以及关于其它浮点值的顺序的更多讨论，请参见[数值比较](@ref)。根据 [IEEE 754 标准](https://en.wikipedia.org/wiki/IEEE_754-2008)，这些浮点值是某些算术运算的结果：
+=======
+For further discussion of how these non-finite floating-point values are ordered with respect
+to each other and other floats, see [Numeric Comparisons](@ref). By the [IEEE 754 standard](https://en.wikipedia.org/wiki/IEEE_754-2008),
+these floating-point values are the results of certain arithmetic operations:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> 1/Inf
@@ -461,6 +488,7 @@ Julia 所使用的默认模式总是 [`RoundNearest`](@ref)，指舍入到最接
 
 浮点算术带来了很多微妙之处，它们可能对于那些不熟悉底层实现细节的用户会是很出人意料的。然而，这些微妙之处在大部分科学计算的书籍中以及以下的参考资料中都有详细介绍:
 
+<<<<<<< HEAD
   * 浮点数算术的权威指南是 [IEEE 754-2008 标准](https://standards.ieee.org/standard/754-2008.html)；
     然而这篇标准在网上无法免费获得。
   * 关于浮点数是如何表示的，想要一个简单而明白的介绍的话，可以看 John D. Cook 的[文章](https://www.johndcook.com/blog/2009/04/06/anatomy-of-a-floating-point-number/)以及他关于从这种表示与实数理想的抽象化的差别中产生的一些问题的[介绍](https://www.johndcook.com/blog/2009/04/06/numbers-are-a-leaky-abstraction/)
@@ -475,6 +503,22 @@ Julia 所使用的默认模式总是 [`RoundNearest`](@ref)，指舍入到最接
      
      
      
+=======
+  * The definitive guide to floating point arithmetic is the [IEEE 754-2008 Standard](https://standards.ieee.org/standard/754-2008.html);
+    however, it is not available for free online.
+  * For a brief but lucid presentation of how floating-point numbers are represented, see John D.
+    Cook's [article](https://www.johndcook.com/blog/2009/04/06/anatomy-of-a-floating-point-number/)
+    on the subject as well as his [introduction](https://www.johndcook.com/blog/2009/04/06/numbers-are-a-leaky-abstraction/)
+    to some of the issues arising from how this representation differs in behavior from the idealized
+    abstraction of real numbers.
+  * Also recommended is Bruce Dawson's [series of blog posts on floating-point numbers](https://randomascii.wordpress.com/2012/05/20/thats-not-normalthe-performance-of-odd-floats/).
+  * For an excellent, in-depth discussion of floating-point numbers and issues of numerical accuracy
+    encountered when computing with them, see David Goldberg's paper [What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.22.6768&rep=rep1&type=pdf).
+  * For even more extensive documentation of the history of, rationale for, and issues with floating-point
+    numbers, as well as discussion of many other topics in numerical computing, see the [collected writings](https://people.eecs.berkeley.edu/~wkahan/)
+    of [William Kahan](https://en.wikipedia.org/wiki/William_Kahan), commonly known as the "Father
+    of Floating-Point". Of particular interest may be [An Interview with the Old Man of Floating-Point](https://people.eecs.berkeley.edu/~wkahan/ieee754status/754story.html).
+>>>>>>> cyhan/en-v1.10
 
 ## [任意精度算术](@id Arbitrary-Precision-Arithmetic)
 

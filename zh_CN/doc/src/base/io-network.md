@@ -13,6 +13,7 @@ Base.take!(::Base.GenericIOBuffer)
 Base.fdio
 Base.flush
 Base.close
+Base.closewrite
 Base.write
 Base.read
 Base.read!
@@ -28,7 +29,7 @@ Base.seekend
 Base.skip
 Base.mark
 Base.unmark
-Base.reset
+Base.reset(::IO)
 Base.ismarked
 Base.eof
 Base.isreadonly
@@ -73,7 +74,11 @@ Base.eachline
 Base.displaysize
 ```
 
+<<<<<<< HEAD
 ## 多媒体 I/O
+=======
+## [Multimedia I/O](@id Multimedia-I/O)
+>>>>>>> cyhan/en-v1.10
 
 就像文本输出用 [`print`](@ref) 实现，用户自定义类型可以通过重载 [`show`](@ref) 来指定其文本化表示，
 Julia 提供了一个应用于富多媒体输出的标准化机制

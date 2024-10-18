@@ -1,4 +1,12 @@
+<<<<<<< HEAD
 # 动态链接器
+=======
+```@meta
+EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Libdl/docs/src/index.md"
+```
+
+# Dynamic Linker
+>>>>>>> cyhan/en-v1.10
 
 ```@docs
 Libdl.dlopen

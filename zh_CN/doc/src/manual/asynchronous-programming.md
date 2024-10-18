@@ -156,7 +156,7 @@ taskHdl = @task mytask(7)
     julia> close(c);
 
     julia> put!(c, 2) # `put!` on a closed channel throws an exception.
-    ERROR: InvalidStateException("Channel is closed.",:closed)
+    ERROR: InvalidStateException: Channel is closed.
     Stacktrace:
     [...]
     ```
@@ -175,7 +175,7 @@ taskHdl = @task mytask(7)
     1
 
     julia> take!(c) # No more data available on a closed channel.
-    ERROR: InvalidStateException("Channel is closed.",:closed)
+    ERROR: InvalidStateException: Channel is closed.
     Stacktrace:
     [...]
     ```
@@ -230,7 +230,15 @@ julia> @elapsed while n > 0 # print out results
 0.029772311
 ```
 
+<<<<<<< HEAD
 不用 `errormonitor(t)`，一个更稳健的解决方案是使用 `bind(results, t)`，这不仅会记录任何意外故障，还会强制相关资源关闭并向上抛出错误。
+=======
+Instead of `errormonitor(t)`, a more robust solution may be to use `bind(results, t)`, as that will
+not only log any unexpected failures, but also force the associated resources to close and propagate
+the exception everywhere.
+
+## More task operations
+>>>>>>> cyhan/en-v1.10
 
 ## 更多任务操作
 

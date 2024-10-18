@@ -1,12 +1,24 @@
+<<<<<<< HEAD
 # 运算符与记号
+=======
+# [Punctuation](@id man-punctuation)
+>>>>>>> cyhan/en-v1.10
 
 数学符号与函数的扩展文档在 [这里](@ref math-ops).
 
+<<<<<<< HEAD
 | 符号      | 含义                                                                                     |
 |:----------- |:--------------------------------------------------------------------------------------------|
 | `@`         | the at-sign marks a [macro](@ref man-macros) invocation; optionally followed by an argument list |
 | [`!`](@ref) | 感叹号是一个表示逻辑否定的前缀算符                       |
 | `a!`        | 在函数名的末尾，`!` 用作表示函数会修改参数（或多个参数） |
+=======
+| symbol      | meaning                                                                                     |
+|:----------- |:--------------------------------------------------------------------------------------------|
+| `@`         | the at-sign marks a [macro](@ref man-macros) invocation; optionally followed by an argument list |
+| [`!`](@ref) | an exclamation mark is a prefix operator for logical negation ("not")                       |
+| `a!`        | function names that end with an exclamation mark modify one or more of their arguments by convention |
+>>>>>>> cyhan/en-v1.10
 | `#`         | the number sign (or hash or pound) character begins single line comments                    |
 | `#=`        | when followed by an equals sign, it begins a multi-line comment (these are nestable)        |
 | `=#`        | end a multi-line comment by immediately preceding the number sign with an equals sign       |
@@ -30,7 +42,11 @@
 | `a[]`       | [array indexing](@ref man-array-indexing) (calling [`getindex`](@ref) or [`setindex!`](@ref)) |
 | `[,]`       | [vector literal constructor](@ref man-array-literals) (calling [`vect`](@ref Base.vect))    |
 | `[;]`       | [vertical concatenation](@ref man-array-concatenation) (calling [`vcat`](@ref) or [`hvcat`](@ref)) |
+<<<<<<< HEAD
 | `[    ]`    | with space-separated expressions, [horizontal concatenation](@ref man-concatenation) (calling [`hcat`](@ref) or [`hvcat`](@ref)) |
+=======
+| `[    ]`    | with space-separated expressions, [horizontal concatenation](@ref man-concatenation) (calling [`hcat`](@ref) or [`hvcat`](@ref)) |
+>>>>>>> cyhan/en-v1.10
 | `T{ }`      | curly braces following a type list that type's [parameters](@ref Parametric-Types)          |
 | `{}`        | curly braces can also be used to group multiple [`where`](@ref) expressions in function declarations |
 | `;`         | semicolons separate statements, begin a list of keyword arguments in function declarations or calls, or are used to separate array literals for vertical concatenation |
@@ -56,5 +72,11 @@
 | [`===`](@ref) | triple equals sign is programmatically identical equality comparison                      |
 | [`=>`](@ref Pair) | right arrow using an equals sign defines a [`Pair`](@ref) typically used to populate [dictionaries](@ref Dictionaries) |
 | `->`        | right arrow using a hyphen defines an [anonymous function](@ref man-anonymous-functions) on a single line |
+<<<<<<< HEAD
 | `|>`        | pipe operator passes output from the left argument to input of the right argument, usually a [function](@ref Function-composition-and-piping) |
 | `∘`         | function composition operator (typed with \circ{tab}) combines two functions as though they are a single larger [function](@ref Function-composition-and-piping) |
+=======
+| [`\|>`](@ref)       | pipe operator passes output from the left argument to input of the right argument, usually a [function](@ref Function-composition-and-piping) |
+| `∘`         | function composition operator (typed with \circ{tab}) combines two functions as though they are a single larger [function](@ref Function-composition-and-piping) |
+| `_`         | underscores may be assigned values which will not be saved, often used to ignore [multiple return values](@ref destructuring-assignment) or create repetitive [comprehensions](@ref man-comprehensions) |
+>>>>>>> cyhan/en-v1.10

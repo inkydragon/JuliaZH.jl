@@ -159,12 +159,21 @@ graph[UUID("c07ecb7d-0dc9-4db7-8803-fadaaeaf08e1")][:Priv]
 
 项目环境的 **路径映射** 从 manifest 文件中提取得到。而包的路径 `uuid` 和名称 `X` 则 (循序) 依据这些规则确定。
 
+<<<<<<< HEAD
 1. 如果目录中的项目文件与要求的 `uuid` 以及名称 `X` 匹配，那么可能出现以下情况的一种：
    - 若该文件具有顶层 `路径` 入口，则 `uuid` 会被映射到该路径，文件的执行与包含项目文件的目录相关。
    - 此外，`uuid` 依照包含项目文件的目录，映射至与`src/X.jl`。
 2. 若非上述情况，且项目文件具有对应的清单文件，且该清单文件包含匹配 `uuid` 的节（stanza），那么：
    - 若其具有一个 `路径` 入口，则使用该路径（与包含清单文件的目录相关）。
    - 若其具有一个 `git-tree-sha1` 入口，计算一个确定的 `uuid` 与 `git-tree-sha1` 函数——我们把这个函数称为 `slug`——并在每个 Julia `DEPOT_PATH` 的全局序列中的目录查询名为 `packages/X/$slug` 的目录。使用存在的第一个此类目录。
+=======
+1. If the project file in the directory matches `uuid` and name `X`, then either:
+   - It has a toplevel `path` entry, then `uuid` will be mapped to that path, interpreted relative to the directory containing the project file.
+   - Otherwise, `uuid` is mapped to  `src/X.jl` relative to the directory containing the project file.
+2. If the above is not the case and the project file has a corresponding manifest file and the manifest contains a stanza matching `uuid` then:
+   - If it has a `path` entry, use that path (relative to the directory containing the manifest file).
+   - If it has a `git-tree-sha1` entry, compute a deterministic hash function of `uuid` and `git-tree-sha1`—call it `slug`—and look for a directory named `packages/X/$slug` in each directory in the Julia `DEPOT_PATH` global array. Use the first such directory that exists.
+>>>>>>> cyhan/en-v1.10
 
 若某些结果成功，源码入口点的路径会是这些结果中的某个，结果的相对路径+`src/X.jl`；否则，`uuid` 不存在路径映射。当加载 `X` 时，如果没找到源码路径，查找即告失败，用户可能会被提示安装适当的包版本或采取其他纠正措施（例如，将 `X` 声明为某种依赖性）。
 
@@ -351,6 +360,72 @@ paths = reduce(merge, reverse([paths₁, paths₂, …]))
 
 由于主环境通常是您正在处理的项目所在的环境，而堆栈中稍后的环境包含其他工具， 因此这是正确的权衡：最好改进您的开发工具，但保持项目能工作。当这种不兼容发生时，你通常要将开发工具升级到与主项目兼容的版本。
 
+<<<<<<< HEAD
 ## 总结
+=======
+### [Package Extensions](@id man-extensions)
+
+A package "extension" is a module that is automatically loaded when a specified set of other packages (its "extension dependencies") are loaded in the current Julia session. Extensions are defined under the `[extensions]` section in the project file. The extension dependencies of an extension are a subset of those packages listed under the `[weakdeps]` section of the project file. Those packages can have compat entries like other packages.
+
+```toml
+name = "MyPackage"
+
+[compat]
+ExtDep = "1.0"
+OtherExtDep = "1.0"
+
+[weakdeps]
+ExtDep = "c9a23..." # uuid
+OtherExtDep = "862e..." # uuid
+
+[extensions]
+BarExt = ["ExtDep", "OtherExtDep"]
+FooExt = "ExtDep"
+...
+```
+
+The keys under `extensions` are the names of the extensions.
+They are loaded when all the packages on the right hand side (the extension dependencies) of that extension are loaded.
+If an extension only has one extension dependency the list of extension dependencies can be written as just a string for brevity.
+The location for the entry point of the extension is either in `ext/FooExt.jl` or `ext/FooExt/FooExt.jl` for
+extension `FooExt`.
+The content of an extension is often structured as:
+
+```
+module FooExt
+
+# Load main package and extension dependencies
+using MyPackage, ExtDep
+
+# Extend functionality in main package with types from the extension dependencies
+MyPackage.func(x::ExtDep.SomeStruct) = ...
+
+end
+```
+
+When a package with extensions is added to an environment, the `weakdeps` and `extensions` sections
+are stored in the manifest file in the section for that package. The dependency lookup rules for
+a package are the same as for its "parent" except that the listed extension dependencies are also considered as
+dependencies.
+
+### [Package/Environment Preferences](@id preferences)
+
+Preferences are dictionaries of metadata that influence package behavior within an environment.
+The preferences system supports reading preferences at compile-time, which means that at code-loading time, we must ensure that the precompilation files selected by Julia were built with the same preferences as the current environment before loading them.
+The public API for modifying Preferences is contained within the [Preferences.jl](https://github.com/JuliaPackaging/Preferences.jl) package.
+Preferences are stored as TOML dictionaries within a `(Julia)LocalPreferences.toml` file next to the currently-active project.
+If a preference is "exported", it is instead stored within the `(Julia)Project.toml` instead.
+The intention is to allow shared projects to contain shared preferences, while allowing for users themselves to override those preferences with their own settings in the LocalPreferences.toml file, which should be .gitignored as the name implies.
+
+Preferences that are accessed during compilation are automatically marked as compile-time preferences, and any change recorded to these preferences will cause the Julia compiler to recompile any cached precompilation file(s) (`.ji` and corresponding `.so`, `.dll`, or `.dylib` files) for that module.
+This is done by serializing the hash of all compile-time preferences during compilation, then checking that hash against the current environment when searching for the proper file(s) to load.
+
+Preferences can be set with depot-wide defaults; if package Foo is installed within your global environment and it has preferences set, these preferences will apply as long as your global environment is part of your `LOAD_PATH`.
+Preferences in environments higher up in the environment stack get overridden by the more proximal entries in the load path, ending with the currently active project.
+This allows depot-wide preference defaults to exist, with active projects able to merge or even completely overwrite these inherited preferences.
+See the docstring for `Preferences.set_preferences!()` for the full details of how to set preferences to allow or disallow merging.
+
+## Conclusion
+>>>>>>> cyhan/en-v1.10
 
 在软件包系统中，联邦软件包管理和精确的软件可复制性是困难但有价值的目标。结合起来，这些目标导致了一个比大多数动态语言更加复杂的包加载机制，但它也产生了通常与静态语言相关的可伸缩性和可复制性。通常，Julia用户应该能够使用内置的包管理器来管理他们的项目，而无需精确理解这些交互细节。通过调用`Pkg.add("X")`添加`X`包到对应的项目，并清晰显示相关文件，选择`Pkg.activate("Y")`后, 可调用`import X` 即可加载`X`包，而无需作过多考虑。

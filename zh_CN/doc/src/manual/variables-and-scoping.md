@@ -1,7 +1,16 @@
 # [变量作用域](@id scope-of-variables)
 
+<<<<<<< HEAD
 变量的 **作用域** 是代码的一个区域，在这个区域中这个变量是可见的。给变量划分作用域有助于解决变量命名冲突。这个概念是符合直觉的：两个函数可能同时都有叫做 `x` 的参量，而这两个 `x` 并不指向同一个东西。
 相似地，也有很多其他的情况，代码的不同块会使用同样名字，但并不指向同一个东西。相同的变量名是否指向同一个东西的规则被称为作用域规则；这一节会详细地把这个规则讲清楚。
+=======
+The *scope* of a variable is the region of code within which a variable is accessible. Variable
+scoping helps avoid variable naming conflicts. The concept is intuitive: two functions can both have
+arguments called `x` without the two `x`'s referring to the same thing. Similarly, there are many
+other cases where different blocks of code can use the same name without referring to the same
+thing. The rules for when the same variable name does or doesn't refer to the same thing are called
+scope rules; this section spells them out in detail.
+>>>>>>> cyhan/en-v1.10
 
 语言中的某些结构会引入*作用域块*，这是可以成为一些变量集合的作用域的代码区域。一个变量的作用域不是源代码行的任意集合；相反，它始终与这些块之一关系密切。在 Julia 中主要有两种作用域，*全局作用域* 与 *局部作用域*，后者可以嵌套。 在 Julia 中还存在引入“硬作用域”的构造和只引入“软作用域”的构造之间的区别，这影响到是否允许以相同的名称[遮蔽](https://en.wikipedia.org/wiki/Variable_shadowing)全局变量。
 
@@ -19,7 +28,14 @@
 
 值得注意的是，这个表内没有的是 [begin 块](@ref man-compound-expressions)和[ if 块](@ref man-conditional-evaluation)，这两个块**不会**引进新的作用域块。这两种作用域遵循的规则有点不一样，会在下面解释。
 
+<<<<<<< HEAD
 Julia 使用[词法作用域](https://en.wikipedia.org/wiki/Scope_%28computer_science%29#Lexical_scoping_vs._dynamic_scoping)，也就是说一个函数的作用域不继承自调用了函数的调用者作用域，而继承自该函数定义处作用域。举例如下，`foo` 中的 `x` 指向模块 `Bar` 的全局作用域中 `x`。
+=======
+Julia uses [lexical scoping](https://en.wikipedia.org/wiki/Scope_(computer_science)#Lexical_scope_vs._dynamic_scope),
+meaning that a function's scope does not inherit from its caller's scope, but from the scope in
+which the function was defined. For example, in the following code the `x` inside `foo` refers
+to the `x` in the global scope of its module `Bar`:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest moduleBar
 julia> module Bar
@@ -42,45 +58,95 @@ julia> Bar.foo()
 
 ## 全局作用域
 
+<<<<<<< HEAD
 每个模块会引进一个新全局作用域，与其他所有模块的全局作用域分开；无所不包的全局作用域不存在。模块可以把其他模块的变量引入到它的作用域中，通过[using 或者 import](@ref modules)语句或者通过点符号这种有资格的通路，也就是说每个模块都是所谓的*命名空间*或者关联着含值的名字的第一类数据结构。值得注意的是，即便变量绑定能在外部被读取，变量绑定也只能在它们的全局作用域中改变。
 作为一个逃生窗口，你总是可以执行该模块内代码来修改一个变量；这特别保证了不调用 `eval` 的外部代码绝不会修改模块绑定。
+=======
+Each module introduces a new global scope, separate from the global scope of all other modules—there
+is no all-encompassing global scope. Modules can introduce variables of other modules into their
+scope through the [using or import](@ref modules) statements or through qualified access using the
+dot-notation, i.e. each module is a so-called *namespace* as well as a first-class data structure
+associating names with values.
+
+If a top-level expression contains a variable declaration with keyword `local`,
+then that variable is not accessible outside that expression.
+The variable inside the expression does not affect global variables of the same name.
+An example is to declare `local x` in a `begin` or `if` block at the top-level:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
-julia> module A
-           a = 1 # a global in A's scope
-       end;
-
-julia> module B
-           module C
-               c = 2
-           end
-           b = C.c    # can access the namespace of a nested global scope
-                      # through a qualified access
-           import ..A # makes module A available
-           d = A.a
-       end;
-
-julia> module D
-           b = a # errors as D's global scope is separate from A's
-       end;
-ERROR: UndefVarError: a not defined
-
-julia> module E
-           import ..A # make module A available
-           A.a = 2    # throws below error
-       end;
-ERROR: cannot assign variables in other modules
+julia> x = 1
+       begin
+           local x = 0
+           @show x
+       end
+       @show x;
+x = 0
+x = 1
 ```
 
 注意交互式提示行（即REPL）是在模块`Main`的全局作用域中。
 
+<<<<<<< HEAD
 ## 局部作用域
 
 大多数代码块都引入了新的局部作用域（完整[列表](@ref man-scope-table)请参见上表）。如果这样的代码块在语法上嵌套在另一个局部作用域内，则它创建的作用域嵌套在它出现的所有局部作用域内，这些局部作用域最终都嵌套在评估代码的模块的全局作用域内。 外部作用域中的变量在它们包含的任何作用域中都是可见的——这意味着它们可以在内部作用域中读取和写入——除非有一个同名的局部变量“遮蔽”了同名的外部变量。 即使外部的本地变量是在内部块之后（在下面的文本意义上）声明的，也是如此。 当我们说一个变量在给定范围内“存在”时，这意味着具有该名称的变量存在于当前范围嵌套在其中的任何范围内，包括当前范围。
+=======
+## [Local Scope](@id local-scope)
+
+A new local scope is introduced by most code blocks (see above [table](@ref
+man-scope-table) for a complete list). If such a block is syntactically nested
+inside of another local scope, the scope it creates is nested inside of all the
+local scopes that it appears within, which are all ultimately nested inside of
+the global scope of the module in which the code is evaluated. Variables in
+outer scopes are visible from any scope they contain — meaning that they can be
+read and written in inner scopes — unless there is a local variable with the
+same name that "shadows" the outer variable of the same name. This is true even
+if the outer local is declared after (in the sense of textually below) an inner
+block. When we say that a variable "exists" in a given scope, this means that a
+variable by that name exists in any of the scopes that the current scope is
+nested inside of, including the current one.
+
+Some programming languages require explicitly declaring new variables before
+using them. Explicit declaration works in Julia too: in any local scope, writing
+`local x` declares a new local variable in that scope, regardless of whether
+there is already a variable named `x` in an outer scope or not. Declaring each
+new variable like this is somewhat verbose and tedious, however, so Julia, like
+many other languages, considers assignment to a variable name that doesn't
+already exist to implicitly declare that variable. If the current scope is
+global, the new variable is global; if the current scope is local, the new
+variable is local to the innermost local scope and will be visible inside of
+that scope but not outside of it. If you assign to an existing local, it
+_always_ updates that existing local: you can only shadow a local by explicitly
+declaring a new local in a nested scope with the `local` keyword. In particular,
+this applies to variables assigned in inner functions, which may surprise users
+coming from Python where assignment in an inner function creates a new local
+unless the variable is explicitly declared to be non-local.
+
+Mostly this is pretty intuitive, but as with many things that behave
+intuitively, the details are more subtle than one might naïvely imagine.
+>>>>>>> cyhan/en-v1.10
 
 一些编程语言需要在使用新变量之前显式声明它们。显式声明也适用于 Julia：在任何局部作用域中，编写 `local x` 都会在该作用域中声明一个新的局部变量，无论外部作用域中是否已经存在名为 `x` 的变量。像这样声明每个新变量有点冗长乏味，但是，与许多其他语言一样，Julia 考虑对不存在的变量名称进行赋值以隐式声明该变量。如果当前作用域是全局的，则新变量是全局的；如果当前作用域是局部的，则新变量对最内部的局部作用域是局部的，并且在该作用域内可见，但在该作用域外不可见。如果你给现有的局部变量赋值，它_总是_更新现有的局部变量：你只能通过使用 `local` 关键字在嵌套范围内显式声明新的局部变量来隐藏原局部变量。特别是，这适用于在内部函数中分配的变量，这可能会让来自 Python 的用户感到惊讶，其中内部函数中的赋值会创建一个新的局部变量，除非该变量被明确声明为非局部变量。
 
+<<<<<<< HEAD
 大多数情况下，这是非常直观的，但与许多直觉行为一样，细节比人们天真地想象的要微妙得多。
+=======
+1. **Existing local:** If `x` is *already a local variable*, then the existing local `x` is
+   assigned;
+2. **Hard scope:** If `x` is *not already a local variable* and assignment occurs inside of any
+   hard scope construct (i.e. within a `let` block, function or macro body, comprehension, or
+   generator), a new local named `x` is created in the scope of the assignment;
+3. **Soft scope:** If `x` is *not already a local variable* and all of the scope constructs
+   containing the assignment are soft scopes (loops, `try`/`catch` blocks, or `struct` blocks), the
+   behavior depends on whether the global variable `x` is defined:
+   * if global `x` is *undefined*, a new local named `x` is created in the scope of the
+     assignment;
+   * if global `x` is *defined*, the assignment is considered ambiguous:
+     * in *non-interactive* contexts (files, eval), an ambiguity warning is printed and a new
+       local is created;
+     * in *interactive* contexts (REPL, notebooks), the global variable `x` is assigned.
+>>>>>>> cyhan/en-v1.10
 
 当 `x = <value>` 出现在某局部作用域，Julia 根据赋值表达式出现位置、 `x` 在此处已经引用的内容，采取如下规则确定表达式的意义：
 
@@ -117,7 +183,7 @@ julia> greet()
 hello
 
 julia> x # global
-ERROR: UndefVarError: x not defined
+ERROR: UndefVarError: `x` not defined
 ```
 
 在 `greet` 函数内部，赋值 `x = "hello"` 导致 `x` 成为函数作用域中的一个新局部变量。 有两个相关的事实：赋值发生在局部作用域内，并且没有现有的局部 `x` 变量。 由于 `x` 是局部的，所以是否存在名为 `x` 的全局变量并不重要。 例如，我们在定义和调用 `greet` 之前定义了 `x = 123`：
@@ -141,9 +207,21 @@ julia> x # global
 
 由于 `greet` 中的 `x` 是局部的，全局 `x` 的值（或缺少值）不会受到调用 `greet` 的影响。 硬作用域规则不关心名为 `x` 的全局变量是否存在：在硬作用域中对 `x` 的赋值是局部的（除非 `x` 被声明为全局的）。
 
+<<<<<<< HEAD
 我们将考虑的下一个明确的情况是已经有一个名为`x`的局部变量，在这种情况下，`x = 1`总是赋值给这个现有的局部`x`。 无论赋值发生在同一局部作用域、同一函数体的内部局部作用域，还是嵌套在另一个函数内部的函数体（也称为 [闭包](https://en.wikipedia.org/wiki/Closure_(computer_programming))）。
 
 我们将使用 `sum_to` 函数，它计算从 1 到 `n` 的整数之和，例如：
+=======
+The next clear cut situation we'll consider is when there is already a local
+variable named `x`, in which case `x = <value>` always assigns to this existing
+local `x`. This is true whether the assignment occurs in the same local scope,
+an inner local scope in the same function body, or in the body of a function
+nested inside of another function, also known as a
+[closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
+
+We'll use the `sum_to` function, which computes the sum of integers from one up
+to `n`, as an example:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 function sum_to(n)
@@ -171,7 +249,7 @@ julia> sum_to(10)
 55
 
 julia> s # global
-ERROR: UndefVarError: s not defined
+ERROR: UndefVarError: `s` not defined
 ```
 
 由于 `s` 是函数 `sum_to` 的局部变量，调用该函数对全局变量 `s` 没有影响。 我们还可以看到，`for` 循环中的更新 `s = s + i` 必须更新由初始化 `s = 0` 创建的相同 `s`，因为我们得到了整数 1 到 10 的正确总和 55。
@@ -195,7 +273,14 @@ julia> sum_to_def(10)
 
 这个版本像先前一样返回 `s`，但它也使用 `@isdefined` 宏返回一个布尔值，指示是否在函数的最外层局部作用域中定义了一个名为 `t` 的局部变量。 正如你所看到的，在 `for` 循环体之外没有定义 `t`。 这又是因为硬作用域规则：由于对 `t` 的赋值发生在一个函数内部，这引入了一个硬作用域，赋值导致 `t` 在它出现的局部作用域中成为一个新的局部变量，即循环体内部。 即使有一个名为 `t` 的全局变量，它也没有任何区别——硬作用域规则不受全局作用域中的任何内容的影响。
 
+<<<<<<< HEAD
 请注意，for 循环体的局部作用域与内部函数的局部作用域没有区别。 这意味着我们可以重写此示例，以便将循环体实现为对内部辅助函数的调用，并且其行为方式相同：
+=======
+Note that the local scope of a for loop body is no different from the local
+scope of an inner function. This means that we could rewrite this example so
+that the loop body is implemented as a call to an inner helper function and it
+behaves the same way:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> function sum_to_def_closure(n)
@@ -215,6 +300,7 @@ julia> sum_to_def_closure(10)
 (55, false)
 ```
 
+<<<<<<< HEAD
 这个例子说明了几个要点：
 
 1. 内部函数作用域就像任何其他嵌套的局部作用域一样。 特别是，如果一个变量已经是内部函数之外的局部变量，并且你在内部函数中为其赋值，则外部局部变量会被更新。
@@ -228,6 +314,26 @@ julia> sum_to_def_closure(10)
 这种设计意味着你通常可以将代码移入或移出内部函数而不改变其含义，这给使用闭包语言中的许多常见习语提供了便利。（参见 [do blocks](@ref Do-Block-Syntax-for-Function-Arguments))。
 
 让我们继续讨论软作用域规则涵盖的一些更模糊的情况。 我们将通过将 `gree`t 和 `sum_to_def `函数的主体提取到软作用域上下文中来探索这一点。 首先，让我们将 `greet` 的主体放在一个 `for` 循环中——它是软的，而不是硬的——并在 REPL 中运行：
+=======
+This example illustrates a couple of key points:
+
+1. Inner function scopes are just like any other nested local scope. In
+   particular, if a variable is already a local outside of an inner function and
+   you assign to it in the inner function, the outer local variable is updated.
+
+2. It doesn't matter if the definition of an outer local happens below where it
+   is updated, the rule remains the same. The entire enclosing local scope is
+   parsed and its locals determined before inner local meanings are resolved.
+
+This design means that you can generally move code in or out of an inner
+function without changing its meaning, which facilitates a number of common
+idioms in the language using closures (see [do blocks](@ref
+Do-Block-Syntax-for-Function-Arguments)).
+
+Let's move onto some more ambiguous cases covered by the soft scope rule. We'll explore this by
+extracting the bodies of the `greet` and `sum_to_def` functions into soft scope contexts. First, let's put the
+body of `greet` in a `for` loop—which is soft, rather than hard—and evaluate it in the REPL:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> for i = 1:3
@@ -239,7 +345,7 @@ hello
 hello
 
 julia> x
-ERROR: UndefVarError: x not defined
+ERROR: UndefVarError: `x` not defined
 ```
 
 由于在执行`for`循环时未定义全局变量`x`，因此软作用域规则的第一个子句适用，并且`x`被创建为`for`循环内的局部变量，因此循环执行完后全局变量`x`一直没有定义 。 接下来，让我们考虑提取到全局作用域内的 `sum_to_def` 的函数体，将其参数固定为 `n = 10`
@@ -293,7 +399,7 @@ julia> code = """
 julia> include_string(Main, code)
 ┌ Warning: Assignment to `s` in soft scope is ambiguous because a global variable by the same name exists: `s` will be treated as a new local. Disambiguate by using `local s` to suppress this warning or `global s` to assign to the existing global variable.
 └ @ string:4
-ERROR: LoadError: UndefVarError: s not defined
+ERROR: LoadError: UndefVarError: `s` not defined
 ```
 
 这里我们使用 [`include_string`](@ref) 来评估 `code`，就好像它是文件的内容一样。 我们也可以将 `code` 保存到一个文件中，然后对该文件调用 `include`——结果是一样的。 如你所见，这与在 REPL 中评估相同代码的行为完全不同。 让我们分解一下这里发生的事情：
@@ -309,7 +415,11 @@ ERROR: LoadError: UndefVarError: s not defined
 
 这展示了作用域的一些重要方面：在一个作用域中，每个变量只能有一个含义，而该含义的确定与表达式的顺序无关。 循环中表达式 `s = t` 的存在导致 `s` 在循环中是局部的，这意味着当它出现在 `t = s + i` 的右侧时它也是局部的，即使该表达式首先出现并首先计算。 有人可能会想象循环第一行上的 `s` 可以是全局的，而循环第二行上的 `s` 是局部的，但这是不可能的，因为这两行在同一个作用域块中并且每个变量 在给定的作用域内只能有一种含义。
 
+<<<<<<< HEAD
 #### 在软作用域
+=======
+#### [On Soft Scope](@id on-soft-scope)
+>>>>>>> cyhan/en-v1.10
 
 我们现在已经涵盖了所有局部作用域规则，但在结束本节之前，也许应该说几句关于为什么在交互式和非交互式上下文中处理模糊软作用域的情况不同。 人们可以问两个明显的问题：
 
@@ -369,13 +479,39 @@ end
 
 > 在软作用域中对 `s` 的赋值是不明确的，因为存在同名的全局变量：`s` 将被视为新的局部变量。 通过使用 `local s` 来消除此警告或使用 `global s` 赋值给现有的全局变量来消除歧义。
 
+<<<<<<< HEAD
 这解决了这两个问题，同时保留了 1.0 行为的“大规模编程”好处：全局变量对可能很远的代码的含义没有幽灵般的影响； 在 REPL 复制粘贴调试工作，初学者没有任何问题； 任何时候有人忘记`global`注解或不小心用软作用域中的局部变量遮蔽了现有的全局变量，这无论如何都会令人困惑，他们会得到一个很好的明确警告。
+=======
+This addresses both issues while preserving the "programming at scale" benefits of the 1.0 behavior:
+global variables have no spooky effect on the meaning of code that may be far away; in the REPL
+copy-and-paste debugging works and beginners don't have any issues; any time someone either forgets
+a `global` annotation or accidentally shadows an existing global with a local in a soft scope,
+which would be confusing anyway, they get a nice clear warning.
+>>>>>>> cyhan/en-v1.10
 
 这种设计的一个重要特点是，在没有警告的情况下在文件中执行的任何代码在新的 REPL 中的行为方式相同。 另一方面，如果您使用 REPL 会话并将其保存到文件中，如果它的行为与 REPL 中的行为不同，那么您将收到警告。
 
 ### Let 块
 
+<<<<<<< HEAD
 `let` 语句创建一个新的 *硬作用域* 块（见上文）并在每次运行时引入新的变量绑定。 赋值可能会为现有值地址重新分配一个新值，而 `let` 总是会创建一个新地址。 这种差异通常并不重要，并且只有在通过闭包超出其作用域的变量的情况下才能检测到。 `let` 语法接受以逗号分隔的一系列赋值和变量名：
+=======
+`let` statements create a new *hard scope* block (see above) and introduce new variable
+bindings each time they run. The variable need not be immediately assigned:
+```jldoctest
+julia> var1 = let x
+           for i in 1:5
+               (i == 4) && (x = i; break)
+           end
+           x
+       end
+4
+```
+Whereas assignments might reassign a new value to an existing value location, `let` always creates a
+new location. This difference is usually not important, and is only detectable in the case of
+variables that outlive their scope via closures. The `let` syntax accepts a comma-separated series of
+assignments and variable names:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> x, y, z = -1, -1, -1;
@@ -385,7 +521,7 @@ julia> let x = 1, z
            println("z: $z") # errors as z has not been assigned yet but is local
        end
 x: 1, y: -1
-ERROR: UndefVarError: z not defined
+ERROR: UndefVarError: `z` not defined
 ```
 
 赋值将按次序执行：作用域右侧先于左侧引入新变量前被执行。这使得类似 `let x = x` 的写法是有意义的，因为这两个 `x` 变量并不一样，拥有不同存储位置。`let` 的行为在如下例子中是必要的：
@@ -424,7 +560,12 @@ julia> Fs[2]()
 2
 ```
 
+<<<<<<< HEAD
 由于 `begin` 结构不会引入新的作用域，使用零参数 `let` 来引入一个新的作用域块而不立即创建任何新的绑定是很有用的：
+=======
+Since the `begin` construct does not introduce a new scope, it can be useful to use a zero-argument
+`let` to just introduce a new scope block without creating any new bindings immediately:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> let
@@ -437,7 +578,21 @@ julia> let
 1
 ```
 
+<<<<<<< HEAD
 由于`let` 引入了一个新的作用域块，内部局部变量`x` 与外部局部变量`x` 是一个不同的变量。这个特定的例子相当于：
+=======
+Since `let` introduces a new scope block, the inner local `x` is a different variable than the
+outer local `x`. This particular example is equivalent to:
+
+```jldoctest
+julia> let x = 1
+           let x = 2
+           end
+           x
+       end
+1
+```
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> let x = 1
@@ -597,4 +752,59 @@ WARNING: redefinition of constant x. This may fail, cause incorrect answers, or 
 
 julia> f()
 1
+```
+
+## [Typed Globals](@id man-typed-globals)
+
+!!! compat "Julia 1.8"
+    Support for typed globals was added in Julia 1.8
+
+Similar to being declared as constants, global bindings can also be declared to always be of a
+constant type. This can either be done without assigning an actual value using the syntax
+`global x::T` or upon assignment as `x::T = 123`.
+
+```jldoctest
+julia> x::Float64 = 2.718
+2.718
+
+julia> f() = x
+f (generic function with 1 method)
+
+julia> Base.return_types(f)
+1-element Vector{Any}:
+ Float64
+```
+
+For any assignment to a global, Julia will first try to convert it to the appropriate type using
+[`convert`](@ref):
+
+```jldoctest
+julia> global y::Int
+
+julia> y = 1.0
+1.0
+
+julia> y
+1
+
+julia> y = 3.14
+ERROR: InexactError: Int64(3.14)
+Stacktrace:
+[...]
+```
+
+The type does not need to be concrete, but annotations with abstract types typically have little
+performance benefit.
+
+Once a global has either been assigned to or its type has been set, the binding type is not allowed
+to change:
+
+```jldoctest
+julia> x = 1
+1
+
+julia> global x::Int
+ERROR: cannot set type for global x. It already has a value or is already set to a different type.
+Stacktrace:
+[...]
 ```

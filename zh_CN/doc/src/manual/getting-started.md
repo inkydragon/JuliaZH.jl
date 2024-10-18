@@ -22,9 +22,10 @@ Markdown.parse("```\n\$ julia\n\n$(banner)\njulia> 1 + 2\n3\n\njulia> ans\n3\n``
 如果想以非交互的方式执行文件中的代码，可以把文件名作为 `julia` 命令的第一个参数：
 
 ```
-$ julia script.jl arg1 arg2...
+$ julia script.jl
 ```
 
+<<<<<<< HEAD
 如这个例子所示，`julia` 后跟着的命令行参数会被作为程序 `script.jl` 的命令行参数。这些参数使用全局常量 `ARGS` 来传递，脚本自身的名字会以全局变量 `PROGRAM_FILE` 传入。注意当脚本以命令行里的 `-e` 选项输入时，`ARGS` 也会被设定（详见此页末尾列表）但是 `PROGRAM_FILE` 会是空的。例如，要把一个脚本的输入参数显示出来，你可以：
 
 ```
@@ -82,9 +83,33 @@ julia [switches] -- [programfile] [args...]
 
 详细的命令选项可以在这里找到 [Command-line Options](@ref
 command-line-options).
+=======
+You can pass additional arguments to Julia, and to your program `script.jl`. A detailed list of all the available options can be found under [Command-line Interface](@ref cli).
+>>>>>>> cyhan/en-v1.10
 
 ## 资源
 
+<<<<<<< HEAD
 除了本手册以外，官方网站还提供了一个有用的**[学习资源列表](https://julialang.org/learning/)**来帮助新用户学习 Julia。
 
 如果已经对 Julia 有所了解，你可以先看 [Performance Tips](@ref man-performance-tips) 和 [Workflow Tips](@ref man-workflow-tips)。
+=======
+A curated list of useful learning resources to help new users get started can be found on the [learning](https://julialang.org/learning/) page of the main Julia website.
+
+You can use the REPL as a learning resource by switching into the help mode.
+Switch to help mode by pressing `?` at an empty `julia> ` prompt, before typing
+anything else. Typing a keyword in help mode will fetch the documentation for
+it, along with examples. Similarly for most functions or other objects you
+might encounter!
+
+```
+help?> begin
+search: begin disable_sigint reenable_sigint
+
+  begin
+
+  begin...end denotes a block of code.
+```
+
+If you already know Julia a bit, you might want to peek ahead at [Performance Tips](@ref man-performance-tips) and [Workflow Tips](@ref man-workflow-tips).
+>>>>>>> cyhan/en-v1.10

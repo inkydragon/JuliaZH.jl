@@ -61,7 +61,13 @@
 
 ## 基于浏览器的工作流程
 
+<<<<<<< HEAD
 也可以通过 [IJulia](https://github.com/JuliaLang/IJulia.jl) 在浏览器中与 Julia REPL 进行交互，请到该库的主页查看详细用法。
+=======
+There are a few ways to interact with Julia in a browser:
+- Using Pluto notebooks through [Pluto.jl](https://github.com/fonsp/Pluto.jl)
+- Using Jupyter notebooks through [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
+>>>>>>> cyhan/en-v1.10
 
 ## 基于Revise的工作流程
 
@@ -98,7 +104,7 @@
 
      切换到临时目录并启动 Julia，然后执行以下操作：
 
-     ```julia
+     ```julia-repl
      pkg> generate MyPkg            # type ] to enter pkg mode
      julia> push!(LOAD_PATH, pwd())   # hit backspace to exit pkg mode
      ```
@@ -117,7 +123,7 @@
    然后切换到包含测试文件（假设文件为`"runtests.jl"`）的目录下，并：
     
 
-   ```julia
+   ```julia-repl
    julia> using MyPkg
 
    julia> include("runtests.jl")

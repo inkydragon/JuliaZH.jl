@@ -8,7 +8,11 @@ Julia 中的模块有助于将代码组织成连贯的部分。 它们在语法�
 2. 模块具有用于命名空间管理的工具：每个模块定义一组它`export`的名称，并且可以使用 `using` 和 `import` 从其他模块导入名称（我们将在下面解释这些）。
     
 
+<<<<<<< HEAD
 3. 模块可以预编译以加快加载速度，并包含用于运行时初始化的代码。
+=======
+3. Modules can be precompiled for faster loading, and may contain code for runtime initialization.
+>>>>>>> cyhan/en-v1.10
 
 通常，在较大的 Julia 包中，你会看到模块的代码组织成文件，例如
 
@@ -23,7 +27,14 @@ include("file2.jl")
 end
 ```
 
+<<<<<<< HEAD
 文件和文件名大多与模块无关； 模块仅与模块表达式相关联。 每个模块可以有多个文件，每个文件可以有多个模块。 `include` 的行为就像在包含模块的全局作用域内执行源文件的内容一样。 在本章中，我们使用简短和简化的示例，因此我们不会使用`include`。
+=======
+Files and file names are mostly unrelated to modules; modules are associated only with module
+expressions. One can have multiple files per module, and multiple modules per file. `include`
+behaves as if the contents of the source file were evaluated in the global scope of the
+including module. In this chapter, we use short and simplified examples, so we won't use `include`.
+>>>>>>> cyhan/en-v1.10
 
 我们推荐不要缩进模块的主体，因为这通常会导致整个文件被缩进。 此外，通常使用 `UpperCamelCase` 作为模块名称（就像类型一样），并在适用时使用复数形式，特别是如果模块包含类似命名的标识符，以避免名称冲突。 例如，
 
@@ -58,20 +69,22 @@ Base
 
 ### 导出列表
 
+<<<<<<< HEAD
 名称（指函数、类型、全局变量和常量）可以通过 `export` 添加到模块的 *导出列表 *。 通常，它们位于或靠近模块定义的顶部，以便源代码的读者可以轻松找到它们，如
+=======
+Names (referring to functions, types, global variables, and constants) can be added to the
+*export list* of a module with `export`: these are the symbols that are imported when `using` the module. Typically, they are at or near the top of the module definition
+so that readers of the source code can find them easily, as in
+>>>>>>> cyhan/en-v1.10
 
-```julia
-module NiceStuff
+```jldoctest module_manual
+julia> module NiceStuff
+       export nice, DOG
+       struct Dog end      # singleton type, not exported
+       const DOG = Dog()   # named instance, exported
+       nice(x) = "nice $x" # function, exported
+       end;
 
-export nice, DOG
-
-struct Dog end      # singleton type, not exported
-
-const DOG = Dog()   # named instance, exported
-
-nice(x) = "nice $x" # function, exported
-
-end
 ```
 
 但这只是一个风格建议——一个模块可以在任意位置有多个 `export` 语句。
@@ -90,10 +103,17 @@ end
 
 严格来说，声明 `using ModuleName` 意味着一个名为 `ModuleName` 的模块可用于根据需要解析名称。 当遇到当前模块中没有定义的全局变量时，系统会在`ModuleName`导出的变量中查找，找到就使用。 这意味着当前模块中该全局变量的所有使用都将解析为`ModuleName`中该变量的定义。
 
+<<<<<<< HEAD
 继续我们的例子，
+=======
+To load a module from a package, the statement `using ModuleName` can be used.
+To load a module from a locally defined module, a dot needs to be added before the module name like `using .ModuleName`.
 
-```julia
-using NiceStuff
+To continue with our example,
+>>>>>>> cyhan/en-v1.10
+
+```jldoctest module_manual
+julia> using .NiceStuff
 ```
 
 将加载上面的代码，使 `NiceStuff`（模块名称）、`DOG` 和 `nice` 可用。 `Dog` 不在导出列表中，但如果名称被模块路径（这里只是模块名称）限定为 `NiceStuff.Dog`，则可以访问它。
@@ -102,43 +122,64 @@ using NiceStuff
 
 相反，
 
-```julia
-import NiceStuff
+```jldoctest module_manual
+julia> import .NiceStuff
 ```
 
+<<<<<<< HEAD
 *仅*将模块名称带入作用域。 用户需要使用 `NiceStuff.DOG`、`NiceStuff.Dog` 和 `NiceStuff.nice` 来访问其内容。 通常，当用户想要保持命名空间干净时，在上下文中使用 `import ModuleName`。 正如我们将在下一节中看到的，`import NiceStuff` 等同于 `using NiceStuff: NiceStuff`。
+=======
+brings *only* the module name into scope. Users would need to use `NiceStuff.DOG`, `NiceStuff.Dog`, and `NiceStuff.nice` to access its contents. Usually, `import ModuleName` is used in contexts when the user wants to keep the namespace clean.
+As we will see in the next section `import .NiceStuff` is equivalent to `using .NiceStuff: NiceStuff`.
+>>>>>>> cyhan/en-v1.10
 
 你可以用逗号分隔符来组合相同类型的多个`using`和`import`语句，例如：
 
-```julia
-using LinearAlgebra, Statistics
+```jldoctest module_manual
+julia> using LinearAlgebra, Statistics
 ```
 
 ### 具有特定标识符的`using` 和 `import` ，并添加方法
 
 当 `using ModuleName:` 或 `import ModuleName:` 后跟以逗号分隔的名称列表时，模块会被加载，但 *只有那些特定的名称才会被语句带入命名空间*。 例如，
 
-```julia
-using NiceStuff: nice, DOG
+```jldoctest module_manual
+julia> using .NiceStuff: nice, DOG
 ```
 
 将导入名称`nice`和`DOG`。
 
+<<<<<<< HEAD
 重要的是，模块名称`NiceStuff` *不会*出现在命名空间中。 如果要使其可访问，则必须明确列出它，如
 ```julia
 using NiceStuff: nice, DOG, NiceStuff
+=======
+Importantly, the module name `NiceStuff` will *not* be in the namespace. If you want to make it accessible, you have to list it explicitly, as
+```jldoctest module_manual
+julia> using .NiceStuff: nice, DOG, NiceStuff
+>>>>>>> cyhan/en-v1.10
 ```
 
 Julia有两种形式来表示似乎相同的内容，因为只有 `import ModuleName:f` 允许在 *没有模块路径*的情况下向 `f` 添加方法。也就是说，以下示例将给出一个错误：
 
-```julia
-using NiceStuff: nice
-struct Cat end
-nice(::Cat) = "nice 😸"
+```jldoctest module_manual
+julia> using .NiceStuff: nice
+
+julia> struct Cat end
+
+julia> nice(::Cat) = "nice 😸"
+ERROR: invalid method definition in Main: function NiceStuff.nice must be explicitly imported to be extended
+Stacktrace:
+ [1] top-level scope
+   @ none:0
+ [2] top-level scope
+   @ none:1
+
 ```
 
 此错误可防止意外将方法添加到你仅打算使用的其他模块中的函数。
 
+<<<<<<< HEAD
 有两种方法可以解决这个问题。 你始终可以使用模块路径限定函数名称：
 ```julia
 using NiceStuff
@@ -154,6 +195,32 @@ nice(::Cat) = "nice 😸"
 ```
 
 你选择哪一个取决于你的代码风格。第一种形式表明你正在向另一个模块中的函数添加一个方法（请记住，导入和方法定义可能在单独的文件中），而第二种形式较短，如果你定义了多个方法，这一点尤其方便。
+=======
+There are two ways to deal with this. You can always qualify function names with a module path:
+```jldoctest module_manual
+julia> using .NiceStuff
+
+julia> struct Cat end
+
+julia> NiceStuff.nice(::Cat) = "nice 😸"
+
+```
+
+Alternatively, you can `import` the specific function name:
+```jldoctest module_manual
+julia> import .NiceStuff: nice
+
+julia> struct Cat end
+
+julia> nice(::Cat) = "nice 😸"
+nice (generic function with 2 methods)
+```
+
+Which one you choose is a matter of style. The first form makes it clear that you are adding a
+method to a function in another module (remember, that the imports and the method definition may be
+in separate files), while the second one is shorter, which is especially convenient if you are
+defining multiple methods.
+>>>>>>> cyhan/en-v1.10
 
 一旦一个变量通过 `using` 或 `import` 引入，当前模块就不能创建同名的变量了。而且导入的变量是只读的，给全局变量赋值只能影响到由当前模块拥有的变量，否则会报错。
 
@@ -161,7 +228,7 @@ nice(::Cat) = "nice 😸"
 
 由`import` 或`using` 引入作用域的标识符可以用关键字`as` 重命名。 这对于解决名称冲突以及缩短名称很有用。 例如，`Base` 导出函数名`read`，但CSV.jl 包也提供了`CSV.read`。 如果我们要多次调用 CSV 读取，删除 `CSV.` 限定符会很方便。 但是，我们指的是`Base.read`还是`CSV.read`是模棱两可的：
 
-```julia
+```julia-repl
 julia> read;
 
 julia> import CSV: read
@@ -170,7 +237,7 @@ WARNING: ignoring conflicting import of CSV.read into Main
 
 重命名提供了一个解决方案：
 
-```julia
+```julia-repl
 julia> import CSV: read as rd
 ```
 
@@ -186,9 +253,11 @@ import BenchmarkTools as BT
 
 当使用上述任何形式的多个 `using` 或 `import` 语句时，它们的效果将按照它们出现的顺序组合。 例如，
 
-```julia
-using NiceStuff         # exported names and the module name
-import NiceStuff: nice  # allows adding methods to unqualified functions
+```jldoctest module_manual
+julia> using .NiceStuff         # exported names and the module name
+
+julia> import .NiceStuff: nice  # allows adding methods to unqualified functions
+
 ```
 
 会将 `NiceStuff` 的所有导出名称和模块名称本身带入作用域，并且还允许向 `nice` 添加方法而不用模块名称作为前缀。
@@ -197,23 +266,31 @@ import NiceStuff: nice  # allows adding methods to unqualified functions
 
 考虑两个（或更多）包导出相同名称的情况，如
 
-```julia
-module A
-export f
-f() = 1
-end
-
-module B
-export f
-f() = 2
-end
+```jldoctest module_manual
+julia> module A
+       export f
+       f() = 1
+       end
+A
+julia> module B
+       export f
+       f() = 2
+       end
+B
 ```
 
+<<<<<<< HEAD
 `using A, B` 语句有效，但是当你尝试调用 `f` 时，你会收到警告
+=======
+The statement `using .A, .B` works, but when you try to call `f`, you get a warning
+>>>>>>> cyhan/en-v1.10
 
-```julia
+```jldoctest module_manual
+julia> using .A, .B
+
+julia> f
 WARNING: both B and A export "f"; uses of it in module Main must be qualified
-ERROR: LoadError: UndefVarError: f not defined
+ERROR: UndefVarError: `f` not defined
 ```
 
 在这里，Julia 无法确定您指的是哪个 `f`，因此你必须做出选择。 常用的解决方法有以下几种：
@@ -222,9 +299,11 @@ ERROR: LoadError: UndefVarError: f not defined
 
 2. 使用上面的 `as` 关键字重命名一个或两个标识符，例如
 
-   ```julia
-   using A: f as f
-   using B: f as g
+   ```jldoctest module_manual
+   julia> using .A: f as f
+
+   julia> using .B: f as g
+
    ```
 
    会使`B.f` 可用作`g`。 在这里，我们假设您之前没有使用 `using A`，
@@ -251,7 +330,23 @@ include(p) = Base.include(Mod, p)
 end
 ```
 
+<<<<<<< HEAD
 ### 标准模块
+=======
+If even `Core` is not wanted, a module that imports nothing and defines no names at all can be defined with `Module(:YourNameHere, false, false)` and code can be evaluated into it with [`@eval`](@ref) or [`Core.eval`](@ref):
+```jldoctest
+julia> arithmetic = Module(:arithmetic, false, false)
+Main.arithmetic
+
+julia> @eval arithmetic add(x, y) = $(+)(x, y)
+add (generic function with 1 method)
+
+julia> arithmetic.add(12, 13)
+25
+```
+
+### Standard modules
+>>>>>>> cyhan/en-v1.10
 
 有三个重要的标准模块：
 * [`Core`](@ref) 包含了语言“内置”的所有功能。
@@ -272,31 +367,34 @@ end
 
 考虑以下示例，其中子模块`SubA`定义了一个函数，然后在其“兄弟”模块中进行扩展：
 
-```julia
-module ParentModule
+```jldoctest module_manual
+julia> module ParentModule
+       module SubA
+       export add_D  # exported interface
+       const D = 3
+       add_D(x) = x + D
+       end
+       using .SubA  # brings `add_D` into the namespace
+       export add_D # export it from ParentModule too
+       module SubB
+       import ..SubA: add_D # relative path for a “sibling” module
+       struct Infinity end
+       add_D(x::Infinity) = x
+       end
+       end;
 
-module SubA
-export add_D  # exported interface
-const D = 3
-add_D(x) = x + D
-end
-
-using .SubA  # brings `add_D` into the namespace
-
-export add_D # export it from ParentModule too
-
-module SubB
-import ..SubA: add_D # relative path for a “sibling” module
-struct Infinity end
-add_D(x::Infinity) = x
-end
-
-end
 ```
 
+<<<<<<< HEAD
 你可能会在包中看到代码，在类似的情况下，它使用
 ```julia
 import ParentModule.SubA: add_D
+=======
+You may see code in packages, which, in a similar situation, uses
+```jldoctest module_manual
+julia> import .ParentModule.SubA: add_D
+
+>>>>>>> cyhan/en-v1.10
 ```
 然而，这是通过 [代码加载](@ref code-loading) 操作的，因此仅当 `ParentModule` 在包中时才有效。 最好使用相对路径。
 
@@ -311,7 +409,7 @@ x = 0
 
 module Sub
 using ..TestPackage
-z = y # ERROR: UndefVarError: y not defined
+z = y # ERROR: UndefVarError: `y` not defined
 end
 
 y = 1
@@ -327,7 +425,7 @@ end
 module A
 
 module B
-using ..C # ERROR: UndefVarError: C not defined
+using ..C # ERROR: UndefVarError: `C` not defined
 end
 
 module C
@@ -337,10 +435,15 @@ end
 end
 ```
 
+<<<<<<< HEAD
 ### 模块初始化和预编译
+=======
+## Module initialization and precompilation
+>>>>>>> cyhan/en-v1.10
 
 因为执行模块中的所有语句通常需要编译大量代码，大型模块可能需要几秒钟才能加载。Julia 会创建模块的预编译缓存以减少这个时间。
 
+<<<<<<< HEAD
 当用 `import` 或 `using` 加载一个模块时，模块增量预编译文件会自动创建并使用。这会让模块在第一次加载时自动编译。
 另外，你也可以手工调用 [`Base.compilecache(modulename)`](@ref)，产生的缓存文件会放在 `DEPOT_PATH[1]/compiled/` 目录下。
 之后，当该模块的任何一个依赖发生变更时，该模块会在 `using` 或 `import` 时自动重新编译；
@@ -349,6 +452,35 @@ end
 对于文件依赖项，通过检查由 `include` 加载或由 `include_dependency` 显式添加的每个文件的修改时间（`mtime`）是否保持不变，或是否等于截断到最接近秒的修改时间（以适应无法以亚秒精度复制 mtime的系统），来确定更改。它还考虑由 `require` 中的搜索逻辑选择的文件路径是否与创建预编译文件的路径匹配。它还考虑了已加载到当前进程中的依赖项集，并且不会重新编译这些模块，即使它们的文件更改或消失，以避免在正在运行的系统和预编译缓存之间创建不兼容。
 
 如果你知道一个模块预编译*不*安全（例如，由于下面描述的原因之一），你应该把`__precompile__(false)`放在模块文件中（通常放在顶部）。 这会导致`Base.compilecache` 抛出错误，并且会导致`using` / `import` 将其直接加载到当前进程中并跳过预编译和缓存。 这也因此防止了模块被任何其他预编译模块导入。
+=======
+Precompiled module files (sometimes called "cache files") are created and used automatically when `import` or `using` loads a module.  If the cache file(s) do not yet exist, the module will be compiled and saved for future reuse. You can also manually call [`Base.compilecache(Base.identify_package("modulename"))`](@ref) to create these files without loading the module. The resulting
+cache files will be stored in the `compiled` subfolder of `DEPOT_PATH[1]`. If nothing about your system changes,
+such cache files will be used when you load the module with `import` or `using`.
+
+Precompilation cache files store definitions of modules, types, methods, and constants. They may also store method specializations and the code generated for them, but this typically requires that the developer add explicit [`precompile`](@ref) directives or execute workloads that force compilation during the package build.
+
+However, if you update the module's dependencies or change its source code, the module is automatically
+recompiled upon `using` or `import`. Dependencies are modules it
+imports, the Julia build, files it includes, or explicit dependencies declared by [`include_dependency(path)`](@ref)
+in the module file(s).
+
+For file dependencies, a change is determined by examining whether the modification time (`mtime`)
+of each file loaded by `include` or added explicitly by `include_dependency` is unchanged, or equal
+to the modification time truncated to the nearest second (to accommodate systems that can't copy
+mtime with sub-second accuracy). It also takes into account whether the path to the file chosen
+by the search logic in `require` matches the path that had created the precompile file. It also takes
+into account the set of dependencies already loaded into the current process and won't recompile those
+modules, even if their files change or disappear, in order to avoid creating incompatibilities between
+the running system and the precompile cache.
+Finally, it takes account of changes in any [compile-time preferences](@ref preferences).
+
+If you know that a module is *not* safe to precompile
+(for example, for one of the reasons described below), you should
+put `__precompile__(false)` in the module file (typically placed at the top).
+This will cause `Base.compilecache` to throw an error, and will cause `using` / `import` to load it
+directly into the current process and skip the precompile and caching.
+This also thereby prevents the module from being imported by any other precompiled module.
+>>>>>>> cyhan/en-v1.10
 
 在开发模块的时候，你可能需要了解一些与增量编译相关的固有行为。例如，外部状态不会被保留。为了解决这个问题，需要显式分离运行时与编译期的部分。Julia 允许你定义一个 `__init__()` 函数来执行任何需要在运行时发生的初始化。在编译期（`--output-*`），此函数将不会被调用。你可以假设在代码的生存周期中，此函数只会被运行一次。当然，如果有必要，你也可以手动调用它，但在默认的情况下，请假定此函数是为了处理与本机状态相关的信息，注意这些信息不需要，更不应该存入预编译镜像。此函数会在模块被导入到当前进程之后被调用，这包括在一个增量编译中导入该模块的时候（`--output-incremental=yes`），但在完整编译时该函数不会被调用。
 
@@ -440,4 +572,19 @@ end
     
     
 
+<<<<<<< HEAD
 在开发模块时，关闭增量预编译可能会有所帮助。命令行标记 `--compiled-modules={yes|no}` 可以让你切换预编译的开启和关闭。当 Julia 附加 `--compiled-modules=no` 启动，在载入模块和模块依赖时，编译缓存中的序列化模块会被忽略。`Base.compilecache` 仍可以被手动调用。此命令行标记的状态会被传递给 `Pkg.build`，禁止其在安装、更新、显式构建包时触发自动预编译。
+=======
+It is sometimes helpful during module development to turn off incremental precompilation. The
+command line flag `--compiled-modules={yes|no}` enables you to toggle module precompilation on and
+off. When Julia is started with `--compiled-modules=no` the serialized modules in the compile cache
+are ignored when loading modules and module dependencies.
+More fine-grained control is available with `--pkgimages=no`, which suppresses only
+native-code storage during precompilation. `Base.compilecache` can still be called
+manually. The state of this command line flag is passed to `Pkg.build` to disable automatic
+precompilation triggering when installing, updating, and explicitly building packages.
+
+You can also debug some precompilation failures with environment variables. Setting
+`JULIA_VERBOSE_LINKING=true` may help resolve failures in linking shared libraries of compiled
+native code. See the **Developer Documentation** part of the Julia manual, where you will find further details in the section documenting Julia's internals under "Package Images".
+>>>>>>> cyhan/en-v1.10

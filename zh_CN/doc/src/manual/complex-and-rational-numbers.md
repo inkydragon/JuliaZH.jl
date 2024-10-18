@@ -4,7 +4,14 @@ Julia 语言包含了预定义的复数和有理数类型，并且支持它们�
 
 ## 复数
 
+<<<<<<< HEAD
 全局常量 [`im`](@ref) 被绑定到复数 *i*，表示 -1 的主平方根。（不应使用数学家习惯的 `i` 或工程师习惯的 `j` 来表示此全局常量，因为它们是非常常用的索引变量名。）由于 Julia 允许数值字面量作为[数值字面量系数](@ref man-numeric-literal-coefficients)，这种绑定就足以为复数提供很方便的语法，类似于传统的数学记法：
+=======
+The global constant [`im`](@ref) is bound to the complex number *i*, representing the principal
+square root of -1. (Using mathematicians' `i` or engineers' `j` for this global constant was rejected since they are such popular index variable names.) Since Julia allows numeric literals to be [juxtaposed with identifiers as coefficients](@ref man-numeric-literal-coefficients),
+this binding suffices to provide convenient syntax for complex numbers, similar to the traditional
+mathematical notation:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> 1+2im
@@ -42,7 +49,7 @@ julia> 3(2 - 5im)^2
 -63 - 60im
 
 julia> 3(2 - 5im)^-1.0
-0.20689655172413796 + 0.5172413793103449im
+0.20689655172413793 + 0.5172413793103449im
 ```
 
 类型提升机制也确保你可以使用不同类型的操作数的组合：
@@ -127,7 +134,7 @@ julia> sinh(1 + 2im)
 ```jldoctest
 julia> sqrt(-1)
 ERROR: DomainError with -1.0:
-sqrt will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
+sqrt was called with a negative real argument but will only return a complex result if called with a complex argument. Try sqrt(Complex(x)).
 Stacktrace:
 [...]
 
@@ -232,7 +239,12 @@ julia> float(3//4)
 0.75
 ```
 
+<<<<<<< HEAD
 对任意整数值 `a` 和 `b`（除了 `a == 0` 且 `b == 0` 时），从分数到浮点数的转换遵从以下的一致性：
+=======
+Conversion from rational to floating-point respects the following identity for any integral values
+of `a` and `b`, with the exception of the two cases `b == 0` and `a == 0 && b < 0`:
+>>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> a = 1; b = 2;

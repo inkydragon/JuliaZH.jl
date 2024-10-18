@@ -1,10 +1,20 @@
 # [调用 C 和 Fortran 代码](@id Calling-C-and-Fortran-Code)
 
+<<<<<<< HEAD
 在数值计算领域，尽管有很多用 C 语言或 Fortran 写的高质量且成熟的库都可以用 Julia 重写，但为了便捷利用现有的 C 或 Fortran 代码，Julia 提供简洁且高效的调用方式。Julia 的哲学是 `no boilerplate`：
 Julia 可以直接调用 C/Fortran 的函数，不需要任何"胶水"代码，代码生成或其它编译过程 -- 即使在交互式会话 (REPL/Jupyter notebook) 中使用也一样. 在 Julia 中，上述特性可以仅仅通过调用 [`ccall`](@ref) 实现，它的语法看起来就像是普通的函数调用。
+=======
+Though most code can be written in Julia, there are many high-quality, mature libraries for numerical
+computing already written in C and Fortran. To allow easy use of this existing code, Julia makes
+it simple and efficient to call C and Fortran functions. Julia has a "no boilerplate" philosophy:
+functions can be called directly from Julia without any "glue" code, code generation, or compilation
+-- even from the interactive prompt. This is accomplished just by making an appropriate call with the
+[`@ccall`](@ref) macro (or the less convenient [`ccall`](@ref) syntax, see the [`ccall` syntax section](@ref ccall-interface)).
+>>>>>>> cyhan/en-v1.10
 
 被调用的代码必须是一个共享库（.so, .dylib, .dll）。大多数 C 和 Fortran 库都已经是以共享库的形式发布的，但在用 GCC 或 Clang 编译自己的代码时，需要添加 `-shared` 和 `-fPIC` 编译器选项。由于 Julia 的 JIT 生成的机器码跟原生 C 代码的调用是一样，所以在 Julia 里调用 C/Fortran 库的额外开销与直接从 C 里调用是一样的。[^1]
 
+<<<<<<< HEAD
 可以通过元组 `(:function, "library")` 或 `("function", "library")` 这两种形式来索引库中的函数，其中 `function` 是函数名，`library` 是库名。（特定平台/操作系统的）加载路径中可用的共享库将按名称解析。 也可以指定库的完整路径。
 
 可以单独使用函数名来代替元组（只用 `:function` 或 `"function"`）。在这种情况下，函数名在当前进程中进行解析。这一调用形式可用于调用 C 库函数、Julia 运行时中的函数或链接到 Julia 的应用程序中的函数。
@@ -33,6 +43,36 @@ Julia 可以直接调用 C/Fortran 的函数，不需要任何"胶水"代码，�
     `(:function, "library")` 对、返回类型和输入类型必须是字面量（即，它们不能是变量，但请参阅下面的 [非常量函数规范](@ref Non-constant-Function-Specifications)）。
 
     当定义包含方法时，将在编译时评估其余参数。
+=======
+By default, Fortran compilers [generate mangled
+names](https://en.wikipedia.org/wiki/Name_mangling#Fortran) (for example,
+converting function names to lowercase or uppercase, often appending an
+underscore), and so to call a Fortran function you must pass
+the mangled identifier corresponding to the rule followed by your Fortran
+compiler. Also, when calling a Fortran function, all inputs must be passed as
+pointers to allocated values on the heap or stack. This applies not only to
+arrays and other mutable objects which are normally heap-allocated, but also to
+scalar values such as integers and floats which are normally stack-allocated and
+commonly passed in registers when using C or Julia calling conventions.
+
+The syntax for [`@ccall`](@ref) to generate a call to the library function is:
+
+```julia
+  @ccall library.function_name(argvalue1::argtype1, ...)::returntype
+  @ccall function_name(argvalue1::argtype1, ...)::returntype
+  @ccall $function_pointer(argvalue1::argtype1, ...)::returntype
+```
+
+where `library` is a string constant or literal (but see [Non-constant Function
+Specifications](@ref) below). The library may be omitted, in which case the
+function name is resolved in the current process. This form can be used to call
+C library functions, functions in the Julia runtime, or functions in an
+application linked to Julia. The full path to the library may also be specified.
+Alternatively, `@ccall` may also be used to call a function pointer
+`$function_pointer`, such as one returned by `Libdl.dlsym`. The `argtype`s
+corresponds to the C-function signature and the `argvalue`s are the actual
+argument values to be passed to the function.
+>>>>>>> cyhan/en-v1.10
 
 !!! note
     请参阅下文了解如何 [将 C 类型映射到 Julia 类型](@ref mapping-c-types-to-julia)。
@@ -40,26 +80,29 @@ Julia 可以直接调用 C/Fortran 的函数，不需要任何"胶水"代码，�
 作为一个完整但简单的例子，下面从大多数 Unix 派生系统上的标准 C 库中调用 `clock` 函数：
 
 ```julia-repl
-julia> t = ccall(:clock, Int32, ())
-2292761
-
-julia> t
+julia> t = @ccall clock()::Int32
 2292761
 
 julia> typeof(t)
 Int32
 ```
 
+<<<<<<< HEAD
 `clock` 不接受任何参数并返回一个 [`Int32`](@ref)。 一个常见的错误是忘记了参数类型的单元组必须用逗号结尾。 例如，要调用 `getenv` 函数来获取指向环境变量值的指针，可以这样调用：
+=======
+`clock` takes no arguments and returns an `Int32`. To call the `getenv` function
+to get a pointer to the value of an environment variable, one makes a call like this:
+>>>>>>> cyhan/en-v1.10
 
 ```julia-repl
-julia> path = ccall(:getenv, Cstring, (Cstring,), "SHELL")
+julia> path = @ccall getenv("SHELL"::Cstring)::Cstring
 Cstring(@0x00007fff5fbffc45)
 
 julia> unsafe_string(path)
 "/bin/bash"
 ```
 
+<<<<<<< HEAD
 请注意，参数类型元组必须是 `(Cstring,)`，而不是 `(Cstring)` 。这是因为 `(Cstring)` 只是括号括起来的表达式 `Cstring`，而不是包含 `Cstring` 的单元组：
 
 ```jldoctest
@@ -71,10 +114,18 @@ julia> (Cstring,)
 ```
 
 在实践中，尤其是在提供可重用功能时，通常会在 Julia 函数中包装 [`ccall`](@ref) 使用，这些函数设置参数，然后以 C 或 Fortran 函数指定的任何方式检查错误。 如果发生错误，它会作为普通的 Julia 异常抛出。 这一点尤其重要，因为 C 和 Fortran API 在它们指示错误条件的方式上是出了名的不一致。 例如，`getenv` C 库函数被包裹在下面的 Julia 函数中，它是 [`env.jl`](https://github.com/JuliaLang/julia/blob/master/base/env.jl) 实际定义的简化版本：
+=======
+In practice, especially when providing reusable functionality, one generally wraps `@ccall`
+uses in Julia functions that set up arguments and then check for errors in whatever manner the
+C or Fortran function specifies. And if an error occurs it is thrown as a normal Julia exception. This is especially
+important since C and Fortran APIs are notoriously inconsistent about how they indicate error
+conditions. For example, the `getenv` C library function is wrapped in the following Julia function,
+which is a simplified version of the actual definition from [`env.jl`](https://github.com/JuliaLang/julia/blob/master/base/env.jl):
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 function getenv(var::AbstractString)
-    val = ccall(:getenv, Cstring, (Cstring,), var)
+    val = @ccall getenv(var::Cstring)::Cstring
     if val == C_NULL
         error("getenv: undefined variable: ", var)
     end
@@ -82,30 +133,40 @@ function getenv(var::AbstractString)
 end
 ```
 
+<<<<<<< HEAD
 C 函数 `getenv` 通过返回 `NULL` 的方式进行报错，但是其他 C 标准库函数也会通过多种不同的方式来报错，这包括返回 -1，0，1 以及其它特殊值。此封装能够明确地抛出异常信息，即是否调用者在尝试获取一个不存在的环境变量：
+=======
+The C `getenv` function indicates an error by returning `C_NULL`, but other standard C functions
+indicate errors in different ways, including by returning -1, 0, 1, and other special values.
+This wrapper throws an exception indicating the problem if the caller tries to get a non-existent
+environment variable:
+>>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> getenv("SHELL")
 "/bin/bash"
 
 julia> getenv("FOOBAR")
-getenv: undefined variable: FOOBAR
+ERROR: getenv: undefined variable: FOOBAR
 ```
 
+<<<<<<< HEAD
 这是一个稍微复杂的示例，用于发现本地计算机的主机名。 在此示例中，假设网络库代码位于名为“libc”的共享库中。 在实践中，这个函数通常是 C 标准库的一部分，因此“libc”部分应该被省略，但我们希望在这里展示这个语法的用法。
+=======
+Here is a slightly more complex example that discovers the local machine's hostname.
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 function gethostname()
     hostname = Vector{UInt8}(undef, 256) # MAXHOSTNAMELEN
-    err = ccall((:gethostname, "libc"), Int32,
-                (Ptr{UInt8}, Csize_t),
-                hostname, sizeof(hostname))
+    err = @ccall gethostname(hostname::Ptr{UInt8}, sizeof(hostname)::Csize_t)::Int32
     Base.systemerror("gethostname", err != 0)
     hostname[end] = 0 # ensure null-termination
     return GC.@preserve hostname unsafe_string(pointer(hostname))
 end
 ```
 
+<<<<<<< HEAD
 此示例首先分配一个字节数组。 然后它调用 C 库函数 `gethostname` 以使用主机名填充数组。 最后，它接受一个指向主机名缓冲区的指针，并将该指针转换为一个 Julia 字符串，假设它是一个以 NUL 结尾的 C 字符串。
 
 C 库通常使用这种模式，要求调用者分配要传递给被调用者并填充的内存。 像这样从 Julia 分配内存通常是通过创建一个未初始化的数组并将指向其数据的指针传递给 C 函数来完成的。 这就是我们在这里不使用 `Cstring` 类型的原因：由于数组未初始化，它可能包含 NUL 字节。 作为 [`ccall`](@ref) 的一部分，转换为 `Cstring` 会检查包含的 NUL 字节，因此可能会引发类型转换错误。
@@ -113,6 +174,44 @@ C 库通常使用这种模式，要求调用者分配要传递给被调用者并
 用 `unsafe_string` 取消引用 `pointer(hostname)` 是一种不安全的操作，因为它需要访问为 `hostname` 分配的内存，而这些内存可能在同时被垃圾收集。 宏 [`GC.@preserve`](@ref) 防止这种情况发生，从而防止访问无效的内存位置。
 
 ## 创建和C兼容的Julia函数指针
+=======
+This example first allocates an array of bytes. It then calls the C library function `gethostname`
+to populate the array with the hostname. Finally, it takes a pointer to the hostname buffer, and
+converts the pointer to a Julia string, assuming that it is a null-terminated C string.
+
+It is common for C libraries to use this pattern of requiring the caller to allocate memory to be
+passed to the callee and populated. Allocation of memory from Julia like this is generally
+accomplished by creating an uninitialized array and passing a pointer to its data to the C function.
+This is why we don't use the `Cstring` type here: as the array is uninitialized, it could contain
+null bytes. Converting to a `Cstring` as part of the `@ccall` checks for contained null bytes
+and could therefore throw a conversion error.
+
+Dereferencing `pointer(hostname)` with `unsafe_string` is an unsafe operation as it requires access to
+the memory allocated for `hostname` that may have been in the meanwhile garbage collected. The macro
+[`GC.@preserve`](@ref) prevents this from happening and therefore accessing an invalid memory location.
+
+Finally, here is an example of specifying a library via a path.
+We create a shared library with the following content
+
+```c
+#include <stdio.h>
+
+void say_y(int y)
+{
+    printf("Hello from C: got y = %d.\n", y);
+}
+```
+
+and compile it with `gcc -fPIC -shared -o mylib.so mylib.c`.
+It can then be called by specifying the (absolute) path as the library name:
+
+```julia-repl
+julia> @ccall "./mylib.so".say_y(5::Cint)::Cvoid
+Hello from C: got y = 5.
+```
+
+## Creating C-Compatible Julia Function Pointers
+>>>>>>> cyhan/en-v1.10
 
 可以将Julia函数传递给接受函数指针参数的原生C函数。例如，要匹配满足下面的C原型：
 
@@ -127,27 +226,45 @@ typedef returntype (*functiontype)(argumenttype, ...)
 3. 输入类型的元组，对应于函数签名
 
 !!! note
+<<<<<<< HEAD
     与 `ccall` 一样，返回类型和输入类型的元组必须是字面量常量。
+=======
+    As with `@ccall`, the return type and the input types must be literal constants.
+>>>>>>> cyhan/en-v1.10
 
 !!! note
     目前，仅支持平台默认的C调用约定。这意味着，`@cfunction`生成的指针不能用于WINAPI要求在32位Windows上使用`stdcall`函数的调用中，但可以在WIN64上使用（其中`stdcall`与C调用约定统一）。
 
+<<<<<<< HEAD
 一个典型的例子就是标准C库函数`qsort`，定义为：
+=======
+!!! note
+    Callback functions exposed via `@cfunction` should not throw errors, as that will
+    return control to the Julia runtime unexpectedly and may leave the program in an undefined state.
+
+A classic example is the standard C library `qsort` function, declared as:
+>>>>>>> cyhan/en-v1.10
 
 ```c
-void qsort(void *base, size_t nmemb, size_t size,
+void qsort(void *base, size_t nitems, size_t size,
            int (*compare)(const void*, const void*));
 ```
 
+<<<<<<< HEAD
 `base` 参数是一个指向长度为 `nmemb` 的数组的指针，每个元素都有 `size` 字节。 `compare` 是一个回调函数，它采用指向两个元素 `a` 和 `b` 的指针，如果 `a` 出现在 `b` 之前/之后，则返回小于/大于零的整数（如果允许任何顺序，则返回零） 。
+=======
+The `base` argument is a pointer to an array of length `nitems`, with elements of `size` bytes
+each. `compare` is a callback function which takes pointers to two elements `a` and `b` and returns
+an integer less/greater than zero if `a` should appear before/after `b` (or zero if any order
+is permitted).
+>>>>>>> cyhan/en-v1.10
 
 现在，假设我们在 Julia 中有一个 1 维数组 `A`，我们希望使用`qsort`函数（而不是 Julia 的内置`sort`函数）对其进行排序。 在我们考虑调用 `qsort` 并传递参数之前，我们需要编写一个比较函数：
 
 ```jldoctest mycompare
 julia> function mycompare(a, b)::Cint
            return (a < b) ? -1 : ((a > b) ? +1 : 0)
-       end
-mycompare (generic function with 1 method)
+       end;
 ```
 
 `qsort` 需要一个返回 C `int` 的比较函数，因此我们将返回类型注释为 `Cint`。
@@ -163,15 +280,9 @@ julia> mycompare_c = @cfunction(mycompare, Cint, (Ref{Cdouble}, Ref{Cdouble}));
 `qsort`的最终调用看起来是这样的：
 
 ```jldoctest mycompare
-julia> A = [1.3, -2.7, 4.4, 3.1]
-4-element Vector{Float64}:
-  1.3
- -2.7
-  4.4
-  3.1
+julia> A = [1.3, -2.7, 4.4, 3.1];
 
-julia> ccall(:qsort, Cvoid, (Ptr{Cdouble}, Csize_t, Csize_t, Ptr{Cvoid}),
-             A, length(A), sizeof(eltype(A)), mycompare_c)
+julia> @ccall qsort(A::Ptr{Cdouble}, length(A)::Csize_t, sizeof(eltype(A))::Csize_t, mycompare_c::Ptr{Cvoid})::Cvoid
 
 julia> A
 4-element Vector{Float64}:
@@ -196,15 +307,16 @@ julia> A
 Julia 会自动插入对 [`Base.cconvert`](@ref) 函数的调用，以将每个参数转换为指定的类型。 例如，以下调用：
 
 ```julia
-ccall((:foo, "libfoo"), Cvoid, (Int32, Float64), x, y)
+@ccall "libfoo".foo(x::Int32, y::Float64)::Cvoid
 ```
 
 将表现得好像它是这样写的：
 
 ```julia
-ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
-      Base.unsafe_convert(Int32, Base.cconvert(Int32, x)),
-      Base.unsafe_convert(Float64, Base.cconvert(Float64, y)))
+@ccall "libfoo".foo(
+    Base.unsafe_convert(Int32, Base.cconvert(Int32, x))::Int32,
+    Base.unsafe_convert(Float64, Base.cconvert(Float64, y))::Float64
+    )::Cvoid
 ```
 
 [`Base.cconvert`](@ref) 通常只调用 [`convert`](@ref)，但可以定义为返回一个更适合传递给 C 的任意新对象。这应该用于执行 C 代码将访问的内存。 例如，这用于将对象（例如字符串）的 `Array` 转换为指针数组。
@@ -263,8 +375,13 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
     当数组作为 `Ptr{T}` 参数传递给 C 时，它不是重新解释转换：Julia 要求数组的元素类型与 `T` 匹配，并传递第一个元素的地址。
      
 
+<<<<<<< HEAD
     因此，如果一个 `Array` 中的数据格式不正确，它必须被显式地转换
     ，通过类似 `trunc(Int32, a)` 的函数。
+=======
+    Therefore, if an `Array` contains data in the wrong format, it will have to be explicitly converted
+    using a call such as `trunc.(Int32, A)`.
+>>>>>>> cyhan/en-v1.10
 
     若要将一个数组 `A` 以不同类型的指针传递，而*不提前转换数据*，
     （比如，将一个 `Float64` 数组传给一个处理原生字节的函数时），你
@@ -301,9 +418,15 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
 | `size_t`                                                |                          | `Csize_t`            | `UInt`                                                                                                         |
 | `void`                                                  |                          |                      | `Cvoid`                                                                                                        |
 | `void` and `[[noreturn]]` or `_Noreturn`                |                          |                      | `Union{}`                                                                                                      |
+<<<<<<< HEAD
 | `void*`                                                 |                          |                      | `Ptr{Cvoid}` (或类似的 `Ref{Cvoid}`)                                                                       |
 | `T*` (where T represents an appropriately defined type) |                          |                      | `Ref{T}` （只有当 T 是 isbits 类型时，T 才可以安全地转变）                                                 |
 | `char*` (or `char[]`, e.g. a string)                    | `CHARACTER*N`            |                      | `Cstring` if NUL-terminated, or `Ptr{UInt8}` if not                                                            |
+=======
+| `void*`                                                 |                          |                      | `Ptr{Cvoid}` (or similarly `Ref{Cvoid}`)                                                                       |
+| `T*` (where T represents an appropriately defined type) |                          |                      | `Ref{T}` (T may be safely mutated only if T is an isbits type)                                                 |
+| `char*` (or `char[]`, e.g. a string)                    | `CHARACTER*N`            |                      | `Cstring` if null-terminated, or `Ptr{UInt8}` if not                                                           |
+>>>>>>> cyhan/en-v1.10
 | `char**` (or `*char[]`)                                 |                          |                      | `Ptr{Ptr{UInt8}}`                                                                                              |
 | `jl_value_t*` (any Julia Type)                          |                          |                      | `Any`                                                                                                          |
 | `jl_value_t* const*` (一个 Julia 值的引用）     |                          |                      | `Ref{Any}`（常量，因为转变需要写屏障，不可能正确插入）    |
@@ -311,7 +434,18 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
 | `...` (variadic function specification)                 |                          |                      | `T...`（其中 `T` 是上述类型之一，当使用 `ccall` 函数时）                                  |
 | `...` (variadic function specification)                 |                          |                      | `; va_arg1::T、va_arg2::S 等`（仅支持`@ccall` 宏）                                          |
 
+<<<<<<< HEAD
 [`Cstring`](@ref) 类型本质上是`Ptr{UInt8}`的同义词，但如果Julia字符串包含任何嵌入的NUL字符，则类型转换为`Cstring`会引发错误（如果C例程将NUL视为终止符，则会导致字符串被静默截断）。如果要将`char*`传递给不采用NUL终止的C例程（例如，因为传递的是显式字符串长度），或者如果确定Julia字符串不包含NUL并希望跳过检查，则可以使用`Ptr{UInt8}`作为参数类型。`Cstring`也可以用作 [`ccall`](@ref) 返回类型，但在这种情况下，它显然不会引入任何额外的检查，只是为了提高调用的可读性。
+=======
+The [`Cstring`](@ref) type is essentially a synonym for `Ptr{UInt8}`, except the conversion to `Cstring`
+throws an error if the Julia string contains any embedded null characters (which would cause the
+string to be silently truncated if the C routine treats null as the terminator). If you are passing
+a `char*` to a C routine that does not assume null termination (e.g. because you pass an explicit
+string length), or if you know for certain that your Julia string does not contain null and want
+to skip the check, you can use `Ptr{UInt8}` as the argument type. `Cstring` can also be used as
+the [`ccall`](@ref) return type, but in that case it obviously does not introduce any extra
+checks and is only meant to improve the readability of the call.
+>>>>>>> cyhan/en-v1.10
 
 **系统独立类型**
 
@@ -326,6 +460,7 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
     调用 Fortran 时，所有输入都必须通过指向堆分配或堆栈分配值的指针传递，因此上述所有类型对应都应在其类型规范周围包含一个额外的 `Ptr{..}` 或 `Ref{..}` 包装器。
 
 !!! warning
+<<<<<<< HEAD
     对于字符串参数 (`char*`)，Julia 类型应该是 `Cstring`（如果需要以 NUL 结尾的数据），否则为 `Ptr{Cchar}` 或 `Ptr{UInt8}`（这两种指针类型具有相同的效果），如上所述，而不是 `String`。 类似地，对于数组参数（`T[]` 或 `T*`），Julia 类型应该还是 `Ptr{T}`，而不是 `Vector{T}`。
 
 !!! warning
@@ -336,6 +471,28 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
 
 !!! note
     对于 `wchar_t*` 参数，Julia 类型应为 [`Cwstring`](@ref)（如果 C 例程需要以 NUL 结尾的字符串），否则为 `Ptr{Cwchar_t}`。 另请注意，Julia 中的 UTF-8 字符串数据在内部以 NUL 结尾，因此可以将其传递给需要以 NUL 结尾的数据的 C 函数，而无需进行复制（但使用 `Cwstring` 类型将导致抛出错误，如果字符串本身包含 NUL 字符）。
+=======
+    For string arguments (`char*`) the Julia type should be `Cstring` (if null-terminated data is
+    expected), or either `Ptr{Cchar}` or `Ptr{UInt8}` otherwise (these two pointer types have the same
+    effect), as described above, not `String`. Similarly, for array arguments (`T[]` or `T*`), the
+    Julia type should again be `Ptr{T}`, not `Vector{T}`.
+
+!!! warning
+    Julia's `Char` type is 32 bits, which is not the same as the wide-character type (`wchar_t` or
+    `wint_t`) on all platforms.
+
+!!! warning
+    A return type of `Union{}` means the function will not return, i.e., C++11 `[[noreturn]]` or C11
+    `_Noreturn` (e.g. `jl_throw` or `longjmp`). Do not use this for functions that return no value
+    (`void`) but do return, for those, use `Cvoid` instead.
+
+!!! note
+    For `wchar_t*` arguments, the Julia type should be [`Cwstring`](@ref) (if the C routine expects a
+    null-terminated string), or `Ptr{Cwchar_t}` otherwise. Note also that UTF-8 string data in Julia is
+    internally null-terminated, so it can be passed to C functions expecting null-terminated data without
+    making a copy (but using the `Cwstring` type will cause an error to be thrown if the string itself
+    contains null characters).
+>>>>>>> cyhan/en-v1.10
 
 !!! note
     可以在 Julia 中使用 `Ptr{Ptr{UInt8}}` 类型调用采用 `char**` 类型参数的 C 函数。 例如，以下形式的 C 函数：
@@ -348,7 +505,7 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
 
     ```julia
     argv = [ "a.out", "arg1", "arg2" ]
-    ccall(:main, Int32, (Int32, Ptr{Ptr{UInt8}}), length(argv), argv)
+    @ccall main(length(argv)::Int32, argv::Ptr{Ptr{UInt8}})::Int32
     ```
 
 !!! note
@@ -369,7 +526,15 @@ ccall((:foo, "libfoo"), Cvoid, (Int32, Float64),
     ```
 
 !!! warning
+<<<<<<< HEAD
     Fortran 编译器还*可以*为指针、假定形状（`:`）和假定大小（`*`）数组添加其他隐藏参数。 这种行为可以通过使用`ISO_C_BINDING`并在子例程的定义中包含`bind(c)`来避免，强烈推荐用于可互操作的代码。 在这种情况下，将没有隐藏的参数，代价是一些语言特性（例如，只允许 `character(len=1)` 传递字符串）。
+=======
+    Fortran compilers *may* also add other hidden arguments for pointers, assumed-shape (`:`)
+    and assumed-size (`*`) arrays. Such behaviour can be avoided by using `ISO_C_BINDING` and
+    including `bind(c)` in the definition of the subroutine, which is strongly recommended for
+    interoperable code. In this case, there will be no hidden arguments, at the cost of some
+    language features (e.g. only `character(len=1)` will be permitted to pass strings).
+>>>>>>> cyhan/en-v1.10
 
 !!! note
     声明为返回 `Cvoid` 的 C 函数将在 Julia 中返回值 `nothing`。
@@ -384,7 +549,11 @@ Julia不支持压缩结构和联合声明。
 
 如果你事先地知道将具有最大大小（可能包括填充）的字段，则可以获得 `union` 的近似。 将你的字段转换为 Julia 时，将 Julia 字段声明为仅属于该类型。
 
+<<<<<<< HEAD
 参数数组可以用 `NTuple` 表示。例如，C 符号中的 struct 写成
+=======
+Arrays of parameters can be expressed with `NTuple`. For example, the struct in C notation is written as
+>>>>>>> cyhan/en-v1.10
 
 ```c
 struct B {
@@ -423,17 +592,40 @@ unsafe_string(str + Core.sizeof(Cint), len)
 
 ### 类型参数
 
+<<<<<<< HEAD
 当定义了方法时，`ccall` 和 `@cfunction` 的类型参数被静态地评估。 因此，它们必须采用字面量元组的形式，而不是变量，并且不能引用局部变量。
+=======
+The type arguments to `@ccall` and `@cfunction` are evaluated statically,
+when the method containing the usage is defined.
+They therefore must take the form of a literal tuple, not a variable,
+and cannot reference local variables.
+>>>>>>> cyhan/en-v1.10
 
 这听起来像是一个奇怪的限制，但请记住，由于 C 不是像 Julia 那样的动态语言，它的函数只能接受具有静态已知的固定签名的参数类型。
 
+<<<<<<< HEAD
 然而，虽然必须静态地知道类型布局才能计算预期的 C ABI，但函数的静态参数被视为此静态环境的一部分。函数的静态参数可以用作调用签名中的类型参数，只要它们不影响类型的布局即可。例如， `f(x::T) where {T} = ccall(:valid, Ptr{T}, (Ptr{T},), x)` 是有效的，因为 `Ptr` 始终是字大小的原始类型。但是， `g(x::T) where {T} = ccall(:notvalid, T, (T,), x)` 是无效的，因为 `T` 的类型布局不是静态已知的。
+=======
+However, while the type layout must be known statically to compute the intended C ABI,
+the static parameters of the function are considered to be part of this static environment.
+The static parameters of the function may be used as type parameters in the call signature,
+as long as they don't affect the layout of the type.
+For example, `f(x::T) where {T} = @ccall valid(x::Ptr{T})::Ptr{T}`
+is valid, since `Ptr` is always a word-size primitive type.
+But, `g(x::T) where {T} = @ccall notvalid(x::T)::T`
+is not valid, since the type layout of `T` is not known statically.
+>>>>>>> cyhan/en-v1.10
 
 ### SIMD 值
 
 注意：此功能目前仅在 64 位 x86 和 AArch64 平台上实现。
 
+<<<<<<< HEAD
 如果 C/C++ 例程具有本机 SIMD 类型的参数或返回值，则相应的 Julia 类型是自然映射到 SIMD 类型的`VecElement` 的同构元组。 具体来说：
+=======
+If a C/C++ routine has an argument or return value that is a native SIMD type, the corresponding
+Julia type is a homogeneous tuple of `VecElement` that naturally maps to the SIMD type. Specifically:
+>>>>>>> cyhan/en-v1.10
 
 > * 元组的大小必须与 SIMD 类型相同。 例如，一个表示 `__m128` 的元组
 > 在 x86 上必须有 16 字节的大小。
@@ -460,29 +652,51 @@ a = m256(ntuple(i -> VecElement(sin(Float32(i))), 8))
 b = m256(ntuple(i -> VecElement(cos(Float32(i))), 8))
 
 function call_dist(a::m256, b::m256)
-    ccall((:dist, "libdist"), m256, (m256, m256), a, b)
+    @ccall "libdist".dist(a::m256, b::m256)::m256
 end
 
 println(call_dist(a,b))
 ```
 
+<<<<<<< HEAD
 主机必须具有必要的 SIMD 寄存器。 例如，上面的代码将无法在没有 AVX 支持的主机上运行。
+=======
+The host machine must have the requisite SIMD registers. For example, the code above will not
+work on hosts without AVX support.
+>>>>>>> cyhan/en-v1.10
 
 ### 内存所有权
 
-**malloc/free**
+**`malloc`/`free`**
 
 此类对象的内存分配和释放必须通过调用正在使用的库中的适当清理例程来处理，就像在任何 C 程序中一样。 不要尝试在 Julia 中使用 [`Libc.free`](@ref) 释放从 C 库接收的对象，因为这可能会导致通过错误的库调用 `free` 函数并导致进程中止。 反过来（传递在 Julia 中分配的对象以供外部库释放）同样无效。
 
+<<<<<<< HEAD
 ### 何时使用 T、Ptr{T} 以及 Ref{T}
 
 在对外部C例程的Julia代码包装调用中，普通（非指针）数据应该在[`ccall`](@ref) 中声明为`T`类型，因为它们是通过值传递的。对于接受指针的C代码，[`Ref{T}`](@ref) 通常应用于输入参数的类型，允许通过对[`Base.cconvert`](@ref) 的隐式调用使用指向Julia或C管理的内存的指针。相反，被调用的C函数返回的指针应该声明为输出类型[`Ptr{T}`](@ref)，这反映了指向的内存仅由C管理。C结构中包含的指针应在相应的Julia结构类型中表示为`Ptr{T}`类型的字段，这些结构类型旨在模拟相应C结构的内部结构。
+=======
+### When to use `T`, `Ptr{T}` and `Ref{T}`
+
+In Julia code wrapping calls to external C routines, ordinary (non-pointer) data should be declared
+to be of type `T` inside the `@ccall`, as they are passed by value. For C code accepting
+pointers, [`Ref{T}`](@ref) should generally be used for the types of input arguments, allowing the use
+of pointers to memory managed by either Julia or C through the implicit call to [`Base.cconvert`](@ref).
+In contrast, pointers returned by the C function called should be declared to be of the output type
+[`Ptr{T}`](@ref), reflecting that the memory pointed to is managed by C only. Pointers contained in C
+structs should be represented as fields of type `Ptr{T}` within the corresponding Julia struct
+types designed to mimic the internal structure of corresponding C structs.
+>>>>>>> cyhan/en-v1.10
 
 在 Julia 代码包装对外部 Fortran 例程的调用中，所有输入参数都应声明为`Ref{T}`类型，因为 Fortran 通过指向内存位置的指针传递所有变量。 Fortran 子程序的返回类型应该是 `Cvoid`，或者 Fortran 函数的返回类型应该是 `T`，返回类型是 `T`。
 
 # 将 C 函数映射到 Julia
 
+<<<<<<< HEAD
 ### `ccall` / `@cfunction` 参数翻译指南
+=======
+### `@ccall` / `@cfunction` argument translation guide
+>>>>>>> cyhan/en-v1.10
 
 将 C 参数列表翻译为 Julia：
 
@@ -496,9 +710,16 @@ println(call_dist(a,b))
       * `T`，其中 `T` 是 Julia 叶类型
       * 参数值将被复制（按值传递）
   * `void*`
+<<<<<<< HEAD
     
      * 取决于如何使用此参数，首先将其翻译为所需的指针类型，然后使用此列表中的其余规则确定 Julia 等价项
      * 这个参数可以声明为 `Ptr{Cvoid}`，如果它真的只是一个未知的指针
+=======
+
+      * depends on how this parameter is used, first translate this to the intended pointer type, then
+        determine the Julia equivalent using the remaining rules in this list
+      * this argument may be declared as `Ptr{Cvoid}` if it really is just an unknown pointer
+>>>>>>> cyhan/en-v1.10
   * `jl_value_t*`
 
       * `Any`
@@ -506,9 +727,16 @@ println(call_dist(a,b))
   * `jl_value_t* const*`
 
       * `Ref{Any}`
+<<<<<<< HEAD
       * 参数列表必须是有效的 Julia 对象（或 C_NULL）
       * 不能用于输出参数，除非用户能够单独安排要GC保留的对象
   * `T*` 
+=======
+      * argument list must be a valid Julia object (or `C_NULL`)
+      * cannot be used for an output parameter, unless the user is able to
+        separately arrange for the object to be GC-preserved
+  * `T*`
+>>>>>>> cyhan/en-v1.10
 
      * `Ref{T}`，其中 `T` 是与 `T` 对应的 Julia 类型
      * 如果它是 `inlinealloc` 类型，则将复制参数值（包括 `isbits`，否则，值必须是有效的 Julia 对象）
@@ -524,8 +752,14 @@ println(call_dist(a,b))
 
      * `ccall` 或 `@cfunction` 不支持
 
+<<<<<<< HEAD
 ### `ccall` / `@cfunction` 返回类型翻译指南
 将 C 返回类型翻译为 Julia：
+=======
+### `@ccall` / `@cfunction` return type translation guide
+
+For translating a C return type to Julia:
+>>>>>>> cyhan/en-v1.10
 
   * `void`
 
@@ -541,8 +775,14 @@ println(call_dist(a,b))
       * 参数值将被复制（按值返回）
   * `void*`
 
+<<<<<<< HEAD
         * 取决于如何使用此参数，首先将其翻译为所需的指针类型，然后使用此列表中的其余规则确定 Julia 等效项
         * 如果它确实只是一个未知指针，则可以将此参数声明为 `Ptr{Cvoid}`
+=======
+      * depends on how this parameter is used, first translate this to the intended pointer type, then
+        determine the Julia equivalent using the remaining rules in this list
+      * this argument may be declared as `Ptr{Cvoid}` if it really is just an unknown pointer
+>>>>>>> cyhan/en-v1.10
   * `jl_value_t*`
 
       * `Any`
@@ -563,14 +803,26 @@ println(call_dist(a,b))
 
       * `Ptr{Cvoid}`，以便从 Julia 直接调用此函数，你需要将此作为 [`ccall`](@ref) 的第一个参数传递。 请参阅 [间接调用](@ref)。
 
+<<<<<<< HEAD
 ### 传递修改输入的指针
 
 因为 C 不支持多个返回值，所以 C 函数通常会使用指向函数将修改的数据的指针。 要在 [`ccall`](@ref) 中完成此操作，你需要首先将值封装在适当类型的 [`Ref{T}`](@ref) 中。 当你将这个 `Ref` 对象作为参数传递时，Julia 会自动传递一个指向封装数据的 C 指针：
+=======
+      * `Ptr{Cvoid}` to call this directly from Julia you will need to pass this as the first argument to `@ccall`.
+        See [Indirect Calls](@ref).
+
+### Passing Pointers for Modifying Inputs
+
+Because C doesn't support multiple return values, often C functions will take pointers to data
+that the function will modify. To accomplish this within a `@ccall`, you need to first
+encapsulate the value inside a [`Ref{T}`](@ref) of the appropriate type. When you pass this `Ref` object
+as an argument, Julia will automatically pass a C pointer to the encapsulated data:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 width = Ref{Cint}(0)
 range = Ref{Cfloat}(0)
-ccall(:foo, Cvoid, (Ref{Cint}, Ref{Cfloat}), width, range)
+@ccall foo(width::Ref{Cint}, range::Ref{Cfloat})::Cvoid
 ```
 
 返回时，可以通过`width[]`和`range[]`检索`width`和`range`的内容（如果它们被`foo`改变的话）； 也就是说，它们就像零维数组。
@@ -586,12 +838,7 @@ end
 # The corresponding C signature is
 #     gsl_permutation * gsl_permutation_alloc (size_t n);
 function permutation_alloc(n::Integer)
-    output_ptr = ccall(
-        (:gsl_permutation_alloc, :libgsl), # name of C function and library
-        Ptr{gsl_permutation},              # output type
-        (Csize_t,),                        # tuple of input types
-        n                                  # name of Julia variable to pass in
-    )
+    output_ptr = @ccall "libgsl".gsl_permutation_alloc(n::Csize_t)::Ptr{gsl_permutation}
     if output_ptr == C_NULL # Could not allocate memory
         throw(OutOfMemoryError())
     end
@@ -599,30 +846,46 @@ function permutation_alloc(n::Integer)
 end
 ```
 
+<<<<<<< HEAD
 [GNU 科学图书馆](https://www.gnu.org/software/gsl/)（这里假设可以通过`:libgsl` 访问）定义了一个不透明的指针，`gsl_permutation *`，作为 C 函数`gsl_permutation_alloc` 的返回类型。 由于用户代码永远不必查看 `gsl_permutation` 结构内部，相应的 Julia 包装器只需要一个新的类型声明 `gsl_permutation`，它没有内部字段，其唯一目的是放置在 `Ptr`类型的类型参数中。 [`ccall`](@ref) 的返回类型声明为 `Ptr{gsl_permutation}`，因为 `output_ptr` 分配和指向的内存由 C 控制。
 
 输入 `n` 是按值传递的，因此函数的输入签名被简单地声明为 `(Csize_t,)`，不需要任何 `Ref` 或 `Ptr`。 （如果包装器改为调用 Fortran 函数，则相应的函数输入签名将改为 `(Ref{Csize_t},)`，因为 Fortran 变量是通过指针传递的。）此外，`n` 可以是任何可转换的类型 到一个 `Csize_t` 整数； [`ccall`](@ref) 隐式调用 [`Base.cconvert(Csize_t, n)`](@ref)。
+=======
+The [GNU Scientific Library](https://www.gnu.org/software/gsl/) (here assumed to be accessible
+through `:libgsl`) defines an opaque pointer, `gsl_permutation *`, as the return type of the C
+function `gsl_permutation_alloc`. As user code never has to look inside the `gsl_permutation`
+struct, the corresponding Julia wrapper simply needs a new type declaration, `gsl_permutation`,
+that has no internal fields and whose sole purpose is to be placed in the type parameter of a
+`Ptr` type. The return type of the [`ccall`](@ref) is declared as `Ptr{gsl_permutation}`, since
+the memory allocated and pointed to by `output_ptr` is controlled by C.
+
+The input `n` is passed by value, and so the function's input signature is
+simply declared as `::Csize_t` without any `Ref` or `Ptr` necessary. (If the
+wrapper was calling a Fortran function instead, the corresponding function input
+signature would instead be `::Ref{Csize_t}`, since Fortran variables are
+passed by pointers.) Furthermore, `n` can be any type that is convertible to a
+`Csize_t` integer; the [`ccall`](@ref) implicitly calls [`Base.cconvert(Csize_t,
+n)`](@ref).
+>>>>>>> cyhan/en-v1.10
 
 这是包装相应析构函数的第二个示例：
 
 ```julia
 # The corresponding C signature is
 #     void gsl_permutation_free (gsl_permutation * p);
-function permutation_free(p::Ref{gsl_permutation})
-    ccall(
-        (:gsl_permutation_free, :libgsl), # name of C function and library
-        Cvoid,                             # output type
-        (Ref{gsl_permutation},),          # tuple of input types
-        p                                 # name of Julia variable to pass in
-    )
+function permutation_free(p::Ptr{gsl_permutation})
+    @ccall "libgsl".gsl_permutation_free(p::Ptr{gsl_permutation})::Cvoid
 end
 ```
 
+<<<<<<< HEAD
 这里，输入`p`被声明为`Ref{gsl_permutation}`类型，这意味着`p`指向的内存可以由Julia或C管理。由C分配的内存指针应该是类型 `Ptr{gsl_permutation}`，但它可以使用 [`Base.cconvert` ](@ref) 进行转换，因此
 
 现在，如果你仔细观察这个例子，你可能会注意到它是不正确的，因为我们上面对首选声明类型的解释。 你看到了吗？ 我们正在调用的函数将释放内存。 这种类型的操作不能被赋予 Julia 对象（它会崩溃或导致内存损坏）。因此，将 `p` 类型声明为 `Ptr{gsl_permutation }` 可能更可取，这样用户就更难错误地传递另一种对象，而不是通过 `gsl_permutation_alloc` 获得的对象。
 
 如果 C 包装器从不希望用户将指针传递给 Julia 管理的内存，那么使用 `p::Ptr{gsl_permutation}` 作为包装器的方法签名，类似地在 [`ccall`](@ref) 中也是可以接受。
+=======
+>>>>>>> cyhan/en-v1.10
 
 这是传递 Julia 数组的第三个示例：
 
@@ -635,12 +898,8 @@ function sf_bessel_Jn_array(nmin::Integer, nmax::Integer, x::Real)
         throw(DomainError())
     end
     result_array = Vector{Cdouble}(undef, nmax - nmin + 1)
-    errorcode = ccall(
-        (:gsl_sf_bessel_Jn_array, :libgsl), # name of C function and library
-        Cint,                               # output type
-        (Cint, Cint, Cdouble, Ref{Cdouble}),# tuple of input types
-        nmin, nmax, x, result_array         # names of Julia variables to pass in
-    )
+    errorcode = @ccall "libgsl".gsl_sf_bessel_Jn_array(
+                    nmin::Cint, nmax::Cint, x::Cdouble, result_array::Ref{Cdouble})::Cint
     if errorcode != 0
         error("GSL error code $errorcode")
     end
@@ -652,17 +911,24 @@ end
 
 ## Fortran 包装器示例
 
+<<<<<<< HEAD
 以下示例利用 ccall 调用通用 Fortran 库 (libBLAS) 中的函数来计算点积。 请注意，这里的参数映射与上面的有点不同，因为我们需要从 Julia 映射到 Fortran。 在每个参数类型上，我们指定 `Ref` 或 `Ptr`。 此修改约定可能特定于你的 Fortran 编译器和操作系统，并且可能未记录在案。 但是，将每个包装在一个 `Ref`（或 `Ptr`，等效地）中是 Fortran 编译器实现的一个常见要求：
+=======
+The following example utilizes `ccall` to call a function in a common Fortran library (libBLAS) to
+compute a dot product. Notice that the argument mapping is a bit different here than above, as
+we need to map from Julia to Fortran. On every argument type, we specify `Ref` or `Ptr`. This
+mangling convention may be specific to your Fortran compiler and operating system and is likely
+undocumented. However, wrapping each in a `Ref` (or `Ptr`, where equivalent) is a frequent
+requirement of Fortran compiler implementations:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 function compute_dot(DX::Vector{Float64}, DY::Vector{Float64})
     @assert length(DX) == length(DY)
     n = length(DX)
     incx = incy = 1
-    product = ccall((:ddot_, "libLAPACK"),
-                    Float64,
-                    (Ref{Int32}, Ptr{Float64}, Ref{Int32}, Ptr{Float64}, Ref{Int32}),
-                    n, DX, incx, DY, incy)
+    product = @ccall "libLAPACK".ddot(
+        n::Ref{Int32}, DX::Ptr{Float64}, incx::Ref{Int32}, DY::Ptr{Float64}, incy::Ref{Int32})::Float64
     return product
 end
 ```
@@ -670,7 +936,17 @@ end
 
 ## 垃圾回收安全
 
+<<<<<<< HEAD
 将数据传递给 [`ccall`](@ref) 时，最好避免使用 [`pointer`](@ref) 函数。 而是定义一个转换方法并将变量直接传递给 [`ccall`](@ref)。 [`ccall`](@ref) 自动安排它的所有参数都将从垃圾收集中保留，直到调用返回。 如果 C API 将存储对 Julia 分配的内存的引用，则在 [`ccall`](@ref) 返回后，你必须确保该对象对垃圾收集器保持可见。 建议的方法是创建一个类型为 `Array{Ref,1}` 的全局变量来保存这些值，直到 C 库通知你它已完成使用它们。
+=======
+When passing data to a `@ccall`, it is best to avoid using the [`pointer`](@ref) function.
+Instead define a [`Base.cconvert`](@ref) method and pass the variables directly to the `@ccall`. `@ccall`
+automatically arranges that all of its arguments will be preserved from garbage collection until
+the call returns. If a C API will store a reference to memory allocated by Julia, after the `@ccall`
+returns, you must ensure that the object remains visible to the garbage collector. The suggested
+way to do this is to make a global variable of type `Array{Ref,1}` to hold these values until
+the C library notifies you that it is finished with them.
+>>>>>>> cyhan/en-v1.10
 
 每当你创建了一个指向 Julia 数据的指针时，你必须确保原始数据存在，直到你完成使用该指针。 Julia 中的许多方法，例如 [`unsafe_load`](@ref) 和 [`String`](@ref) 复制数据而不是获取缓冲区的所有权，因此可以安全地释放（或更改）原始数而不影响 Julia。 一个值得注意的例外是 [`unsafe_wrap`](@ref)，出于性能原因，它共享（或可以被告知拥有）底层缓冲区。
 
@@ -678,26 +954,52 @@ end
 
 ## [非常数函数规范](@id Non-constant-Function-Specifications)
 
+<<<<<<< HEAD
 在某些情况下，所需库的确切名称或路径是事先未知的，必须在运行时计算。 为了处理这种情况，`(name, library)` 规范的库组件可以是一个函数调用，例如 `(:dgemm_, find_blas())`。 调用表达式将在执行 `ccall` 本身时执行。 但是，假设库位置一旦确定就不会改变，因此调用的结果可以被缓存和重用。 因此，表达式执行的次数是未指定的，多次调用返回不同的值会导致未指定的行为。
+=======
+In some cases, the exact name or path of the needed library is not known in advance and must
+be computed at run time. To handle such cases, the library component
+specification can be a function call, e.g. `find_blas().dgemm`. The call expression will
+be executed when the `ccall` itself is executed. However, it is assumed that the library
+location does not change once it is determined, so the result of the call can be cached and
+reused. Therefore, the number of times the expression executes is unspecified, and returning
+different values for multiple calls results in unspecified behavior.
+>>>>>>> cyhan/en-v1.10
 
 如果需要更大的灵活性，可以通过 [`eval`](@ref) 分段使用计算值作为函数名称，如下所示：
 
-```
-@eval ccall(($(string("a", "b")), "lib"), ...
+```julia
+@eval @ccall "lib".$(string("a", "b"))()::Cint
 ```
 
+<<<<<<< HEAD
 此表达式使用 `string` 构造一个名称，然后将此名称替换为一个新的 [`ccall`](@ref) 表达式，然后对其进行评估。 请记住，`eval` 仅在顶层运行，因此在此表达式中局部变量将不可用（除非它们的值被替换为 `$`）。 出于这个原因，`eval` 通常仅用于形成顶级定义，例如在包装包含许多类似函数的库时。 可以为 [`@cfunction`](@ref) 构造一个类似的示例。
+=======
+This expression constructs a name using `string`, then substitutes this name into a new `@ccall`
+expression, which is then evaluated. Keep in mind that `eval` only operates at the top level,
+so within this expression local variables will not be available (unless their values are substituted
+with `$`). For this reason, `eval` is typically only used to form top-level definitions, for example
+when wrapping libraries that contain many similar functions.
+A similar example can be constructed for [`@cfunction`](@ref).
+>>>>>>> cyhan/en-v1.10
 
 但是，这样做也会很慢并且会泄漏内存，因此你通常应该避免这种情况，而是继续阅读。 下一节讨论如何使用间接调用来有效地实现类似的效果。
 
 ## 非直接调用
 
+<<<<<<< HEAD
 [`ccall`](@ref) 的第一个参数也可以是在运行时计算的表达式。 在这种情况下，表达式的计算结果必须为 `Ptr`，它将用作要调用的本地函数的地址。 当第一个 [`ccall`](@ref) 参数包含对非常量（例如局部变量、函数参数或非常量全局变量）的引用时，会发生此行为。
+=======
+The first argument to `@ccall` can also be an expression evaluated at run time. In this
+case, the expression must evaluate to a `Ptr`, which will be used as the address of the native
+function to call. This behavior occurs when the first `@ccall` argument contains references
+to non-constants, such as local variables, function arguments, or non-constant globals.
+>>>>>>> cyhan/en-v1.10
 
 例如，你可以通过 `dlsym` 查找函数，然后将其缓存在该会话的共享引用中。 例如：
 
 ```julia
-macro dlsym(func, lib)
+macro dlsym(lib, func)
     z = Ref{Ptr{Cvoid}}(C_NULL)
     quote
         let zlocal = $z[]
@@ -711,7 +1013,7 @@ macro dlsym(func, lib)
 end
 
 mylibvar = Libdl.dlopen("mylib")
-ccall(@dlsym("myfunc", mylibvar), Cvoid, ())
+@ccall $(@dlsym(mylibvar, "myfunc"))()::Cvoid
 ```
 
 ## cfunction 闭包
@@ -724,8 +1026,7 @@ function qsort(a::Vector{T}, cmp) where T
     callback = @cfunction $cmp Cint (Ref{T}, Ref{T})
     # Here, `callback` isa Base.CFunction, which will be converted to Ptr{Cvoid}
     # (and protected against finalization) by the ccall
-    ccall(:qsort, Cvoid, (Ptr{T}, Csize_t, Csize_t, Ptr{Cvoid}),
-        a, length(a), Base.elsize(a), callback)
+    @ccall qsort(a::Ptr{T}, length(a)::Csize_t, Base.elsize(a)::Csize_t, callback::Ptr{Cvoid})
     # We could instead use:
     #    GC.@preserve callback begin
     #        use(Base.unsafe_convert(Ptr{Cvoid}, callback))
@@ -736,7 +1037,12 @@ end
 ```
 
 !!! note
+<<<<<<< HEAD
     闭包 [`@cfunction`](@ref) 依赖于 LLVM Trampolines，并非在所有平台（例如 ARM 和 PowerPC）上都可用。
+=======
+    Closure [`@cfunction`](@ref) relies on LLVM trampolines, which are not available on all
+    platforms (for example ARM and PowerPC).
+>>>>>>> cyhan/en-v1.10
 
 
 ## 关闭库
@@ -744,6 +1050,7 @@ end
 关闭（卸载）库以便重新加载有时很有用。 例如，在开发与 Julia 一起使用的 C 代码时，可能需要编译、从 Julia 调用 C 代码，然后关闭库、进行编辑、重新编译并加载新的更改。 可以重新启动 Julia 或使用 `Libdl` 函数来显式管理库，例如：
 
 ```julia
+<<<<<<< HEAD
 lib = Libdl.dlopen("./my_lib.so") # 显式打开库
 sym = Libdl.dlsym(lib, :my_fcn)   # 获得用于调用函数的符号
 ccall(sym, ...) # 直接用指针 `sym` 而不是 (symbol, library) 元组，其余参数保持不变
@@ -755,15 +1062,101 @@ Libdl.dlclose(lib) # 显式关闭库
 ## 调用规约
 
 [`ccall`](@ref) 的第二个参数可以选择是调用约定说明符（直接在返回类型之前）。 没有任何说明符，使用平台默认的 C 调用约定。 其他支持的约定是：`stdcall`、`cdecl`、`fastcall` 和`thiscall`（64 位Windows 上无操作）。 例如（来自`base/libc.jl`）我们看到与上面相同的`gethostname`[`ccall`](@ref)，但具有正确的Windows签名：
+=======
+lib = Libdl.dlopen("./my_lib.so") # Open the library explicitly.
+sym = Libdl.dlsym(lib, :my_fcn)   # Get a symbol for the function to call.
+@ccall $sym(...) # Use the pointer `sym` instead of the library.symbol tuple.
+Libdl.dlclose(lib) # Close the library explicitly.
+```
+
+Note that when using `@ccall` with the input
+(e.g., `@ccall "./my_lib.so".my_fcn(...)::Cvoid`), the library is opened implicitly
+and it may not be explicitly closed.
+
+## Variadic function calls
+
+To call variadic C functions a `semicolon` can be used in the argument list to
+separate required arguments from variadic arguments. An example with the
+`printf` function is given below:
+
+```julia-repl
+julia> @ccall printf("%s = %d\n"::Cstring ; "foo"::Cstring, foo::Cint)::Cint
+foo = 3
+8
+```
+
+## [`ccall` interface](@id ccall-interface)
+
+There is another alternative interface to `@ccall`.
+This interface is slightly less convenient but it does allow one to specify a [calling convention](@ref calling-convention).
+
+The arguments to [`ccall`](@ref) are:
+
+1. A `(:function, "library")` pair (most common),
+
+   OR
+
+   a `:function` name symbol or `"function"` name string (for symbols in the current process or libc),
+
+   OR
+
+   a function pointer (for example, from `dlsym`).
+
+2. The function's return type
+
+3. A tuple of input types, corresponding to the function signature. One common mistake is forgetting that a 1-tuple of
+   argument types must be written with a trailing comma.
+
+4. The actual argument values to be passed to the function, if any; each is a separate parameter.
+
+
+!!! note
+    The `(:function, "library")` pair, return type, and input types must be literal constants
+    (i.e., they can't be variables, but see [Non-constant Function Specifications](@ref)).
+
+    The remaining parameters are evaluated at compile-time, when the containing method is defined.
+
+
+A table of translations between the macro and function interfaces is given below.
+
+| `@ccall`                                                                     | `ccall`                                                                     |
+|------------------------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `@ccall clock()::Int32`                                                      | `ccall(:clock, Int32, ())`                                                  |
+| `@ccall f(a::Cint)::Cint`                                                    | `ccall(:a, Cint, (Cint,), a)`                                               |
+| `@ccall "mylib".f(a::Cint, b::Cdouble)::Cvoid`                               | `ccall((:f, "mylib"), Cvoid, (Cint, Cdouble), (a, b))`                      |
+| `@ccall $fptr.f()::Cvoid`                                                    | `ccall(fptr, f, Cvoid, ())`                                                 |
+| `@ccall printf("%s = %d\n"::Cstring ; "foo"::Cstring, foo::Cint)::Cint`      | `<unavailable>`                                                             |
+| `@ccall printf("%s = %d\n"::Cstring ; "2 + 2"::Cstring, "5"::Cstring)::Cint` | `ccall(:printf, Cint, (Cstring, Cstring...), "%s = %s\n", "2 + 2", "5")`    |
+| `<unavailable>`                                                              | `ccall(:gethostname, stdcall, Int32, (Ptr{UInt8}, UInt32), hn, length(hn))` |
+
+## [Calling Convention](@id calling-convention)
+
+The second argument to `ccall` (immediately preceding return type) can optionally
+be a calling convention specifier (the `@ccall` macro currently does not support
+giving a calling convention). Without any specifier, the platform-default C
+calling convention is used. Other supported conventions are: `stdcall`, `cdecl`,
+`fastcall`, and `thiscall` (no-op on 64-bit Windows). For example (from
+`base/libc.jl`) we see the same `gethostname``ccall` as above, but with the
+correct signature for Windows:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 hn = Vector{UInt8}(undef, 256)
 err = ccall(:gethostname, stdcall, Int32, (Ptr{UInt8}, UInt32), hn, length(hn))
 ```
 
+<<<<<<< HEAD
 请参阅 [LLVM Language Reference](http://llvm.org/docs/LangRef.html#calling-conventions) 来获得更多信息。
 
 还有一个额外的特殊调用约定 [`llvmcall`](@ref Base.llvmcall)，它允许直接插入对 LLVM 内部函数的调用。 这在针对不常见的平台（例如 GPGPU）时特别有用。 例如，对于[CUDA](http://llvm.org/docs/NVPTXUsage.html)，我们需要能够读取线程索引：
+=======
+For more information, please see the [LLVM Language Reference](https://llvm.org/docs/LangRef.html#calling-conventions).
+
+There is one additional special calling convention [`llvmcall`](@ref Base.llvmcall),
+which allows inserting calls to LLVM intrinsics directly.
+This can be especially useful when targeting unusual platforms such as GPGPUs.
+For example, for [CUDA](https://llvm.org/docs/NVPTXUsage.html), we need to be able to read the thread index:
+>>>>>>> cyhan/en-v1.10
 
 ```julia
 ccall("llvm.nvvm.read.ptx.sreg.tid.x", llvmcall, Int32, ())
@@ -793,13 +1186,33 @@ Ptr{Int32} @0x00007f418d0816b8
 
 返回值将是一个初始化为包含引用内存内容副本的新对象。 引用的内存可以安全地释放或释放。
 
+<<<<<<< HEAD
 如果 `T` 是 `Any`，则假定内存包含对 Julia 对象的引用（`jl_value_t*`），结果将是对该对象的引用，并且不会复制该对象。 在这种情况下，你必须小心确保对象始终对垃圾收集器可见（指针不计数，但新引用计数）以确保内存不会过早释放。 请注意，如果对象最初不是由 Julia 分配的，则新对象将永远不会被 Julia 的垃圾收集器终结。 如果 `Ptr` 本身实际上是一个 `jl_value_t*`，它可以通过 [`unsafe_pointer_to_objref(ptr)`](@ref) 转换回 Julia 对象引用。 （Julia 值 `v` 可以通过调用 [`pointer_from_objref(v)`](@ref) 转换为 `jl_value_t*` 指针，如 `Ptr{Cvoid}`。）
+=======
+If `T` is `Any`, then the memory is assumed to contain a reference to a Julia object (a `jl_value_t*`),
+the result will be a reference to this object, and the object will not be copied. You must be
+careful in this case to ensure that the object was always visible to the garbage collector (pointers
+do not count, but the new reference does) to ensure the memory is not prematurely freed. Note
+that if the object was not originally allocated by Julia, the new object will never be finalized
+by Julia's garbage collector. If the `Ptr` itself is actually a `jl_value_t*`, it can be converted
+back to a Julia object reference by [`unsafe_pointer_to_objref(ptr)`](@ref). (Julia values `v`
+can be converted to `jl_value_t*` pointers, as `Ptr{Cvoid}`, by calling [`pointer_from_objref(v)`](@ref).)
+>>>>>>> cyhan/en-v1.10
 
 可以使用 [`unsafe_store!(ptr, value, [index])`](@ref) 执行反向操作（将数据写入 `Ptr{T}`）。 目前，这仅支持原始类型或其他无指针（`isbits`）不可变结构类型。
 
 任何引发错误的操作目前可能尚未实现，应作为错误发布，以便解决。
 
+<<<<<<< HEAD
 如果感兴趣的指针是纯数据数组（原始类型或不可变结构），则函数 [`unsafe_wrap(Array, ptr,dims, own = false)`](@ref) 可能更有用。 如果 Julia 应该“获得”底层缓冲区的所有权并在返回的 `Array` 对象最终确定时调用 `free(ptr)`，则最后一个参数应该为 true。 如果省略了 `own` 参数或为 false，则调用者必须确保缓冲区一直存在，直到所有访问完成。
+=======
+If the pointer of interest is a plain-data array (primitive type or immutable struct), the function
+[`unsafe_wrap(Array, ptr,dims, own = false)`](@ref)
+may be more useful. The final parameter should be true if Julia should "take ownership" of the
+underlying buffer and call `free(ptr)` when the returned `Array` object is finalized. If the
+`own` parameter is omitted or false, the caller must ensure the buffer remains in existence until
+all access is complete.
+>>>>>>> cyhan/en-v1.10
 
 Julia 中 `Ptr` 类型的算术（例如使用 `+`）与 C 的指针算术的行为不同。 将整数添加到 Julia 中的 `Ptr` 总是将指针移动一定数量的 *bytes*，而不是元素。 这样，通过指针运算获得的地址值不依赖于指针的元素类型。
 
@@ -822,8 +1235,12 @@ wait(cond)
 
 ## C++
 
+<<<<<<< HEAD
 如需要直接易用的C++接口，即直接用Julia写封装代码，请参考 [Cxx](https://github.com/Keno/Cxx.jl)。如需封装C++库的工具，即用C++写封装/胶水代码，请参考[CxxWrap](https://github.com/JuliaInterop/CxxWrap.jl)。
 
+=======
+For tools to create C++ bindings, see the [CxxWrap](https://github.com/JuliaInterop/CxxWrap.jl) package.
+>>>>>>> cyhan/en-v1.10
 
 
 [^1]: Non-library function calls in both C and Julia can be inlined and thus may have

@@ -1,6 +1,16 @@
+<<<<<<< HEAD
 # [Interactive Utilities](@id man-interactive-utils)
 
 This module is intended for interactive work. It is loaded automaticaly in [interactive mode](@ref command-line-options).
+=======
+```@meta
+EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/InteractiveUtils/docs/src/index.md"
+```
+
+# [Interactive Utilities](@id man-interactive-utils)
+
+This module is intended for interactive work. It is loaded automatically in [interactive mode](@ref command-line-interface).
+>>>>>>> cyhan/en-v1.10
 
 ```@docs
 InteractiveUtils.apropos
@@ -26,5 +36,6 @@ InteractiveUtils.code_llvm
 InteractiveUtils.@code_llvm
 InteractiveUtils.code_native
 InteractiveUtils.@code_native
+InteractiveUtils.@time_imports
 InteractiveUtils.clipboard
 ```
