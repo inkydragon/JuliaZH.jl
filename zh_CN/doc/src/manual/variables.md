@@ -81,34 +81,19 @@ julia> sqrt = 4
 ERROR: cannot assign a value to imported variable Base.sqrt from module Main
 ```
 
-<<<<<<< HEAD
 ## [合法的变量名](@id man-allowed-variable-names)
 
 变量名字必须以英文字母（A-Z 或 a-z）、下划线或编码大于 00A0 的 Unicode 字符的一个子集开头。
-具体来说指的是，[Unicode字符分类](http://www.fileformat.info/info/unicode/category/index.htm)中的
+具体来说指的是，[Unicode字符分类](https://www.fileformat.info/info/unicode/category/index.htm)中的
 Lu/Ll/Lt/Lm/Lo/Nl（字母）、Sc/So（货币和其他符号）以及一些其它像字母的符号（例如 Sm 类别数学符号中的一部分）。
 变量名的非首字符还允许使用惊叹号 `!`、数字（包括 0-9 和其他 Nd/No 类别中的 Unicode 字符）以及其它 Unicode 字符：变音符号和其他修改标记（Mn/Mc/Me/Sk 类别）、标点和连接符（Pc 类别）、引号和少许其他字符。
-=======
-## [Allowed Variable Names](@id man-allowed-variable-names)
-
-Variable names must begin with a letter (A-Z or a-z), underscore, or a subset of Unicode code
-points greater than 00A0; in particular, [Unicode character categories](https://www.fileformat.info/info/unicode/category/index.htm)
-Lu/Ll/Lt/Lm/Lo/Nl (letters), Sc/So (currency and other symbols), and a few other letter-like characters
-(e.g. a subset of the Sm math symbols) are allowed. Subsequent characters may also include ! and
-digits (0-9 and other characters in categories Nd/No), as well as other Unicode code points: diacritics
-and other modifying marks (categories Mn/Mc/Me/Sk), some punctuation connectors (category Pc),
-primes, and a few other characters.
->>>>>>> cyhan/en-v1.10
 
 像 `+` 这样的运算符也是合法的标识符，但是它们会被特别地解析。 在一些上下文中，运算符可以像变量一样使用，比如 `(+)` 表示加函数，语句 `(+) = f`会把它重新赋值。大部分 Unicode 中缀运算符（Sm 类别），像 `⊕`，会被解析成真正的中缀运算符，并且支持用户自定义方法（举个例子，你可以使用语句 `const ⊗ = kron `将 `⊗` 定义为中缀的 Kronecker 积）。 运算符也可以使用修改标记、引号和上标/下标进行加缀，例如 `+̂ₐ″` 被解析成一个与 `+` 具有相同优先级的中缀运算符。以下标/上标字母结尾的运算符与后续变量名之间需要一个空格。举个例子，如果 `+ᵃ` 是一个运算符，那么 `+ᵃx` 应该被写为`+ᵃ x`，以区分表达式 `+ ᵃx` ，其中 `ᵃx` 是变量名。
 
 
-<<<<<<< HEAD
-一类特定的变量名是只包含下划线的变量名。这些标识符只能赋值，不能用于给其他变量赋值。严格来说，它们只能用作[左值](https://en.wikipedia.org/wiki/Value_(computer_science)#lrvalue) 而不能作[右值](https://en.wikipedia.org/wiki/R-value):
-=======
-A particular class of variable names is one that contains only underscores. These identifiers can only be assigned values, which are immediately discarded, and cannot therefore be used to assign values to other variables (i.e., they cannot be used as [`rvalues`](https://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values)) or use the last value
-assigned to them in any way.
->>>>>>> cyhan/en-v1.10
+一类特定的变量名是只包含下划线的变量名。这些标识符只能赋值，不能用于给其他变量赋值。
+这些标识符只能赋值，赋值后会立即丢弃，因此不能用于为其他变量赋值。
+严格来说，它们只能用作 [左值(`rvalues`)](https://en.wikipedia.org/wiki/Value_(computer_science)#Assignment:_l-values_and_r-values) 而不能作右值。
 
 ```julia-repl
 julia> x, ___ = size([2 2; 1 1])
@@ -116,18 +101,12 @@ julia> x, ___ = size([2 2; 1 1])
 
 julia> y = ___
 ERROR: syntax: all-underscore identifier used as rvalue
-<<<<<<< HEAD
-```
-
-唯一明确禁止的变量名称是内置[关键字](@ref Keywords)的名称：
-=======
 
 julia> println(___)
 ERROR: syntax: all-underscore identifier used as rvalue
 ```
 
 The only explicitly disallowed names for variables are the names of the built-in [Keywords](@ref Keywords):
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> else = false
@@ -137,9 +116,6 @@ julia> try = "No"
 ERROR: syntax: unexpected "="
 ```
 
-<<<<<<< HEAD
-某些 Unicode 字符被认为是等效的标识符。不同的输入 Unicode 组合字符的方法（例如：重音）被视为等价的（Julia 标识符采用 [NFC](http://www.macchiato.com/unicode/nfc-faq) 标准）。Julia 还加入了一些非标准的等价字符，用于在视觉上相似且易于通过某些输入法输入的字符。Unicode 字符 `ɛ` (U+025B: Latin small letter open e) 和 `µ` (U+00B5: micro sign) 被视为等同于相应的希腊字母。点 `·` (U+00B7) 和希腊字符[间断](https://en.wikipedia.org/wiki/Interpunct) `·` (U+0387) 都被当作数学上的点积运算符 `⋅` (U+22C5)。减号 `−` (U+2212) 与连接号 `-` (U+002D) 也被视作相同的符号。
-=======
 Some Unicode characters are considered to be equivalent in identifiers.
 Different ways of entering Unicode combining characters (e.g., accents)
 are treated as equivalent (specifically, Julia identifiers are [NFC](https://en.wikipedia.org/wiki/Unicode_equivalence).
@@ -224,7 +200,6 @@ the argument values to new variable names corresponding to the function argument
 in [Argument-Passing Behavior](@ref man-argument-passing).  (By [convention](@ref man-punctuation),
 functions that mutate one or more of their arguments have names ending with `!`.)
 
->>>>>>> cyhan/en-v1.10
 
 ## 命名规范
 

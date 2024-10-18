@@ -2,18 +2,11 @@
 
 下面几节简要地介绍了一些使 Julia 代码运行得尽可能快的技巧。
 
-<<<<<<< HEAD
 ## 影响性能的关键代码应该在函数内部
 
 任何对性能至关重要的代码都应该在函数内部。 由于 Julia 编译器的工作方式，函数内部的代码往往比顶层代码运行得更快。
 
 函数的使用不仅对性能很重要：函数更可重用和可测试，并阐明正在执行哪些步骤以及它们的输入和输出是什么，[编写函数，而不仅仅是脚本]（@ref）也是 Julia 的风格指南。
-=======
-## Performance critical code should be inside a function
-
-Any code that is performance critical should be inside a function. Code inside functions tends to run much faster than top level code, due to how Julia's compiler works.
-
-The use of functions is not only important for performance: functions are more reusable and testable, and clarify what steps are being done and what their inputs and outputs are, [Write functions, not just scripts](@ref) is also a recommendation of Julia's Styleguide.
 
 The functions should take arguments, instead of operating directly on global variables, see the next point.
 
@@ -22,7 +15,6 @@ The functions should take arguments, instead of operating directly on global var
 The value of an untyped global variable might change at any point, possibly leading to a change of its type. This makes
 it difficult for the compiler to optimize code using global variables. This also applies to type-valued variables,
 i.e. type aliases on the global level. Variables should be local, or passed as arguments to functions, whenever possible.
->>>>>>> cyhan/en-v1.10
 
 函数应该接收参数，而不是直接对全局变量进行操作，请参阅下一点。
 
@@ -37,14 +29,9 @@ i.e. type aliases on the global level. Variables should be local, or passed as a
 const DEFAULT_VAL = 0
 ```
 
-<<<<<<< HEAD
-对于非常量的全局变量可以通过在使用的时候标注它们的类型来优化。
-=======
 If a global is known to always be of the same type, [the type should be annotated](@ref man-typed-globals).
 
-Uses of untyped globals can be optimized by annotating their types at the point of use:
->>>>>>> cyhan/en-v1.10
-
+对于非常量的全局变量可以通过在使用的时候标注它们的类型来优化。
 ```julia
 global x = rand(1000)
 
@@ -92,17 +79,6 @@ julia> function sum_global()
        end;
 
 julia> @time sum_global()
-<<<<<<< HEAD
-  0.010414 seconds (9.07 k allocations: 373.448 KiB, 98.40% compilation time)
-493.6199223951192
-
-julia> @time sum_global()
-  0.000108 seconds (3.49 k allocations: 70.156 KiB)
-493.6199223951192
-```
-
-在第一次调用（`@time sum_global()`）时，函数被编译。 （如果不在此会话中使用 [`@time`](@ref)，它还会编译计时所需的函数。）你不用把此次运行的结果放在心上。对于第二次运行，请注意，除了报告时间外，它还表明分配了大量内存。 我们在这里只是计算 64 位浮点数向量中所有元素的总和，因此不需要分配内存（至少不是在堆上，这就是 `@time` 报告的内容）。
-=======
   0.011539 seconds (9.08 k allocations: 373.386 KiB, 98.69% compilation time)
 523.0007221951678
 
@@ -111,11 +87,10 @@ julia> @time sum_global()
 523.0007221951678
 ```
 
-On the first call (`@time sum_global()`) the function gets compiled. (If you've not yet used [`@time`](@ref)
-in this session, it will also compile functions needed for timing.)  You should not take the results
-of this run seriously. For the second run, note that in addition to reporting the time, it also
-indicated that a significant amount of memory was allocated. We are here just computing a sum over all elements in
-a vector of 64-bit floats so there should be no need to allocate (heap) memory.
+在第一次调用（`@time sum_global()`）时，函数被编译。
+（如果不在此会话中使用 [`@time`](@ref)，它还会编译计时所需的函数）
+你不用把此次运行的结果放在心上。对于第二次运行，请注意，除了报告时间外，它还表明分配了大量内存。
+我们在这里只是计算 64 位浮点数向量中所有元素的总和，因此不需要分配（堆）内存
 
 We should clarify that what `@time` reports is specifically *heap* allocations, which are typically needed for either
 mutable objects or for creating/growing variable-sized containers (such as `Array` or `Dict`, strings, or "type-unstable"
@@ -123,17 +98,13 @@ objects whose type is only known at runtime).  Allocating (or deallocating) such
 system call (e.g. via `malloc` in C), and they must be tracked for garbage collection.  In contrast, immutable values like
 numbers (except bignums), tuples, and immutable `struct`s can be stored much more cheaply, e.g. in stack or CPU-register
 memory, so one doesn’t typically worry about the performance cost of "allocating" them.
->>>>>>> cyhan/en-v1.10
 
 预料之外的内存分配几乎总是表示你的代码存在问题，通常是类型稳定性问题或创建了许多小的临时数组。 因此，除了分配本身之外，你的函数的代码很可能远非最优。请认真对待此类迹象并遵循以下建议。
 
-<<<<<<< HEAD
-如果我们改为将 `x` 作为参数传递给函数，它不再分配内存（下面报告的分配是由于在全局范围内运行 `@time` 宏）并且在第一次调用后明显更快：
-=======
-In this particular case, the memory allocation is due to the usage of a type-unstable global variable `x`, so if we instead pass `x` as an argument to the function it no longer allocates memory
+In this particular case, the memory allocation is due to the usage of a type-unstable global variable `x`,
+so if we instead pass `x` as an argument to the function it no longer allocates memory
 (the remaining allocation reported below is due to running the `@time` macro in global scope)
 and is significantly faster after the first call:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest sumarg; setup = :(using Random; Random.seed!(1234)), filter = r"[0-9\.]+ seconds \(.*?\)"
 julia> x = rand(1000);
@@ -147,21 +118,12 @@ julia> function sum_arg(x)
        end;
 
 julia> @time sum_arg(x)
-<<<<<<< HEAD
-  0.007971 seconds (3.96 k allocations: 200.171 KiB, 99.83% compilation time)
-493.6199223951192
-
-julia> @time sum_arg(x)
-  0.000003 seconds (1 allocation: 16 bytes)
-493.6199223951192
-=======
   0.007551 seconds (3.98 k allocations: 200.548 KiB, 99.77% compilation time)
 523.0007221951678
 
 julia> @time sum_arg(x)
   0.000006 seconds (1 allocation: 16 bytes)
 523.0007221951678
->>>>>>> cyhan/en-v1.10
 ```
 
 看到的 1 allocation 来自在全局范围内运行 `@time` 宏本身。 如果我们改为在函数中运行计时，我们可以看到确实没有执行任何分配：
@@ -170,13 +132,8 @@ julia> @time sum_arg(x)
 julia> time_sum(x) = @time sum_arg(x);
 
 julia> time_sum(x)
-<<<<<<< HEAD
-  0.000001 seconds
-493.6199223951192
-=======
   0.000002 seconds
 523.0007221951678
->>>>>>> cyhan/en-v1.10
 ```
 
 在某些情况下，你的函数可能需要将分配内存作为其操作的一部分，这比上面的简单例子复杂的多。 在这种情况下，请考虑使用下面的 [工具](@ref tools) 之一来诊断问题，或者编写一个将分配内存与算法方面分开的函数版本（请参阅 [输出预分配](@ref Pre-allocating outputs)）。
@@ -337,11 +294,7 @@ Float32
 
 对于一个实际的目的来说，这样的对象表现起来和那些 `MyStillAmbiguousType` 的对象一模一样。
 
-<<<<<<< HEAD
 比较为一个简单函数生成的代码的绝对数量是十分有指导意义的，
-=======
-It's quite instructive to compare the sheer amount of code generated for a simple function
->>>>>>> cyhan/en-v1.10
 
 ```julia
 func(m::MyType) = m.a+1
@@ -356,9 +309,6 @@ code_llvm(func, Tuple{MyType{AbstractFloat}})
 
 由于长度的原因，代码的结果没有在这里显示出来，但是你可能会希望自己去验证这一点。因为在第一种情况中，类型被完全指定了，在运行时，编译器不需要生成任何代码来决定类型。这就带来了更短和更快的代码。
 
-<<<<<<< HEAD
-### 避免使用带抽象容器的字段
-=======
 One should also keep in mind that not-fully-parameterized types behave like abstract types. For example, even though a fully specified `Array{T,n}` is concrete, `Array` itself with no parameters given is not concrete:
 
 ```jldoctest myambig3
@@ -367,8 +317,7 @@ julia> !isconcretetype(Array), !isabstracttype(Array), isstructtype(Array), !isc
 ```
 In this case, it would be better to avoid declaring `MyType` with a field `a::Array` and instead declare the field as `a::Array{T,N}` or as `a::A`, where `{T,N}` or `A` are parameters of `MyType`.
 
-### Avoid fields with abstract containers
->>>>>>> cyhan/en-v1.10
+### 避免使用带抽象容器的字段
 
 上面的做法同样也适用于容器的类型：
 
@@ -501,7 +450,10 @@ function nr(a, prec)
 end
 ```
 
-`c` 的注释会损害性能。要编写涉及在运行时构造类型的高性能代码，请使用下面讨论的 [函数障碍技巧](@ref kernel-functions)，并确保构造的类型出现在内核函数的参数类型中，以便内核操作由编译器合理地特例化。例如，在上面的代码片段中，一旦构建了 `b`，它就可以传递给另一个函数 `k`，即内核。 例如，如果函数 `k` 将 `b` 声明为类型为 `Complex{T}` 的参数，其中 `T` 是一个类型参数，那么出现在`k`的赋值语句中的类型注释的形式：
+`c` 的注释会损害性能。要编写涉及在运行时构造类型的高性能代码，请使用下面讨论的 [函数障碍技巧](@ref kernel-functions)，
+并确保构造的类型出现在内核函数的参数类型中，以便内核操作由编译器合理地 [特例化](@ref man-method-specializations)。
+例如，在上面的代码片段中，一旦构建了 `b`，它就可以传递给另一个函数 `k`，即内核。
+例如，如果函数 `k` 将 `b` 声明为类型为 `Complex{T}` 的参数，其中 `T` 是一个类型参数，那么出现在`k`的赋值语句中的类型注释的形式：
 
 ```julia
 c = (b + 1.0f0)::Complex{T}
@@ -511,17 +463,7 @@ c = (b + 1.0f0)::Complex{T}
 
 ### [注意Julia何时避免特例化](@id Be-aware-of-when-Julia-avoids-specializing)
 
-<<<<<<< HEAD
 作为一种启发式方法，Julia 避免在三种特定情况下自动特例化参数类型参数：`Type`、`Function` 和 `Vararg`。 当在方法中使用参数时，Julia 将始终特例化，但如果参数只是传递给另一个函数，则不会。 这通常在运行时没有性能影响并且[提高编译器性能](@ref compiler-efficiency-issues)。 如果你发现它在你的案例中在运行时确实有性能影响，您可以通过向方法声明添加类型参数来触发特例化。这里有些例子：
-=======
-As a heuristic, Julia avoids automatically [specializing](@ref man-method-specializations) on argument type parameters in three
-specific cases: `Type`, `Function`, and `Vararg`. Julia will always specialize when the argument is
-used within the method, but not if the argument is just passed through to another function. This
-usually has no performance impact at runtime and
-[improves compiler performance](@ref compiler-efficiency-issues). If you find it does have a
-performance impact at runtime in your case, you can trigger specialization by adding a type
-parameter to the method declaration. Here are some examples:
->>>>>>> cyhan/en-v1.10
 
 这不会特例化：
 
@@ -571,15 +513,9 @@ g_vararg(x::Vararg{Int, N}) where {N} = tuple(x...)
 h_vararg(x::Vararg{Any, N}) where {N} = tuple(x...)
 ```
 
-<<<<<<< HEAD
-请注意， [`@code_typed`](@ref) 和你的朋友给你的始终是特例化的代码，即使 Julia 通常不会特例化该方法调用。如果要查看更改参数类型时是否生成特例化，则需要检查 [method internals](@ref ast-lowered-method)，即是否 `(@which f(...)).specializations` 包含相关参数的特例化。
-=======
-Note that [`@code_typed`](@ref) and friends will always show you specialized code, even if Julia
-would not normally specialize that method call. You need to check the
-[method internals](@ref ast-lowered-method) if you want to see whether specializations are generated
-when argument types are changed, i.e., if `Base.specializations(@which f(...))` contains specializations
-for the argument in question.
->>>>>>> cyhan/en-v1.10
+请注意， [`@code_typed`](@ref) 和你的朋友给你的始终是特例化的代码，即使 Julia 通常不会特例化该方法调用。
+如果要查看更改参数类型时是否生成特例化，则需要检查 [method internals](@ref ast-lowered-method)，
+即是否 `Base.specializations(@which f(...))` 包含相关参数的特例化。
 
 ## 将函数拆分为多个定义
 
@@ -781,26 +717,12 @@ end
 
 当存在以下任一情况，这可能是值得做的：
 
-<<<<<<< HEAD
   * 你需要对每个 `Car` 进行 CPU 密集型处理，如果你在编译时知道 `Make` 和 `Model`，并且将使用的不同`Make`或`Model`的总数不太大，则效率会大大提高。
-     
-     
+
   * 你需要处理相同类型的 `Car` 的同类列表，因此可以将它们全部存储在一个数组`{Car{:Honda,:Accord},N}` 中。
-     
+
 
 当后者成立时，处理此类同型数组的函数可以高效地特例化：Julia 预先知道每个元素的类型（容器中的所有对象都具有相同的具体类型），因此当函数被编译时， Julia 可以“查找”正确的方法调用（不需要在运行时检查），从而产生有效的代码来处理整个列表。
-=======
-  * You require CPU-intensive processing on each `Car`, and it becomes vastly more efficient if you
-    know the `Make` and `Model` at compile time and the total number of different `Make` or `Model`
-    that will be used is not too large.
-  * You have homogeneous lists of the same type of `Car` to process, so that you can store them all
-    in an `Array{Car{:Honda,:Accord},N}`.
-
-When the latter holds, a function processing such a homogeneous array can be productively specialized:
-Julia knows the type of each element in advance (all objects in the container have the same concrete
-type), so Julia can "look up" the correct method calls when the function is being compiled (obviating
-the need to check at run-time) and thereby emit efficient code for processing the whole list.
->>>>>>> cyhan/en-v1.10
 
 当这些都不成立时，你很可能不会获得任何好处；更糟糕的是，由此产生的“类型组合爆炸”将适得其反。 如果 `items[i+1]` 与 `item[i]` 的类型不同，Julia 必须在运行时查找类型，在方法表中搜索适当的方法，决定（通过类型交集）哪一个匹配，确定它是否已经被 JIT 编译（如果没有，则执行），然后进行调用。 本质上，你是在要求完整的类型系统和 JIT 编译机制在你自己的代码中基本上执行相当于 switch 语句或字典查找的操作。
 
@@ -969,16 +891,12 @@ julia> @time f.(x);
   0.002626 seconds (8 allocations: 7.630 MiB)
 ```
 
-<<<<<<< HEAD
-也就是说，`fdot(x)` 的速度是 `f(x)` 的 10 倍，分配的内存是 `f(x)` 的 1/6，因为 f(x) 中的每个 `*` 和 `+` 操作都会分配一个新的临时数组并在单独的循环中执行。 （当然，如果你只做 `f.(x)` 那么在这个例子中它和 `fdot(x)` 一样快，但在许多情况下，只在表达式中写一些点比为每个向量化操作定义单独的函数更方便。）
-=======
 That is, `fdot(x)` is ten times faster and allocates 1/6 the
 memory of `f(x)`, because each `*` and `+` operation in `f(x)` allocates
 a new temporary array and executes in a separate loop. In this example
 `f.(x)` is as fast as `fdot(x)` but in many contexts it is more
 convenient to sprinkle some dots in your expressions than to
 define a separate function for each vectorized operation.
->>>>>>> cyhan/en-v1.10
 
 ## [考虑对切片使用视图](@id man-performance-views)
 
@@ -1004,21 +922,13 @@ julia> @time fview(x);
 
 ## 复制数据不总是坏的
 
-<<<<<<< HEAD
-数组被连续地存储在内存中，这使其可被 CPU 向量化，并且会由于缓存减少内存访问。这与建议以列序优先方式访问数组的原因相同（请参见上文）。由于不按顺序访问内存，无规律的访问方式和不连续的视图可能会大大减慢数组上的计算速度。
+数组被连续地存储在内存中，这使其可被 CPU 向量化，并且会由于缓存减少内存访问。
+这与建议以列序优先方式访问数组的原因相同（请参见上文）。
+由于不按顺序访问内存，无规律的访问方式和不连续的视图可能会大大减慢数组上的计算速度。
 
-在对无规律访问的数据进行操作前，将其复制到连续的数组中可能带来巨大的加速，正如下例所示。其中，矩阵和向量在相乘前会访问其 800,000 个已被随机混洗的索引处的值。将视图复制到普通数组会加速乘法，即使考虑了复制操作的成本。
-=======
-Arrays are stored contiguously in memory, lending themselves to CPU vectorization
-and fewer memory accesses due to caching. These are the same reasons that it is recommended
-to access arrays in column-major order (see above). Irregular access patterns and non-contiguous
-views can drastically slow down computations on arrays because of non-sequential memory access.
-
-Copying irregularly-accessed data into a contiguous array before repeated access it can result
-in a large speedup, such as in the example below. Here, a matrix is being accessed at
-randomly-shuffled indices before being multiplied. Copying into plain arrays speeds up the
-multiplication even with the added cost of copying and allocation.
->>>>>>> cyhan/en-v1.10
+在对无规律访问的数据进行重复访问之前，将其复制到连续的数组中可能带来巨大的加速，正如下例所示。
+其中，矩阵和向量在相乘前会访问已被随机混洗的索引处的值。
+即使增加了复制和分配的成本，复制到普通数组中也能加快乘法运算速度。
 
 ```julia-repl
 julia> using Random
@@ -1045,12 +955,7 @@ julia> @time iterated_neural_network(A[inds, inds], x, 10)
 1569
 ```
 
-<<<<<<< HEAD
-倘若副本本身的内存足够大，那么将视图复制到数组的成本可能远远超过在连续数组上执行矩阵乘法所带来的加速。
-=======
-Provided there is enough memory, the cost of copying the view to an array is outweighed
-by the speed boost from doing the repeated matrix multiplications on a contiguous array.
->>>>>>> cyhan/en-v1.10
+只要有足够的内存，将视图复制到数组的成本，就会被在连续数组上进行重复矩阵乘法所带来的加速所抵消。
 
 ## 使用 StaticArrays.jl 进行小型固定大小的向量/矩阵运算
 
@@ -1377,63 +1282,33 @@ Body::Float64
 
 理解 [`@code_warntype`](@ref) 的输出，就像理解它的同类工具 [`@code_lowered`](@ref), [`@code_typed`](@ref), [`@code_llvm`](@ ref) 和 [`@code_native`](@ref) 一样需要一些练习。你的代码以在生成编译机器代码的过程中经过大量摘要的形式呈现。大多数表达式都由类型注释，由 `::T` 表示（例如，其中 `T` 可能是 [`Float64`](@ref)）。 [`@code_warntype`](@ref) 最大的特点就是非具体类型用红色显示； 由于本文档是用Markdown 编写的，没有颜色，所以本文档中红色文字用大写表示。
 
-<<<<<<< HEAD
-在顶部，该函数类型推导后的返回类型显示为 `Body::Float64`。下一行以 Julia 的 SSA IR 形式表示了 `f` 的主体。被数字标记的方块表示代码中（通过 `goto`）跳转的目标。查看主体，你会看到首先调用了 `pos`，其返回值经类型推导为 `Union` 类型 `UNION{FLOAT64, INT64}` 并以大写字母显示，因为它是非具体类型。这意味着我们无法根据输入类型知道 `pos` 的确切返回类型。但是，无论 `y` 是 `Float64` 还是 `Int64`，`y*x` 的结果都是 `Float64`。最终的结果是 `f(x::Float64)` 在其输出中不会是类型不稳定的，即使有些中间计算是类型不稳定的。
-=======
-At the top, the inferred return type of the function is shown as `Body::Float64`.
-The next lines represent the body of `f` in Julia's SSA IR form.
-The numbered boxes are labels and represent targets for jumps (via `goto`) in your code.
-Looking at the body, you can see that the first thing that happens is that `pos` is called and the
-return value has been inferred as the `Union` type `Union{Float64, Int64}` shown in uppercase since
-it is a non-concrete type. This means that we cannot know the exact return type of `pos` based on the
-input types. However, the result of `y*x`is a `Float64` no matter if `y` is a `Float64` or `Int64`
-The net result is that `f(x::Float64)` will not be type-unstable
-in its output, even if some of the intermediate computations are type-unstable.
->>>>>>> cyhan/en-v1.10
+在顶部，该函数类型推导后的返回类型显示为 `Body::Float64`。下一行以 Julia 的 SSA IR 形式表示了 `f` 的主体。
+被数字标记的方块表示代码中（通过 `goto`）跳转的目标。
+查看主体，你会看到首先调用了 `pos`，其返回值经类型推导为 `Union` 类型 `Union{Float64, Int64}` 并以大写字母显示，因为它是非具体类型。
+这意味着我们无法根据输入类型知道 `pos` 的确切返回类型。
+但是，无论 `y` 是 `Float64` 还是 `Int64`，`y*x` 的结果都是 `Float64`。
+最终的结果是 `f(x::Float64)` 在其输出中不会是类型不稳定的，即使有些中间计算是类型不稳定的。
 
 如何使用这些信息取决于你。显然，最好将 `pos` 修改为类型稳定的：如果这样做，`f` 中的所有变量都是具体的，其性能将是最佳的。但是，在某些情况下，这种*短暂的*类型不稳定性可能无关紧要：例如，如果 `pos` 从不单独使用，那么 `f` 的输出（对于 [`Float64`](@ref) 输入）是类型稳定的这一事实将保护之后的代码免受类型不稳定性的传播影响。这与类型不稳定性难以或不可能修复的情况密切相关。在这些情况下，上面的建议（例如，添加类型注释并/或分解函数）是你控制类型不稳定性的「损害」的最佳工具。另请注意，即使是 Julia Base 也有类型不稳定的函数。例如，函数 [`findfirst`](@ref) 如果找到键则返回数组索引，如果没有找到键则返回 `nothing`，这是明显的类型不稳定性。为了更易于找到可能很重要的类型不稳定性，包含 `missing` 或 `nothing` 的 `Union` 会用黄色着重显示，而不是用红色。
 
 以下示例可以帮助你解释被标记为包含非叶类型的表达式：
 
-<<<<<<< HEAD
-  * 函数体以 `Body::UNION{T1,T2})` 开头
+  * 函数体以 `Body::Union{T1,T2})` 开头
       * 解释：函数具有不稳定返回类型
       * 建议：使返回值类型稳定，即使你必须对其进行类型注释
 
-  * `invoke Main.g(%%x::Int64)::UNION{FLOAT64, INT64}`
+  * `invoke Main.g(%%x::Int64)::Union{Float64, Int64}`
       * 解释：调用类型不稳定的函数 `g`。
       * 建议：修改该函数，或在必要时对其返回值进行类型注释
 
-  * `invoke Base.getindex(%%x::Array{Any,1}, 1::Int64)::ANY`
+  * `invoke Base.getindex(%%x::Array{Any,1}, 1::Int64)::Any`
       * 解释：访问缺乏类型信息的数组的元素
       * 建议：使用具有更佳定义的类型的数组，或在必要时对访问的单个元素进行类型注释
-         
-
-  * `Base.getfield(%%x, :(:data))::ARRAY{FLOAT64,N} WHERE N`
-      * 解释：获取一个非叶子类型的字段。 在这种情况下，`x` 的类型，比如说 `ArrayContainer`，有一个字段 `data::Array{T}`。 但是 `Array` 也需要维度 `N` 作为具体类型。
-         
-      * 建议：使用类似于 `Array{T,3}` 或 `Array{T,N}` 的具体类型，其中的 `N` 现在是 `ArrayContainer` 的参数
-         
-=======
-  * Function body starting with `Body::Union{T1,T2})`
-      * Interpretation: function with unstable return type
-      * Suggestion: make the return value type-stable, even if you have to annotate it
-
-  * `invoke Main.g(%%x::Int64)::Union{Float64, Int64}`
-      * Interpretation: call to a type-unstable function `g`.
-      * Suggestion: fix the function, or if necessary annotate the return value
-
-  * `invoke Base.getindex(%%x::Array{Any,1}, 1::Int64)::Any`
-      * Interpretation: accessing elements of poorly-typed arrays
-      * Suggestion: use arrays with better-defined types, or if necessary annotate the type of individual
-        element accesses
 
   * `Base.getfield(%%x, :(:data))::Array{Float64,N} where N`
-      * Interpretation: getting a field that is of non-leaf type. In this case, the type of `x`, say `ArrayContainer`, had a
-        field `data::Array{T}`. But `Array` needs the dimension `N`, too, to be a concrete type.
-      * Suggestion: use concrete types like `Array{T,3}` or `Array{T,N}`, where `N` is now a parameter
-        of `ArrayContainer`
->>>>>>> cyhan/en-v1.10
+      * 解释：获取一个非叶子类型的字段。 在这种情况下，`x` 的类型，比如说 `ArrayContainer`，有一个字段 `data::Array{T}`。 但是 `Array` 也需要维度 `N` 作为具体类型。
+      * 建议：使用类似于 `Array{T,3}` 或 `Array{T,N}` 的具体类型，其中的 `N` 现在是 `ArrayContainer` 的参数
+
 
 ## [被捕获变量的性能](@id man-performance-captured)
 
@@ -1479,9 +1354,6 @@ function abmult3(r::Int)
     return f
 end
 ```
-<<<<<<< HEAD
-`let` 代码块创建了一个新的变量 `r`，它的作用域只是内部函数。第二种技术在捕获变量存在时完全恢复了语言性能。请注意，这是编译器的一个快速发展的方面，未来的版本可能不需要依靠这种程度的程序员注释来获得性能。与此同时，一些用户提供的包（如 [FastClosures](https://github.com/c42f/FastClosures.jl)）会自动插入像在 `abmult3` 中那样的 `let` 语句。
-=======
 The `let` block creates a new variable `r` whose scope is only the
 inner function. The second technique recovers full language performance
 in the presence of captured variables. Note that this is a rapidly
@@ -1519,4 +1391,3 @@ Prominent examples include [MKL.jl](https://github.com/JuliaLinearAlgebra/MKL.jl
 
 These are external packages, so we will not discuss them in detail here.
 Please refer to their respective documentations (especially because they have different behaviors than OpenBLAS with respect to multithreading).
->>>>>>> cyhan/en-v1.10

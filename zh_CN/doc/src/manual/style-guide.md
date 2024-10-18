@@ -92,15 +92,11 @@ end
 
 Julia 的 Base 模块中的函数都遵循了这种规范，且包含很多例子：有的函数同时有拷贝和修改的形式（比如 [`sort`](@ref) 和 [`sort!`](@ref)），还有一些只有修改（比如 [`push!`](@ref)，[`pop!`](@ref) 和 [`splice!`](@ref)）。为了方便起见，这类函数通常也会把修改后的数组作为返回值。
 
-<<<<<<< HEAD
-## 避免使用奇怪的 `Union` 类型
-=======
 Functions related to IO or making use of random number generators (RNG) are notable exceptions:
 Since these functions almost invariably must mutate the IO or RNG, functions ending with `!` are used to signify a mutation _other_ than mutating the IO or advancing the RNG state.
 For example, `rand(x)` mutates the RNG, whereas `rand!(x)` mutates both the RNG and `x`; similarly, `read(io)` mutates `io`, whereas `read!(io, x)` mutates both arguments.
 
-## Avoid strange type `Union`s
->>>>>>> cyhan/en-v1.10
+## 避免使用奇怪的 `Union` 类型
 
 使用 `Union{Function,AbstractString}` 这样的类型的时候通常意味着设计还不够清晰。
 
@@ -114,12 +110,7 @@ a = Vector{Union{Int,AbstractString,Tuple,Array}}(undef, n)
 
 这种情况下，`Vector{Any}(undef, n)`更合适些。此外，相比将所有可能的类型都打包在一起，直接在使用时标注具体的数据类型（比如：`a[i]::Int`）对编译器来说更有用。
 
-<<<<<<< HEAD
 ## 方法导出优先于直接字段访问
-
-惯例上，Julia 代码通常应将模块的导出方法视为其类型的接口。 一个对象的字段通常被认为是实现细节，如果这被声明为 API，用户代码应该只直接访问它们。 这有几个好处：
-=======
-## Prefer exported methods over direct field access
 
 Idiomatic Julia code should generally treat a module's exported methods as the
 interface to its types. An object's fields are generally considered
@@ -155,7 +146,6 @@ Counter-examples to this rule include [`NamedTuple`](@ref), [`RegexMatch`](@ref 
   * functions mutating at least one of their arguments end in `!`.
   * conciseness is valued, but avoid abbreviation ([`indexin`](@ref) rather than `indxin`) as
     it becomes difficult to remember whether and how particular words are abbreviated.
->>>>>>> cyhan/en-v1.10
 
 包开发人员可以更自由地更改实现而不会破坏用户代码。
 
@@ -336,15 +326,11 @@ show(io::IO, v::Vector{MyType}) = ...
 
 ## 避免类型盗版
 
-<<<<<<< HEAD
-“类型盗版”（type piracy）指的是扩展或是重定义 Base 或其它包中的并不是你所定义的类型的方法。在某些情况下，你可以几乎毫无副作用地逃避类型盗版。但在极端情况下，你甚至会让 Julia 崩溃（比如说你的方法扩展或重定义造成了对 `ccall` 传入了无效的输入）。类型盗版也让代码推导变得更复杂，且可能会引入难以预料和诊断的不兼容性。
-=======
 "Type piracy" refers to the practice of extending or redefining methods in Base
 or other packages on types that you have not defined. In extreme cases, you can crash Julia
 (e.g. if your method extension or redefinition causes invalid input to be passed to a
 `ccall`). Type piracy can complicate reasoning about code, and may introduce
 incompatibilities that are hard to predict and diagnose.
->>>>>>> cyhan/en-v1.10
 
 例如，你也许想在一个模块中定义符号上的乘法：
 
@@ -363,11 +349,7 @@ end
 
 通常会用 [`isa`](@ref) 和 [`<:`](@ref) 来对类型进行测试，而不会用到 `==`。检测类型的相等通常只对和一个已知的具体类型比较有意义（例如 `T == Float64`），或者你**真的真的**知道自己在做什么。
 
-<<<<<<< HEAD
 ## 不要写 `x->f(x)`
-=======
-## Don't write a trivial anonymous function `x->f(x)` for a named function `f`
->>>>>>> cyhan/en-v1.10
 
 因为调用高阶函数时经常会用到匿名函数，很容易认为这是合理甚至必要的。但任何函数都可以被直接传递，并不需要被“包"在一个匿名函数中。比如 `map(x->f(x), a)` 应当被写成 [`map(f, a)`](@ref)。
 

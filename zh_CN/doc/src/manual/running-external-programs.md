@@ -36,12 +36,7 @@ julia> run(mycommand);
 hello
 ```
 
-<<<<<<< HEAD
-`hello` 是 `echo` 命令的输出，发送到 [`stdout`](@ref)。 如果外部命令无法成功运行，则 run 方法会抛出 [`ErrorException`](@ref)。
-=======
-The `hello` is the output of the `echo` command, sent to [`stdout`](@ref). If the external command fails to run
-successfully, the run method throws an [`ProcessFailedException`](@ref).
->>>>>>> cyhan/en-v1.10
+`hello` 是 `echo` 命令的输出，发送到 [`stdout`](@ref)。 如果外部命令无法成功运行，则 run 方法会抛出 [`ProcessFailedException`](@ref)。
 
 如果要读取外部命令的输出，可以使用 [`read`](@ref) 或 [`readchomp`](@ref) 代替：
 
@@ -282,13 +277,7 @@ wait(writer)
 fetch(reader)
 ```
 
-<<<<<<< HEAD
-（通常，reader 不是一个单独的任务，因为无论如何我们都会立即`fetch`它）。
-=======
-(commonly also, reader is not a separate task, since we immediately `fetch` it anyways).
-
-### Complex Example
->>>>>>> cyhan/en-v1.10
+（通常，reader 不是一个单独的任务，因为无论如何我们都会立即 `fetch` 它）。
 
 ### 复杂示例
 
@@ -324,53 +313,31 @@ B Z 5
 
 此示例与前一个类似，不同之处在于本例中的消费者有两个阶段，并且阶段间有不同的延迟，因此它们使用不同数量的并行 worker 来维持饱和的吞吐量。
 
-<<<<<<< HEAD
 我们强烈建议你尝试所有这些例子，以便了解它们的工作原理。
 
 ## `Cmd`对象
 反引号语法创建一个 [`Cmd`](@ref) 类型的对象。 此类对象也可以直接从现有的 `Cmd` 或参数列表构造：
-=======
-We strongly encourage you to try all these examples to see how they work.
-
-## `Cmd` Objects
-The backtick syntax create an object of type [`Cmd`](@ref). Such object may also be constructed directly from
-an existing `Cmd` or list of arguments:
->>>>>>> cyhan/en-v1.10
 
 ```julia
 run(Cmd(`pwd`, dir=".."))
 run(Cmd(["pwd"], detach=true, ignorestatus=true))
 ```
 
-<<<<<<< HEAD
 这允许你通过关键字参数指定 `Cmd` 的执行环境的几个方面。 例如，`dir` 关键字提供对 `Cmd` 工作目录的控制：
-=======
-This allows you to specify several aspects of the `Cmd`'s execution environment via keyword arguments. For
-example, the `dir` keyword provides control over the `Cmd`'s working directory:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> run(Cmd(`pwd`, dir="/"));
 /
 ```
 
-<<<<<<< HEAD
 并且 `env` 关键字允许您设置执行环境变量：
-=======
-And the `env` keyword allows you to set execution environment variables:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> run(Cmd(`sh -c "echo foo \$HOWLONG"`, env=("HOWLONG" => "ever!",)));
 foo ever!
 ```
 
-<<<<<<< HEAD
 有关其它关键字参数，请参阅 [`Cmd`](@ref)。 [`setenv`](@ref) 和 [`addenv`](@ref) 命令分别提供了另一种替换或添加到 `Cmd` 执行环境变量的方法：
-=======
-See [`Cmd`](@ref) for additional keyword arguments. The [`setenv`](@ref) and [`addenv`](@ref) commands
-provide another means for replacing or adding to the `Cmd` execution environment variables, respectively:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> run(setenv(`sh -c "echo foo \$HOWLONG"`, ("HOWLONG" => "ever!",)));
