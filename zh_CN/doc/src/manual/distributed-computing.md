@@ -96,7 +96,6 @@ julia> fetch(s)
 [`@async`](@ref) 类似于 [`@spawnat`](@ref)，但只在本地进程上运行任务。我们使用它为每个进程创建一个“feeder”任务。每个任务选择需要计算的下一个索引，然后等待其进程完成，然后重复直到我们用完索引。请注意，feeder任务直到主任务到达 [`@sync`](@ref) 块的末尾才开始执行，此时它放弃控制并等待所有本地任务完成，然后从主任务返回功能。对于 v0.7 及更高版本，feeder 任务能够通过 `nextidx` 共享状态，因为它们都运行在同一个进程上。即使`Tasks` 是协作调度的，在某些上下文中可能仍然需要锁定，例如在 [asynchronous I/O](@ref faq-async-io) 中。这意味着上下文切换只发生在明确定义的点：在这种情况下，当 [`remotecall_fetch`](@ref) 被调用时。这是当前的实现状态，它可能会在未来的 Julia 版本中发生变化，因为它旨在使在 M个 `Process` 上运行最多 N 个 `Tasks` 成为可能，也就是 [M:N Threading](https://en.wikipedia.org/wiki/Thread_(computing)#Models)。然后，需要为 `nextidx` 提供锁获取/释放模型，因为让多个进程同时读写一个资源是不安全的。
 
 
-
 ## [访问代码以及加载库](@id code-availability)
 
 对于想要并行执行的代码，需要所有对所有进程都可见。例如，在 Julia 命令行中输入以下命令：
@@ -186,6 +185,7 @@ the process where [`using`](@ref) was called.
 
 最后，如果`DummyModule.jl`不是一个独立的文件，而是一个包，那么`using DummyModule`将在所有进程上_加载_ `DummyModule.jl`，但只在调用[`using`]（@ref）的进程上将其纳入作用域。
 
+
 ## 启动和管理 worker 进程
 
 Julia 自带两种集群管理模式：
@@ -212,6 +212,7 @@ julia> addprocs(2)
 请注意，worker 不会运行 `~/.julia/config/startup.jl` 启动脚本，也不会将其全局状态（例如全局变量、新方法定义和加载的模块）与任何其他正在运行的进程同步 。你可以使用 `addprocs(exeflags="--project")` 来初始化具有特定环境的 worker，然后使用 `@everywhere using <modulename>` 或 `@everywhere include("file.jl")`。
 
 其它类型的集群可以通过自己写一个 `ClusterManager` 来实现，下面 [集群管理器](@ref) 部分会介绍。
+
 
 ## 数据转移
 
@@ -245,7 +246,9 @@ julia> fetch(Bref);
 
 在这个简单示例中，这两种方法很容易区分和选择。 然而，在一个真正的程序设计数据转移可能需要更多的思考和一些测量。 例如，如果第一个进程需要矩阵`A`，那么第一种方法可能更好。 或者，如果计算 `A` 很昂贵并且只有当前进程拥有它，那么将它移到另一个进程可能是不可避免的。 或者，如果当前进程在 [`@spawnat`](@ref) 和 `fetch(Bref)` 之间几乎没有什么关系，最好完全消除并行性。 或者想象一下 `rand(1000,1000)` 被更昂贵的操作取代。 那么为这一步添加另一个 [`@spawnat`](@ref) 语句可能是有意义的。
 
+
 ## 全局变量
+
 通过 [`@spawnat`](@ref) 远程执行的表达式，或使用 [`remotecall`](@ref) 为远程执行指定的闭包可能会引用全局变量。 与其他模块中的全局绑定相比，模块 `Main` 下的全局绑定的处理方式略有不同。 考虑以下代码片段：
 
 ```julia-repl
@@ -392,6 +395,7 @@ julia> pmap(svdvals, M);
 ```
 
 Julia 中的 [`pmap`](@ref) 是被设计用来处理一些计算量比较复杂的函数的并行化的。与之对比的是，`@distributed for` 是用来处理一些每次迭代计算都很轻量的计算，比如简单地对两个数求和。[`pmap`](@ref) 和 `@distributed for` 都只会用到 worker 的进程。对于 `@distributed for` 而言，最后的聚合计算由发起者的进程完成。
+
 
 ## 远程引用和 AbstractChannel
 
@@ -575,7 +579,6 @@ v=[0], v2=[1], false
 重复一遍，一般来说这不是问题。 如果本地节点也被用作计算节点，并且在调用后使用的参数，则需要考虑此行为，并且如果需要，必须将参数的深拷贝传递给在本地节点上唤起的调用。 对远程节点的调用将始终对参数的副本进行操作。
 
 
-
 ## [共享数组](@id man-shared-arrays)
 
 共享数组使用系统共享内存将数组映射到多个进程上，尽管和 [`DArray`](https://github.com/JuliaParallel/DistributedArrays.jl) 有点像，但其实际表现有很大不同。在 [`DArray`](https://github.com/JuliaParallel/DistributedArrays.jl) 中，每个进程可以访问数据中的一块，但任意两个进程都不能共享同一块数据，而对于 [`SharedArray`](@ref)，每个进程都可以访问整个数组。如果你想在一台机器上，让一大块数据能够被多个进程访问到，那么 [`SharedArray`](@ref) 是个不错的选择。
@@ -754,6 +757,7 @@ julia> @time advection_shared!(q,u);
 
 和远程引用一样，共享数组也依赖于创建节点上的垃圾回收来释放所有参与的 worker 上的引用。因此，创建大量生命周期比较短的数组，并尽可能快地显式 finilize 这些对象，代码会更高效，这样与之对用的内存和文件句柄都会更快地释放。
 
+
 ## 集群管理器
 
 Julia 通过集群管理器实现对多个进程（所构成的逻辑上的集群）的启动，管理以及网络通信。一个 `ClusterManager` 负责：
@@ -879,17 +883,16 @@ end
 `WorkerConfig` 中的大多数字段都是内置的集群管理器会用到，对于自定义的管理器，通常只需要指定 `io` 或 `host`/`port`:
 
   * 如果指定了 `io`，那么就会用来读取 host/port 信息。每个 worker 会在启动时打印地址和端口，这样 worker 就可以自由监听可用的端口，而不必手动配置 worker 的端口。
-     
-     
+
   * 如果 `io` 没有指定，那么 `host` 和 `port` 就会用来连接。
+
   * `count`，`exename` 和 `exeflags` 用于从一个 worker 上启动额外的 worker。例如，一个集群管理器可能对每个节点都只启动一个 worker，然后再用它来启动额外的 worker。
-     
-     
 
       * `count` 可以是一个整数 `n`，用来指定启动 `n` 个 worker
       * `count` 还可以是 `:auto`，用来启动跟那台机器上 CPU 个数（逻辑上的核的个数）相同的 worker
       * `exename` 是 `julia` 可执行文件的全路径
       * `exeflags` 应该设置成传递给将要启动的 worker 命令行参数
+
   * `tunnel`, `bind_addr`, `sshflags` 和 `max_parallel` 会在从 worker 与 master 进程建立 ssh 隧道时用到
      
   * `userdata` 用来提供给自定义集群管理器存储自己的 worker 相关的信息
@@ -898,7 +901,6 @@ end
 
   * `:register`/`:deregister`，从 Julia 的 worker 池子中添加/删除一个 worker
   * `:interrupt`，当 `interrupt(workers)` 被调用是，此时，`ClusterManager` 应该给相应的 worker 发送终端信号
-     
   * `:finalize`，用于清理操作。
 
 ### 自定义集群管理器的传输方式
@@ -908,9 +910,7 @@ end
   * 每个进程都有31个通信task
   * 每个 task 在一个**消息处理循环**中从一个远端 worker 读取所有的输入信息
   * 每个消息处理循环等待一个 `IO` 对象（比如，在默认实现中是一个 [`TCPSocket`](@ref)），然后读取整个信息，处理，等待下一个
-     
   * 发送消息则可以直接在任意 Julia task 中完成，而不只是通信 task，同样，也是通过相应的 `IO` 对象
-     
 
 要替换默认的传输方式，需要新的实现能够在远程 worker 之间建立连接，同时提供一个可以用来被消息处理循环等待的 `IO` 对象。集群管理器的回调函数需要实现如下函数：
 
@@ -926,156 +926,22 @@ the other to write data that needs to be sent to worker `pid`. Custom cluster ma
 an in-memory `BufferStream` as the plumbing to proxy data between the custom, possibly non-`IO`
 transport and Julia's in-built parallel infrastructure.
 
-A `BufferStream` is an in-memory [`IOBuffer`](@ref) which behaves like an `IO`--it is a stream which can
-be handled asynchronously.
-
-The folder `clustermanager/0mq` in the [Examples repository](https://github.com/JuliaAttic/Examples)
-contains an example of using ZeroMQ to connect Julia workers
-in a star topology with a 0MQ broker in the middle. Note: The Julia processes are still all *logically*
-connected to each other--any worker can message any other worker directly without any awareness
-of 0MQ being used as the transport layer.
-
-When using custom transports:
-
-  * Julia workers must NOT be started with `--worker`. Starting with `--worker` will result in the
-    newly launched workers defaulting to the TCP/IP socket transport implementation.
-  * For every incoming logical connection with a worker, `Base.process_messages(rd::IO, wr::IO)()`
-    must be called. This launches a new task that handles reading and writing of messages from/to
-    the worker represented by the `IO` objects.
-  * `init_worker(cookie, manager::FooManager)` *must* be called as part of worker process initialization.
-  * Field `connect_at::Any` in `WorkerConfig` can be set by the cluster manager when [`launch`](@ref)
-    is called. The value of this field is passed in all [`connect`](@ref) callbacks. Typically,
-    it carries information on *how to connect* to a worker. For example, the TCP/IP socket transport
-    uses this field to specify the `(host, port)` tuple at which to connect to a worker.
-
-`kill(manager, pid, config)` is called to remove a worker from the cluster. On the master process,
-the corresponding `IO` objects must be closed by the implementation to ensure proper cleanup.
-The default implementation simply executes an `exit()` call on the specified remote worker.
-
-The Examples folder `clustermanager/simple` is an example that shows a simple implementation using UNIX domain
-sockets for cluster setup.
-
-### Network Requirements for LocalManager and SSHManager
-
-Julia clusters are designed to be executed on already secured environments on infrastructure such
-as local laptops, departmental clusters, or even the cloud. This section covers network security
-requirements for the inbuilt `LocalManager` and `SSHManager`:
-
-  * The master process does not listen on any port. It only connects out to the workers.
-  * Each worker binds to only one of the local interfaces and listens on an ephemeral port number
-    assigned by the OS.
-  * `LocalManager`, used by `addprocs(N)`, by default binds only to the loopback interface. This means
-    that workers started later on remote hosts (or by anyone with malicious intentions) are unable
-    to connect to the cluster. An `addprocs(4)` followed by an `addprocs(["remote_host"])` will fail.
-    Some users may need to create a cluster comprising their local system and a few remote systems.
-    This can be done by explicitly requesting `LocalManager` to bind to an external network interface
-    via the `restrict` keyword argument: `addprocs(4; restrict=false)`.
-  * `SSHManager`, used by `addprocs(list_of_remote_hosts)`, launches workers on remote hosts via SSH.
-    By default SSH is only used to launch Julia workers. Subsequent master-worker and worker-worker
-    connections use plain, unencrypted TCP/IP sockets. The remote hosts must have passwordless login
-    enabled. Additional SSH flags or credentials may be specified via keyword argument `sshflags`.
-  * `addprocs(list_of_remote_hosts; tunnel=true, sshflags=<ssh keys and other flags>)` is useful when
-    we wish to use SSH connections for master-worker too. A typical scenario for this is a local laptop
-    running the Julia REPL (i.e., the master) with the rest of the cluster on the cloud, say on Amazon
-    EC2. In this case only port 22 needs to be opened at the remote cluster coupled with SSH client
-    authenticated via public key infrastructure (PKI). Authentication credentials can be supplied
-    via `sshflags`, for example ```sshflags=`-i <keyfile>` ```.
-
-    In an all-to-all topology (the default), all workers connect to each other via plain TCP sockets.
-    The security policy on the cluster nodes must thus ensure free connectivity between workers for
-    the ephemeral port range (varies by OS).
-
-    Securing and encrypting all worker-worker traffic (via SSH) or encrypting individual messages
-    can be done via a custom `ClusterManager`.
-
-  * If you specify `multiplex=true` as an option to [`addprocs`](@ref), SSH multiplexing is used to create
-    a tunnel between the master and workers. If you have configured SSH multiplexing on your own and
-    the connection has already been established, SSH multiplexing is used regardless of `multiplex`
-    option. If multiplexing is enabled, forwarding is set by using the existing connection
-    (`-O forward` option in ssh). This is beneficial if your servers require password authentication;
-    you can avoid authentication in Julia by logging in to the server ahead of [`addprocs`](@ref). The control
-    socket will be located at `~/.ssh/julia-%r@%h:%p` during the session unless the existing multiplexing
-    connection is used. Note that bandwidth may be limited if you create multiple processes on a node
-    and enable multiplexing, because in that case processes share a single multiplexing TCP connection.
-
-### [Cluster Cookie](@id man-cluster-cookie)
-
-All processes in a cluster share the same cookie which, by default, is a randomly generated string
-on the master process:
-
-  * [`cluster_cookie()`](@ref) returns the cookie, while `cluster_cookie(cookie)()` sets
-    it and returns the new cookie.
-  * All connections are authenticated on both sides to ensure that only workers started by the master
-    are allowed to connect to each other.
-  * The cookie may be passed to the workers at startup via argument `--worker=<cookie>`. If argument
-    `--worker` is specified without the cookie, the worker tries to read the cookie from its
-    standard input ([`stdin`](@ref)). The `stdin` is closed immediately after the cookie is retrieved.
-  * `ClusterManager`s can retrieve the cookie on the master by calling [`cluster_cookie()`](@ref).
-    Cluster managers not using the default TCP/IP transport (and hence not specifying `--worker`)
-    must call `init_worker(cookie, manager)` with the same cookie as on the master.
-
-Note that environments requiring higher levels of security can implement this via a custom `ClusterManager`.
-For example, cookies can be pre-shared and hence not specified as a startup argument.
-
-## Specifying Network Topology (Experimental)
-
-The keyword argument `topology` passed to [`addprocs`](@ref) is used to specify how the workers must be
-connected to each other:
-
-  * `:all_to_all`, the default: all workers are connected to each other.
-  * `:master_worker`: only the driver process, i.e. `pid` 1, has connections to the workers.
-  * `:custom`: the `launch` method of the cluster manager specifies the connection topology via the
-    fields `ident` and `connect_idents` in `WorkerConfig`. A worker with a cluster-manager-provided
-    identity `ident` will connect to all workers specified in `connect_idents`.
-
-Keyword argument `lazy=true|false` only affects `topology` option `:all_to_all`. If `true`, the cluster
-starts off with the master connected to all workers. Specific worker-worker connections are established
-at the first remote invocation between two workers. This helps in reducing initial resources allocated for
-intra-cluster communication. Connections are setup depending on the runtime requirements of a parallel
-program. Default value for `lazy` is `true`.
-
-Currently, sending a message between unconnected workers results in an error. This behaviour,
-as with the functionality and interface, should be considered experimental in nature and may change
-in future releases.
-
-## Noteworthy external packages
-
-Outside of Julia parallelism there are plenty of external packages that should be mentioned.
-For example [MPI.jl](https://github.com/JuliaParallel/MPI.jl) is a Julia wrapper for the `MPI` protocol, [Dagger.jl](https://github.com/JuliaParallel/Dagger.jl) provides functionality similar to Python's [Dask](https://dask.org/), and
-[DistributedArrays.jl](https://github.com/JuliaParallel/Distributedarrays.jl) provides array operations distributed across workers, as presented in [Shared Arrays](@ref).
-
-A mention must be made of Julia's GPU programming ecosystem, which includes:
-
-1. [CUDA.jl](https://github.com/JuliaGPU/CUDA.jl) wraps the various CUDA libraries and supports compiling Julia kernels for Nvidia GPUs.
-
-2. [oneAPI.jl](https://github.com/JuliaGPU/oneAPI.jl) wraps the oneAPI unified programming model, and supports executing Julia kernels on supported accelerators. Currently only Linux is supported.
-
-3. [AMDGPU.jl](https://github.com/JuliaGPU/AMDGPU.jl) wraps the AMD ROCm libraries and supports compiling Julia kernels for AMD GPUs. Currently only Linux is supported.
-
-4. High-level libraries like [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl), [Tullio.jl](https://github.com/mcabbott/Tullio.jl) and [ArrayFire.jl](https://github.com/JuliaComputing/ArrayFire.jl).
-
-
-In the following example we will use both `DistributedArrays.jl` and `CUDA.jl` to distribute an array across multiple
-processes by first casting it through `distribute()` and `CuArray()`.
-
 `BufferStream` 是一个内存中的 [`IOBuffer`](@ref)，其表现很像 `IO`，就是一个**流**（stream），可以异步地处理。
 
-在 [Examples repository](https://github.com/JuliaAttic/Examples) 的 `clustermanager/0mq` 目录中，包含一个使用 ZeroMQ 连接 Julia worker 的例子，用的是星型拓补结构。需要注意的是：Julia 的进程仍然是**逻辑上**相互连接的，任意 worker 都可以与其它 worker 直接相连而无需感知到 0MQ 作为传输层的存在。
+在 [Examples repository](https://github.com/JuliaAttic/Examples) 的 `clustermanager/0mq` 目录中，
+包含一个使用 ZeroMQ 连接 Julia worker 的例子，用的是星型拓补结构。需要注意的是：
+Julia 的进程仍然是**逻辑上**相互连接的，任意 worker 都可以与其它 worker 直接相连而无需感知到 0MQ 作为传输层的存在。
 
 在使用自定义传输的时候：
 
-  * Julia 的 workers 必须**不能**通过 `--worker` 启动。如果启动的时候使用了 `--worker`，那么新启动的 worker 会默认使用基于 TCP/IP socket 的实现
-     
-  * 对于每个 worker 逻辑上的输入连接，必须调用 `Base.process_messages(rd::IO, wr::IO)()`，这会创建一个新的 task 来处理 worker 消息的读写
-     
-     
-  * `init_worker(cookie, manager::FooManager)` 必须作为 worker 进程初始化的一部分呢被调用
-  * `WorkerConfig `中的 `connect_at::Any` 字段可以被集群管理器在调用 [`launch`](@ref) 的时候设置，该字段的值会发送到所有的 [`connect`](@ref) 回调中。通常，其中包含的是**如何连接到**一个 worker 的信息。例如，在 TCP/IP socket 传输中，用这个字段存储 `(host, port)` 来声明如何连接到一个 worker。
-     
-     
-     
+* Julia 的 workers 必须**不能**通过 `--worker` 启动。如果启动的时候使用了 `--worker`，那么新启动的 worker 会默认使用基于 TCP/IP socket 的实现
+* 对于每个 worker 逻辑上的输入连接，必须调用 `Base.process_messages(rd::IO, wr::IO)()`，这会创建一个新的 task 来处理 worker 消息的读写
+* `init_worker(cookie, manager::FooManager)` 必须作为 worker 进程初始化的一部分呢被调用
+* `WorkerConfig `中的 `connect_at::Any` 字段可以被集群管理器在调用 [`launch`](@ref) 的时候设置，该字段的值会发送到所有的 [`connect`](@ref) 回调中。通常，其中包含的是**如何连接到**一个 worker 的信息。例如，在 TCP/IP socket 传输中，用这个字段存储 `(host, port)` 来声明如何连接到一个 worker。
 
-`kill(manager, pid, config)` 用来从一个集群中删除一个 worker，在 master 进程中，对应的 `IO` 对象必须通过对应的实现来关闭，从而保证正确地释放资源。默认的实现简单地对指定的远端 worker 执行 `exit()` 即可。
+`kill(manager, pid, config)` 用来从一个集群中删除一个 worker，在 master 进程中，
+对应的 `IO` 对象必须通过对应的实现来关闭，从而保证正确地释放资源。
+默认的实现简单地对指定的远端 worker 执行 `exit()` 即可。
 
 在例子目录中，`clustermanager/simple` 展示了一个简单地实现，使用的是 UNIX 下的 socket。
 
@@ -1084,19 +950,16 @@ processes by first casting it through `distribute()` and `CuArray()`.
 Julia 集群设计的时候，默认是在一个安全的环境中执行，比如本地的笔记本，部门的集群，甚至是云端。这部分将介绍 `LocalManager` 和 `SSHManager` 的网络安全要点：
 
   * master 进程不监听任何端口，它只负责向外连接 worker
+
   * 每个 worker 都只绑定一个本地的接口，同时监听一个操作系统分配的临时端口。
      
   * `addprocs(N)` 使用的 `LocalManager`，默认只会绑定到回环接口（loopback interface），这就意味着，之后在远程主机上（恶意）启动的 worker 无法连接到集群中，在执行 `addprocs(4)` 之后，又跟一个 `addprocs(["remote_host"])` 会失败。有些用户可能希望创建一个集群同时管理本地系统和几个远端系统，这可以通过在绑定 `LocalManager` 到外部网络接口的时候，指定一个 `restrict` 参数：`addprocs(4; restrict=false)`
-     
-     
-     
-     
-     
-  *  
-    `addprocs(list_of_remote_hosts)` 使用的 `SSHManager` 会通过 SSH 启动远程机上的 worker。
+
+  * `addprocs(list_of_remote_hosts)` 使用的 `SSHManager` 会通过 SSH 启动远程机上的 worker。
 默认 SSH 只会用来启动 Julia 的 worker。随后的 master-worker 和 worker-worker 连接使用的是普通的、未加密的 TCP/IP 通信。
     远程机必须开启免密登陆。
     额外的 SSH 标记或认证信息会通过关键字参数 `sshflags` 指定。
+
   * `addprocs(list_of_remote_hosts; tunnel=true, sshflags=<ssh keys and other flags>)` 在我们希望给 master-worker 也使用 SSH 连接的时候很有用。
     一个典型的场景是本地的笔记本
     运行 Julia ERPL （做为 master）和云上的其他机器，比如 Amazon EC2，构成集群。
@@ -1112,31 +975,20 @@ Julia 集群设计的时候，默认是在一个安全的环境中执行，比�
     都可以通过自定义 `ClusterManager` 完成。
 
   * 如果将 `multiplex=true` 指定为 [`addprocs`](@ref) 的选项，则 SSH 多路复用用于在 master 和 worker 之间创建隧道。 如果你自己配置了 SSH 多路复用并且已经建立了连接，则无论 `multiplex` 选项如何，都会使用 SSH 多路复用。 如果启用了多路复用，则使用现有连接（ssh 中的 `-O forward` 选项）设置转发。 如果你的服务器需要密码验证，那么这就很有用了；
-     
-     
-     
-     
+
     你可以通过在 [`addprocs`](@ref) 之前登录服务器来避免在 Julia 中进行身份验证。 除非使用现有的多路复用连接，否则在会话期间控制套接字将位于 `~/.ssh/julia-%r@%h:%p`。 请注意，如果你在一个节点上创建多个进程并启用多路复用，带宽可能会受到限制，因为在这种情况下，进程共享一个多路复用 TCP 连接。
-     
-     
-     
 
 ### [集群 Cookie](@id man-cluster-cookie)
 
 集群上所有的进程都共享同一个 cookie，默认是 master 进程随机生成的字符串。
 
   * [`cluster_cookie()`](@ref) 返回 cookie，而 `cluster_cookie(cookie)()` 设置并返回新的 cookie。
-     
   * 所有的连接都进行双向认证，从而保证只有 master 启动的 worker 才能相互连接。
-     
   * cookie 可以在 worker 启动的时候，通过参数 `--worker=<cookie>` 指定，如果参数 `--worker` 没有指定 cookie，那么 worker 会从它的标准输入中 ([`stdin`](@ref)) 读取， `stdin` 会在 cookie 获取之后立即关闭。
-     
-     
   * `ClusterManager` 可以通过 [`cluster_cookie()`](@ref) 从 master 中过去 cookie，不适用默认 TCP/IP 传输的集群管理器（即没有指定 `--worker`）必须用于 master 相同的 cookie 调用 `init_worker(cookie, manager)`。
-     
-     
 
 注意，在对安全性要求很高的环境中，可以通过自定义 `ClusterManager` 实现。例如，cookie 可以提前共享，然后不必再启动参数中指定。
+
 
 ## 指定网络拓补结构（实验性功能）
 
@@ -1145,12 +997,11 @@ Julia 集群设计的时候，默认是在一个安全的环境中执行，比�
   * `:all_to_all`，默认的，所有 worker 之间相互都连接
   * `:master_worker`，只有主进程，即 `pid` 为 1 的进程能够与 worker 建立连接
   * `:custom`: 集群管理器的 `launch` 方法通过 `WorkerConfig` 中的 `ident` 和 `connect_idents` 指定连接的拓补结构。一个 worker 通过集群管理器提供的 `ident` 来连接到所有 `connect_idents` 指定的 worker。
-     
-     
 
 关键字参数 `lazy=true|false` 只会影响 `topology` 选项中的 `:all_to_all`。如果是 `true`，那么集群启动的时候 master 会连接所有的 worker，然后 worker 之间的特定连接会在初次唤醒的是建立连接，这有利于降低集群初始化的时候对资源的分配。`lazy` 的默认值是 `true`。
 
 目前，在没有建立连接的两个 worker 之间传递消息会出错，目前该行为是实验性的，未来的版本中可能会改变。
+
 
 ## 一些值得关注的外部库
 
@@ -1289,6 +1140,7 @@ MPI.Finalize()
 ```
 mpirun -np 4 ./julia example.jl
 ```
+
 
 [^1]:
     In this context, MPI refers to the MPI-1 standard. Beginning with MPI-2, the MPI standards committee
