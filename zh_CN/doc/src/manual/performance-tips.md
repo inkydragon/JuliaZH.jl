@@ -185,7 +185,7 @@ julia> push!(a, 1); push!(a, 2.0); push!(a,  π)
 
 如果无法避免使用抽象值类型的容器，有时最好使用`Any`参数化以避免运行时类型检查。 例如。 `IdDict{Any, Any}` 的性能优于 `IdDict{Type, Vector}`。
 
-也请参见在[参数类型](@ref)下的讨论。
+也请参见在[参数类型](@ref Parametric-Types)下的讨论。
 
 ## 类型声明
 

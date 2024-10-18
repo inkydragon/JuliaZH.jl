@@ -377,7 +377,7 @@ julia> mytypeof(1.0)
 Float64
 ```
 
-就像你能在类型声明时通过类型参数对子类型进行约束一样（参见[参数类型](@ref)），你也可以约束方法的类型参数：
+就像你能在类型声明时通过类型参数对子类型进行约束一样（参见[参数类型](@ref Parametric-Types)），你也可以约束方法的类型参数：
 
 ```jldoctest
 julia> same_type_numeric(x::T, y::T) where {T<:Number} = true

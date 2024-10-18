@@ -294,7 +294,7 @@ julia> X(1, 2) === X(1, 2)
 true
 ```
 
-关于如何构造复合类型的实例还有很多要说的，但这种讨论依赖于[参数类型](@ref)和[方法](@ref)，并且这是非常重要的，应该在专门的章节中讨论：[构造函数](@ref man-constructors)。
+关于如何构造复合类型的实例还有很多要说的，但这种讨论依赖于[参数类型](@ref Parametric-Types)和[方法](@ref)，并且这是非常重要的，应该在专门的章节中讨论：[构造函数](@ref man-constructors)。
 
 For many user-defined types `X`, you may want to define a method [`Base.broadcastable(x::X) = Ref(x)`](@ref man-interfaces-broadcasting)
 so that instances of that type act as 0-dimensional "scalars" for [broadcasting](@ref Broadcasting).
