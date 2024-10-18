@@ -214,16 +214,10 @@ no
 
 Julia 中的 `&&` 和 `||` 运算符分别对应于逻辑“与”和“或”操作，并通常都这样使用。 但是，它们具有 *逻辑短路* 的特殊性质：不一定评估其第二个参数，下面会详细介绍。 （也有按位 `&` 和 `|` 运算符可用作逻辑“与”和“或”的*无*短路行为，但要注意 `&` 和 `|` 的评估时的优先级高于 `&& ` 和 `||` 。）
 
-<<<<<<< HEAD
-短路求值与条件求值非常相似。 这种行为在大多数具有 `&&` 和 `||` 布尔运算符的命令式编程语言中都可以找到：在一系列由这些运算符连接的布尔表达式中，为了得到整个链的最终布尔值，仅仅只有最小数量的表达式被计算。 一些语言（如 Python）将它们称为`and`（`&&`）和`or`（`||`）。 更准确地说，这意味着：
-=======
-Short-circuit evaluation is quite similar to conditional evaluation. The behavior is found in
-most imperative programming languages having the `&&` and `||` boolean operators: in a series
-of boolean expressions connected by these operators, only the minimum number of expressions are
-evaluated as are necessary to determine the final boolean value of the entire chain. Some
-languages (like Python) refer to them as `and` (`&&`) and `or` (`||`). Explicitly, this means
-that:
->>>>>>> cyhan/en-v1.10
+短路求值与条件求值非常相似。 这种行为在大多数具有 `&&` 和 `||` 布尔运算符的命令式编程语言中都可以找到：
+在一系列由这些运算符连接的布尔表达式中，为了得到整个链的最终布尔值，仅仅只有最小数量的表达式被计算。
+一些语言（如 Python）将它们称为 `and`（`&&`）和 `or`（`||`）。
+更准确地说，这意味着：
 
   * 在表达式 `a && b` 中，子表达式 `b` 仅当 `a` 为 `true` 的时候才会被执行。
   * 在表达式 `a || b` 中，子表达式 `b` 仅在 `a` 为 `false` 的时候才会被执行。
@@ -366,19 +360,13 @@ julia> for i = 1:3
 3
 ```
 
-<<<<<<< HEAD
-这里的 `1:5` 是一个范围对象，代表数字 1, 2, 3, 4, 5 的序列。`for` 循环在这些值之中迭代，对每一个变量 `i` 进行赋值。`for` 循环与之前 `while` 循环的一个非常重要区别是作用域，即变量的可见性。如果变量 `i` 没有在另一个作用域里引入，在 `for` 循环内，它就只在 `for` 循环内部可见，在外部和后面均不可见。你需要一个新的交互式会话实例或者一个新的变量名来测试这个特性：
-=======
-Here the `1:3` is a range object, representing the sequence of numbers 1, 2, 3. The `for`
-loop iterates through these values, assigning each one in turn to the variable `i`. One rather
-important distinction between the previous `while` loop form and the `for` loop form is the scope
-during which the variable is visible. A `for` loop always introduces a new iteration variable in
+这里的 `1:3` 是一个范围对象，代表数字 `1, 2, 3` 的序列。
+`for` 循环在这些值之中迭代，对每一个变量 `i` 进行赋值。`for` 循环与之前 `while` 循环的一个非常重要区别是作用域，即变量的可见性。
+A `for` loop always introduces a new iteration variable in
 its body, regardless of whether a variable of the same name exists in the enclosing scope.
 This implies that on the one hand `i` need not be declared before the loop. On the other hand it
 will not be visible outside the loop, nor will an outside variable of the same name be affected.
 You'll either need a new interactive session instance or a different variable
-name to test this:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> for j = 1:3
@@ -392,9 +380,6 @@ julia> j
 ERROR: UndefVarError: `j` not defined
 ```
 
-<<<<<<< HEAD
-参见[变量作用域](@ref scope-of-variables)中对变量作用域的详细解释以及它在 Julia 中是如何工作的。
-=======
 ```jldoctest
 julia> j = 0;
 
@@ -413,7 +398,6 @@ Use `for outer` to modify the latter behavior and reuse an existing local variab
 
 See [Scope of Variables](@ref scope-of-variables) for a detailed explanation of variable scope, [`outer`](@ref), and how it works in
 Julia.
->>>>>>> cyhan/en-v1.10
 
 一般来说，`for` 循环组件可以用于迭代任一个容器。在这种情况下，相比 `=`，另外的（但完全相同）关键字 `in` 或者 `∈` 则更常用，因为它使得代码更清晰：
 
@@ -748,9 +732,6 @@ catch
 end
 ```
 
-<<<<<<< HEAD
-`try/catch` 结构的强大之处在于能够立即将深度嵌套的计算展开到调用函数堆栈中的更高级别。 在某些情况下，没有发生错误，但需要能够展开堆栈并将值传递到更高级别。 Julia 提供了 [`rethrow`](@ref)、[`backtrace`](@ref)、[`catch_backtrace`](@ref) 和 [`current_exceptions`](@ref) 函数来进行更高级的错误处理。
-=======
 The power of the `try/catch` construct lies in the ability to unwind a deeply nested computation
 immediately to a much higher level in the stack of calling functions. There are situations where
 no error has occurred, but the ability to unwind the stack and pass a value to a higher level
@@ -794,7 +775,6 @@ end
     ```
     Use the [`local` keyword](@ref local-scope) outside the `try` block to make the variable
     accessible from anywhere within the outer scope.
->>>>>>> cyhan/en-v1.10
 
 ### `finally` 子句
 

@@ -1,11 +1,6 @@
 # 多进程和分布式计算
 
-<<<<<<< HEAD
 分布式内存并行计算的实现由模块 [`Distributed`](@ref man-distributed) 作为 Julia 附带的标准库的一部分提供。
-=======
-An implementation of distributed memory parallel computing is provided by module [`Distributed`](@ref man-distributed)
-as part of the standard library shipped with Julia.
->>>>>>> cyhan/en-v1.10
 
 大多数现代计算机都拥有不止一个 CPU，而且多台计算机可以组织在一起形成一个集群。借助多个 CPU 的计算能力，许多计算过程能够更快地完成，这其中影响性能的两个主要因素分别是：CPU 自身的速度以及它们访问内存的速度。显然，在一个集群中，一个 CPU 访问同一个节点的 RAM 速度是最快的，不过令人吃惊的是，在一台典型的多核笔记本电脑上，由于访问主存和[缓存](https://www.akkadia.org/drepper/cpumemory.pdf)的速度存在差别，类似的现象也会存在。因此，一个良好的多进程环境应该能够管理好某一片内存区域“所属”的CPU。Julia提供的多进程环境是基于消息传递来实现的，可以做到同时让程序在多个进程的不同内存区域中运行。
 
@@ -16,25 +11,20 @@ Julia 中的分布式编程基于两个基本概念：**远程引用**(*remote r
 
 远程引用有两种形式：[`Future`](@ref Distributed.Future) 和 [`RemoteChannel`](@ref)。
 
-<<<<<<< HEAD
 远程调用返回 [`Future`](@ref Distributed.Future) 作为其结果。 远程调用立即返回；当远程调用发生在其他地方后，发出调用的进程继续执行下一个操作。你可以通过在返回的 [`Future`](@ref Distributed.Future) 上调用 [`wait`](@ref) 来等待远程调用完成，并且可以使用 [`fetch `](@ref)。
-=======
-On the other hand, [`RemoteChannel`](@ref) s are rewritable. For example, multiple processes can
-coordinate their processing by referencing the same remote `Channel`.
->>>>>>> cyhan/en-v1.10
 
 对于 [`RemoteChannel`](@ref) 而言，它可以被反复写入。例如，多个进程可以通过引用同一个远程 `Channel` 来协调相互之间的操作。
 
-<<<<<<< HEAD
 
-每个进程都有一个关联的标识符。 提供交互式 Julia 提示符的进程的 `id` 总是等于 1。默认情况下用于并行操作的进程被称为“workers”。 当只有一个进程时，进程 1 被认为是一个worker。 否则，workers 被认为是进程 1 之外的所有进程。因此，需要添加 2 个或更多进程才能从 [`pmap`](@ref) 等并行处理方法中获益。 如果你只想在主进程中做其他事情，同时在工作进程上运行长时间的计算，那么添加单个进程是有益的。
+每个进程都有一个关联的标识符。 提供交互式 Julia 提示符的进程的 `id` 总是等于 1。
+默认情况下用于并行操作的进程被称为“workers”。
+当只有一个进程时，进程 1 被认为是一个worker。 否则，workers 被认为是进程 1 之外的所有进程。
+因此，需要添加 2 个或更多进程才能从 [`pmap`](@ref) 等并行处理方法中获益。
+如果你只想在主进程中做其他事情，同时在工作进程上运行长时间的计算，那么添加单个进程是有益的。
 
-让我们开始尝试。 以 `julia -p n` 开始，在本地机器上提供 `n` 个工作进程。 通常，`n` 等于机器上的 CPU 线程（逻辑核心）的数量是有意义的。 请注意，`-p` 参数隐式加载模块 [`Distributed`](@ref man-distributed)。
-=======
-Let's try this out. Starting with `julia -p n` provides `n` worker processes on the local machine.
-Generally it makes sense for `n` to equal the number of CPU threads (logical cores) on the machine. Note that the `-p`
-argument implicitly loads module [`Distributed`](@ref man-distributed).
->>>>>>> cyhan/en-v1.10
+让我们开始尝试。 以 `julia -p n` 开始，在本地机器上提供 `n` 个工作进程。
+通常，`n` 等于机器上的 CPU 线程（逻辑核心）的数量是有意义的。
+请注意，`-p` 参数隐式加载模块 [`Distributed`](@ref man-distributed)。
 
 
 ```julia
@@ -63,9 +53,6 @@ julia> remotecall_fetch(r-> fetch(r)[1, 1], 2, r)
 0.18526337335308085
 ```
 
-<<<<<<< HEAD
-这将获取 worker 2 上的数组并返回第一个值。 请注意，在这种情况下，`fetch` 不会移动任何数据，因为它是在拥有该数组的 worker 上执行的。 还可以这样写：
-=======
 This fetches the array on worker 2 and returns the first value. Note, that `fetch` doesn't move any data in
 this case, since it's executed on the worker that owns the array. One can also write:
 
@@ -76,7 +63,6 @@ julia> remotecall_fetch(getindex, 2, r, 1, 1)
 
 Remember that [`getindex(r,1,1)`](@ref) is [equivalent](@ref man-array-indexing) to `r[1,1]`, so this call fetches
 the first element of the future `r`.
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> remotecall_fetch(getindex, 2, r, 1, 1)
@@ -161,13 +147,8 @@ loaded
       From worker 2:    loaded
 ```
 
-<<<<<<< HEAD
-像往常一样，这不会将 `DummyModule` 引入任何进程的作用域，这需要 [`using`](@ref) 或 [`import`](@ref)。 此外，当 `DummyModule` 被带入一个进程的作用域时，它不在任何其他进程中：
-=======
-As usual, this does not bring `DummyModule` into scope on any of the process, which requires
-[`using`](@ref) or [`import`](@ref).  Moreover, when `DummyModule` is brought into scope on one process, it
-is not on any other:
->>>>>>> cyhan/en-v1.10
+像往常一样，这不会将 `DummyModule` 引入任何进程的作用域，这需要 [`using`](@ref) 或 [`import`](@ref)。
+此外，当 `DummyModule` 被带入一个进程的作用域时，它不在任何其他进程中：
 
 ```julia-repl
 julia> using .DummyModule
@@ -199,12 +180,9 @@ julia -p <n> -L file1.jl -L file2.jl driver.jl
 
 上面执行 `driver.jl` 的进程 id 为1，就跟提供交互式命令行的 Julia 进程一样。
 
-<<<<<<< HEAD
-=======
 Finally, if `DummyModule.jl` is not a standalone file but a package, then `using
 DummyModule` will _load_ `DummyModule.jl` on all processes, but only bring it into scope on
 the process where [`using`](@ref) was called.
->>>>>>> cyhan/en-v1.10
 
 最后，如果`DummyModule.jl`不是一个独立的文件，而是一个包，那么`using DummyModule`将在所有进程上_加载_ `DummyModule.jl`，但只在调用[`using`]（@ref）的进程上将其纳入作用域。
 
@@ -212,17 +190,6 @@ the process where [`using`](@ref) was called.
 
 Julia 自带两种集群管理模式：
 
-<<<<<<< HEAD
-  * 本地集群，前面通过启动时指定 `-p` 参数就是这种模式
-  * 跨机器的集群，通过 `--machine-file` 指定。这种模式采用没有密码的 `ssh` 登陆并对应的机器上（与 host 相同的路径下）启动 Julia 的 worker 进程。每个机器定义都采用 `[count*][user@]host[:port] [bind_addr[:port]]` 的形式。 `user` 默认为当前用户，`port` 为标准 ssh 端口。`count` 是在节点上生成的 worker 数量，默认为 1。可选的 `bind-to bind_addr[:port]` 指定其他 worker 应该用来连接到这个 worker 的 IP 地址和端口。
-     
-     
-     
-     
-     
-
-[`addprocs`](@ref), [`rmprocs`](@ref), [`workers`](@ref) 这些函数可以分别用来对集群中的进程进行增加，删除和修改。
-=======
 !!! note
     While Julia generally strives for backward compatibility, distribution of code to worker processes relies on
     [`Serialization.serialize`](@ref). As pointed out in the corresponding documentation, this can not be guaranteed to work across
@@ -230,7 +197,6 @@ Julia 自带两种集群管理模式：
 
 Functions [`addprocs`](@ref), [`rmprocs`](@ref), [`workers`](@ref), and others are available
 as a programmatic means of adding, removing and querying the processes in a cluster.
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> using Distributed
@@ -241,12 +207,7 @@ julia> addprocs(2)
  3
 ```
 
-<<<<<<< HEAD
 模块 [`Distributed`](@ref man-distributed) 必须在调用 [`addprocs`](@ref) 之前显式加载到主进程上。 它在工作进程上自动可用。
-=======
-Module [`Distributed`](@ref man-distributed) must be explicitly loaded on the master process before invoking [`addprocs`](@ref).
-It is automatically made available on the worker processes.
->>>>>>> cyhan/en-v1.10
 
 请注意，worker 不会运行 `~/.julia/config/startup.jl` 启动脚本，也不会将其全局状态（例如全局变量、新方法定义和加载的模块）与任何其他正在运行的进程同步 。你可以使用 `addprocs(exeflags="--project")` 来初始化具有特定环境的 worker，然后使用 `@everywhere using <modulename>` 或 `@everywhere include("file.jl")`。
 
@@ -284,31 +245,19 @@ julia> fetch(Bref);
 
 在这个简单示例中，这两种方法很容易区分和选择。 然而，在一个真正的程序设计数据转移可能需要更多的思考和一些测量。 例如，如果第一个进程需要矩阵`A`，那么第一种方法可能更好。 或者，如果计算 `A` 很昂贵并且只有当前进程拥有它，那么将它移到另一个进程可能是不可避免的。 或者，如果当前进程在 [`@spawnat`](@ref) 和 `fetch(Bref)` 之间几乎没有什么关系，最好完全消除并行性。 或者想象一下 `rand(1000,1000)` 被更昂贵的操作取代。 那么为这一步添加另一个 [`@spawnat`](@ref) 语句可能是有意义的。
 
-<<<<<<< HEAD
 ## 全局变量
 通过 [`@spawnat`](@ref) 远程执行的表达式，或使用 [`remotecall`](@ref) 为远程执行指定的闭包可能会引用全局变量。 与其他模块中的全局绑定相比，模块 `Main` 下的全局绑定的处理方式略有不同。 考虑以下代码片段：
-=======
-## Global variables
-Expressions executed remotely via [`@spawnat`](@ref), or closures specified for remote execution using
-[`remotecall`](@ref) may refer to global variables. Global bindings under module `Main` are treated
-a little differently compared to global bindings in other modules. Consider the following code
-snippet:
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 A = rand(10,10)
 remotecall_fetch(()->sum(A), 2)
 ```
 
-<<<<<<< HEAD
-在这种情况下，[`sum`](@ref) 必须在远程进程中定义。请注意，`A` 是在本地工作区中定义的全局变量。 worker 2 在 `Main` 下没有名为 `A` 的变量。 将闭包 `()->sum(A)` 传送到 worker 2 的行为导致 `Main.A` 被定义在 2 上。即使在调用 [`remotecall_fetch`](@ref) 返回之后， `Main.A` 仍然存在于 worker 2 上。带有嵌入式全局引用的远程调用（仅在`Main` 模块下）以如下的方式管理全局变量：
-=======
-In this case [`sum`](@ref) MUST be defined in the remote process.
-Note that `A` is a global variable defined in the local workspace. Worker 2 does not have a variable called
-`A` under `Main`. The act of shipping the closure `()->sum(A)` to worker 2 results in `Main.A` being defined
-on 2. `Main.A` continues to exist on worker 2 even after the call [`remotecall_fetch`](@ref) returns. Remote calls
-with embedded global references (under `Main` module only) manage globals as follows:
->>>>>>> cyhan/en-v1.10
+在这种情况下，[`sum`](@ref) 必须在远程进程中定义。
+请注意，`A` 是在本地工作区中定义的全局变量。 worker 2 在 `Main` 下没有名为 `A` 的变量。
+将闭包 `()->sum(A)` 传送到 worker 2 的行为导致 `Main.A` 被定义在 2 上。
+即使在调用 [`remotecall_fetch`](@ref) 返回之后， `Main.A` 仍然存在于 worker 2 上。
+带有嵌入式全局引用的远程调用（仅在 `Main` 模块下）以如下的方式管理全局变量：
 
 - 在全局调用中引用的全局绑定会在将要执行该调用的 worker 中被创建。
 
@@ -555,18 +504,7 @@ julia> @elapsed while n > 0 # print out results
 
 ## 本地调用
 
-<<<<<<< HEAD
 数据必须复制到远程节点以供执行。 远程调用和数据存储到不同节点上的 [`RemoteChannel`](@ref) / [`Future`](@ref Distributed.Future) 时都是这种情况。 正如预期的那样，这会在远程节点上生成序列化对象的副本。 但是，当目的节点是本地节点时，即调用进程id与远程节点id相同，则作为本地调用执行。 它通常（并非总是）在不同的 Task 中执行 - 但没有数据的序列化/反序列化。 因此，该调用引用了与传递相同的对象实例 - 没有创建副本。 这种行为在下面突出显示：
-=======
-Data is necessarily copied over to the remote node for execution. This is the case for both
-remotecalls and when data is stored to a [`RemoteChannel`](@ref) / [`Future`](@ref Distributed.Future) on
-a different node. As expected, this results in a copy of the serialized objects
-on the remote node. However, when the destination node is the local node, i.e.
-the calling process id is the same as the remote node id, it is executed
-as a local call. It is usually (not always) executed in a different task - but there is no
-serialization/deserialization of data. Consequently, the call refers to the same object instances
-as passed - no copies are created. This behavior is highlighted below:
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> using Distributed;
@@ -608,19 +546,9 @@ julia> println("Num Unique objects : ", length(unique(map(objectid, result))));
 Num Unique objects : 3
 ```
 
-<<<<<<< HEAD
 可以看出，本地拥有的 [`RemoteChannel`](@ref) 上的 [`put!`](@ref) 在调用之间修改了相同的对象 `v` 会导致存储相同的单个对象实例。 与当拥有 `rc` 的节点是不同节点时创建的 `v` 副本相反。
 
 需要注意的是，这通常不是问题。 只有当对象既存储在本地又在调用后被修改时，才需要考虑这一点。 在这种情况下，存储对象的 `deepcopy` 可能是合适的。
-=======
-As can be seen, [`put!`](@ref) on a locally owned [`RemoteChannel`](@ref) with the same
-object `v` modified between calls results in the same single object instance stored. As
-opposed to copies of `v` being created when the node owning `rc` is a different node.
-
-It is to be noted that this is generally not an issue. It is something to be factored in only
-if the object is both being stored locally and modified post the call. In such cases it may be
-appropriate to store a `deepcopy` of the object.
->>>>>>> cyhan/en-v1.10
 
 对于本地节点上的远程调用也是如此，如下例所示：
 
@@ -991,12 +919,6 @@ connect(manager::FooManager, pid::Integer, config::WorkerConfig)
 kill(manager::FooManager, pid::Int, config::WorkerConfig)
 ```
 
-<<<<<<< HEAD
-默认的实现（使用的是 TCP/IP socket）是 `connect(manager::ClusterManager, pid::Integer, config::WorkerConfig)`。
-
-
-`connect` 需要返回一对 `IO` 对象，一个用于从 `pid` worker 读取数据，另一个用于往 `pid` 写数据。自定义的集群管理器可以用内存中的 `BUfferStream` 作为一个管道将自定义的（很可能是非 `IO` 的）传输与 Julia 内置的并行基础设施衔接起来。
-=======
 The default implementation (which uses TCP/IP sockets) is implemented as `connect(manager::ClusterManager, pid::Integer, config::WorkerConfig)`.
 
 `connect` should return a pair of `IO` objects, one for reading data sent from worker `pid`, and
@@ -1135,7 +1057,6 @@ A mention must be made of Julia's GPU programming ecosystem, which includes:
 
 In the following example we will use both `DistributedArrays.jl` and `CUDA.jl` to distribute an array across multiple
 processes by first casting it through `distribute()` and `CuArray()`.
->>>>>>> cyhan/en-v1.10
 
 `BufferStream` 是一个内存中的 [`IOBuffer`](@ref)，其表现很像 `IO`，就是一个**流**（stream），可以异步地处理。
 
@@ -1294,15 +1215,9 @@ true
 julia> typeof(cuC)
 CuArray{Float64,1}
 ```
-<<<<<<< HEAD
-请记住，CUDAnative.jl[^2] 目前不支持某些 Julia 功能，尤其是像 `sin` 这样的一些函数需要替换为 `CUDAnative.sin`（cc：@maleadt）。
-
-下面的例子中，通过 `DistributedArrays.jl` 和 `CuArrays.jl` 将一个数组分配到多个进程，然后调用一个函数。
-=======
 
 In the following example we will use both `DistributedArrays.jl` and `CUDA.jl` to distribute an array across multiple
 processes and call a generic function on it.
->>>>>>> cyhan/en-v1.10
 
 ```julia
 function power_method(M, v)

@@ -1,44 +1,18 @@
-<<<<<<< HEAD
-# [多维数组](@id man-multi-dim-arrays)
+# [一维和多维数组](@id man-multi-dim-arrays)
 
-与大多数科学计算语言一样，Julia 提供原生的数组实现。 大多数科学计算语言非常重视其数组实现，而牺牲了其他容器。Julia 没有以任何特殊方式处理数组。就像和其它用 Julia 写的代码一样，Julia 的数组库几乎完全是用 Julia 自身实现的，并且由编译器保证其性能。因此，也可以通过继承 [`AbstractArray`](@ref) 来定义自定义数组类型。 有关实现自定义数组类型的更多详细信息，请参阅 [AbstractArray 接口的手册部分](@ref man-interface-array)。
+与大多数科学计算语言一样，Julia 提供原生的数组实现。大多数科学计算语言非常重视其数组实现，而牺牲了其他容器。Julia 没有以任何特殊方式处理数组。
+就像和其它用 Julia 写的代码一样，Julia 的数组库几乎完全是用 Julia 自身实现的，并且由编译器保证其性能。
+因此，也可以通过继承 [`AbstractArray`](@ref) 来定义自定义数组类型。
+有关实现自定义数组类型的更多详细信息，请参阅 [AbstractArray 接口的手册部分](@ref man-interface-array)。
 
-数组是存储在多维网格中对象的集合。在最一般的情况下， 数组中的对象可能是 [`Any`](@ref) 类型。
+数组是存储在多维网格中对象的集合。允许使用零维数组，请参见[常见问题]（@ref faq-array-0dim）。
+在最一般的情况下， 数组中的对象可能是 [`Any`](@ref) 类型。
 对于大多数计算上的需求，数组中对象的类型应该更加具体，例如 [`Float64`](@ref) 或 [`Int32`](@ref)。
-=======
-# [Single- and multi-dimensional Arrays](@id man-multi-dim-arrays)
 
-Julia, like most technical computing languages, provides a first-class array implementation. Most
-technical computing languages pay a lot of attention to their array implementation at the expense
-of other containers. Julia does not treat arrays in any special way. The array library is implemented
-almost completely in Julia itself, and derives its performance from the compiler, just like any
-other code written in Julia. As such, it's also possible to define custom array types by inheriting
-from [`AbstractArray`](@ref). See the [manual section on the AbstractArray interface](@ref man-interface-array)
-for more details on implementing a custom array type.
+一般来说，与许多其他科学计算语言不同，Julia 不希望为了性能而以向量化的方式编写程序。
+Julia 的编译器使用类型推断，并为标量数组索引生成优化的代码，从而能够令用户方便地编写可读性良好的程序，而不牺牲性能，并且时常会减少内存使用。
 
-An array is a collection of objects stored in a multi-dimensional grid. Zero-dimensional arrays
-are allowed, see [this FAQ entry](@ref faq-array-0dim). In the most general case,
-an array may contain objects of type [`Any`](@ref). For most computational purposes, arrays should contain
-objects of a more specific type, such as [`Float64`](@ref) or [`Int32`](@ref).
->>>>>>> cyhan/en-v1.10
-
-一般来说，与许多其他科学计算语言不同，Julia 不希望为了性能而以向量化的方式编写程序。Julia 的编译器使用类型推断，并为标量数组索引生成优化的代码，从而能够令用户方便地编写可读性良好的程序，而不牺牲性能，并且时常会减少内存使用。
-
-<<<<<<< HEAD
 在 Julia 中，所有函数的参数都是 [非复制的方式进行传递](https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_sharing)的（比如说，通过指针传递）。一些科学计算语言用传值的方式传递数组，尽管这样做可以防止数组在被调函数中被意外地篡改，但这也会导致不必要的数组拷贝。作为 Julia 的一个惯例，以一个 `!` 结尾的函数名它会对自己的一个或者多个参数的值进行修改或者销毁（例如，请比较 [`sort`](@ref) 和 [`sort!`](@ref)）。被调函数必须进行显式拷贝，以确保它们不会无意中修改输入参数。很多不以`!`结尾的函数在实现的时候，都会先进行显式拷贝，然后调用一个以 `!` 结尾的同名函数，最后返回之前拷贝的副本。
-=======
-In Julia, all arguments to functions are [passed by
-sharing](https://en.wikipedia.org/wiki/Evaluation_strategy#Call_by_sharing)
-(i.e. by pointers). Some technical computing languages pass arrays by value, and
-while this prevents accidental modification by callees of a value in the caller,
-it makes avoiding unwanted copying of arrays difficult. By convention, a
-function name ending with a `!` indicates that it will mutate or destroy the
-value of one or more of its arguments (compare, for example, [`sort`](@ref) and [`sort!`](@ref)).
-Callees must make explicit copies to ensure that they don't modify inputs that
-they don't intend to change. Many non-mutating functions are implemented by
-calling a function of the same name with an added `!` at the end on an explicit
-copy of the input, and returning that copy.
->>>>>>> cyhan/en-v1.10
 
 ## 基本函数
 
@@ -61,7 +35,6 @@ Julia 提供了许多用于构造和初始化数组的函数。在下列函数�
 
 | 函数                           | 描述                                                                                                                                                                                                                                  |
 |:---------------------------------- |:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-<<<<<<< HEAD
 | [`Array{T}(undef, dims...)`](@ref)             | 一个没有初始化的密集 [`Array`](@ref)                                                                                                                                                                                                              |
 | [`zeros(T, dims...)`](@ref)                    | 一个全零 `Array`                                                                                                                                                                                                                      |
 | [`ones(T, dims...)`](@ref)                     | 一个元素均为 1 的 `Array`                                                                                                                                                                                                                       |
@@ -72,30 +45,12 @@ Julia 提供了许多用于构造和初始化数组的函数。在下列函数�
 | [`deepcopy(A)`](@ref)                          | 深拷贝，即拷贝 `A`，并递归地拷贝其元素                                                                                                                                                                                                   |
 | [`similar(A, T, dims...)`](@ref)               | 一个与`A`具有相同类型（这里指的是密集，稀疏等）的未初始化数组，但具有指定的元素类型和维数。第二个和第三个参数都是可选的，如果省略则默认为元素类型和 `A` 的维数。 |
 | [`reinterpret(T, A)`](@ref)                    | 与 `A` 具有相同二进制数据的数组，但元素类型为 `T`                                                                                                                                                                         |
-| [`rand(T, dims...)`](@ref)                     | 一个随机 `Array`，元素值是 ``[0, 1)`` 半开区间中的均匀分布且服从一阶独立同分布 [^1]                                                                                                                                       |
+| [`rand(T, dims...)`](@ref)                     |  一个随机 `Array`，其元素值是 iid [^1] 和均匀分布值的。 对于浮点类型 `T`，数值位于半开放区间 ``[0, 1)`` 内。 |
 | [`randn(T, dims...)`](@ref)                    | 一个随机 `Array`，元素为标准正态分布，服从独立同分布                                                                                                                                                                         |
 | [`Matrix{T}(I, m, n)`](@ref)                   | `m` 行 `n` 列的单位矩阵 （需要先执行 `using LinearAlgebra` 来才能使用 [`I`](@ref)）                                                                                                                                                                                                                   |
-| [`range(start, stop=stop, length=n)`](@ref)    | 从 `start` 到 `stop` 的带有 `n` 个线性间隔元素的范围                                                                                                                                                                                 |
+| [`range(start, stop, n)`](@ref)                | 从 `start` 到 `stop` 的带有 `n` 个线性间隔元素的范围                                                                                                                                                                                 |
 | [`fill!(A, x)`](@ref)                          | 用值 `x` 填充数组 `A`                                                                                                                                                                                                        |
-| [`fill(x, dims...)`](@ref)                     | 一个被值 `x` 填充的 `Array`                                                                                                                                                                                                         |
-=======
-| [`Array{T}(undef, dims...)`](@ref)             | an uninitialized dense [`Array`](@ref)                                                                                                                                                                                                              |
-| [`zeros(T, dims...)`](@ref)                    | an `Array` of all zeros                                                                                                                                                                                                                      |
-| [`ones(T, dims...)`](@ref)                     | an `Array` of all ones                                                                                                                                                                                                                       |
-| [`trues(dims...)`](@ref)                       | a [`BitArray`](@ref) with all values `true`                                                                                                                                                                                                  |
-| [`falses(dims...)`](@ref)                      | a `BitArray` with all values `false`                                                                                                                                                                                                         |
-| [`reshape(A, dims...)`](@ref)                  | an array containing the same data as `A`, but with different dimensions                                                                                                                                                                      |
-| [`copy(A)`](@ref)                              | copy `A`                                                                                                                                                                                                                                     |
-| [`deepcopy(A)`](@ref)                          | copy `A`, recursively copying its elements                                                                                                                                                                                                   |
-| [`similar(A, T, dims...)`](@ref)               | an uninitialized array of the same type as `A` (dense, sparse, etc.), but with the specified element type and dimensions. The second and third arguments are both optional, defaulting to the element type and dimensions of `A` if omitted. |
-| [`reinterpret(T, A)`](@ref)                    | an array with the same binary data as `A`, but with element type `T`                                                                                                                                                                         |
-| [`rand(T, dims...)`](@ref)                     | an `Array` with random, iid [^1] and uniformly distributed values. For floating point types `T`, the values lie in the half-open interval ``[0, 1)``.                                                                                                                                       |
-| [`randn(T, dims...)`](@ref)                    | an `Array` with random, iid and standard normally distributed values                                                                                                                                                                         |
-| [`Matrix{T}(I, m, n)`](@ref)                   | `m`-by-`n` identity matrix. Requires `using LinearAlgebra` for [`I`](@ref).                                                                                                                                                                                                                   |
-| [`range(start, stop, n)`](@ref)                | a range of `n` linearly spaced elements from `start` to `stop` |
-| [`fill!(A, x)`](@ref)                          | fill the array `A` with the value `x`                                                                                                                                                                                                        |
-| [`fill(x, dims...)`](@ref)                     | an `Array` filled with the value `x`. In particular, `fill(x)` constructs a zero-dimensional `Array` containing `x`. |
->>>>>>> cyhan/en-v1.10
+| [`fill(x, dims...)`](@ref)                     | 一个由 `x` 填充的 `Array`。特别的，`fill(x)` 构造了一个包含 `x` 的零维 `Array`。 |
 
 [^1]: *iid*，独立同分布
 
@@ -120,27 +75,14 @@ julia> zeros((2, 3))
 
 ## [数组常量](@id man-array-literals)
 
-<<<<<<< HEAD
-数组也可以直接用方括号来构造; 语法为 `[A, B, C, ...]`
-创建一个一维数组(即一个向量)，该一维数组的元素用逗号分隔。所创建的数组中元素的类型([`eltype`](@ref)) 自动由括号内参数的类型确定。如果所有参数类型都相同，则该类型称为数组的 `eltype`。 如果所有元素都有相同的[promotion type](@ref conversion-and-promotion)，那么个元素都由[`convert`](@ref)转换成该类型并且该类型为数组的 `eltype`. 否则, 生成一个可以包含任意类型的异构数组—— `Vector{Any}` ;该构造方法包含字符 `[]`，此时构造过程无参数给出。
+数组也可以直接用方括号来构造; 语法 `[A, B, C, ...]` 创建一个一维数组(即一个向量)，该一维数组的元素用逗号分隔。
+所创建的数组中元素的类型([`eltype`](@ref)) 自动由括号内参数的类型确定。如果所有参数类型都相同，则该类型称为数组的 `eltype`。
+如果所有元素都有相同的[promotion type](@ref conversion-and-promotion)，那么个元素都由[`convert`](@ref)转换成该类型并且该类型为数组的 `eltype`。
+否则, 生成一个可以包含任意类型的异构数组—— `Vector{Any}` ;该构造方法包含字符 `[]`，此时构造过程无参数给出。
+[Array literal can be typed](@ref man-array-typed-literal) with the syntax `T[A, B, C, ...]` where `T` is a type.
 
 ```jldoctest
 julia> [1,2,3] # 元素类型为 Int 的向量
-=======
-Arrays can also be directly constructed with square braces; the syntax `[A, B, C, ...]`
-creates a one-dimensional array (i.e., a vector) containing the comma-separated arguments as
-its elements. The element type ([`eltype`](@ref)) of the resulting array is automatically
-determined by the types of the arguments inside the braces. If all the arguments are the
-same type, then that is its `eltype`. If they all have a common
-[promotion type](@ref conversion-and-promotion) then they get converted to that type using
-[`convert`](@ref) and that type is the array's `eltype`. Otherwise, a heterogeneous array
-that can hold anything — a `Vector{Any}` — is constructed; this includes the literal `[]`
-where no arguments are given. [Array literal can be typed](@ref man-array-typed-literal) with
-the syntax `T[A, B, C, ...]` where `T` is a type.
-
-```jldoctest
-julia> [1, 2, 3] # An array of `Int`s
->>>>>>> cyhan/en-v1.10
 3-element Vector{Int64}:
  1
  2
@@ -167,14 +109,8 @@ Any[]
 
 ### [数组拼接](@id man-array-concatenation)
 
-<<<<<<< HEAD
 如果方括号里的参数不是由逗号分隔，而是由单个分号(`;`) 或者换行符分隔，那么每一个参数就不再解析为一个单独的数组元素，而是纵向拼接起来。
  
-=======
-If the arguments inside the square brackets are separated by single semicolons (`;`) or newlines
-instead of commas, then their contents are _vertically concatenated_ together instead of
-the arguments being used as elements themselves.
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> [1:2, 4:5] # 这里有一个逗号，因此并不会发生矩阵的拼接。这里居然的元素本身就是这些 range
@@ -200,12 +136,7 @@ julia> [1:2
  6
 ```
 
-<<<<<<< HEAD
 类似的，如果这些参数是被制表符、空格符或者两个分号所分隔，那么它们的内容就_横向拼接_在一起。
-=======
-Similarly, if the arguments are separated by tabs or spaces or double semicolons, then their contents are
-_horizontally concatenated_ together.
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> [1:2  4:5  7:8]
@@ -227,12 +158,7 @@ julia> [1;; 2;; 3;; 4]
  1  2  3  4
 ```
 
-<<<<<<< HEAD
 单个分号（或换行符）和空格（或制表符）可以被结合起来使用进行横向或者纵向的拼接。
-=======
-Single semicolons (or newlines) and spaces (or tabs) can be combined to concatenate
-both horizontally and vertically at the same time.
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> [1 2
@@ -253,8 +179,6 @@ julia> [[1 1]; 2 3; [4 4]]
  1  1
  2  3
  4  4
-<<<<<<< HEAD
-=======
 ```
 
 Spaces (and tabs) have a higher precedence than semicolons, performing any horizontal
@@ -366,26 +290,10 @@ julia> [2; 3;;;]
 [:, :, 1] =
  2
  3
->>>>>>> cyhan/en-v1.10
 ```
 
 空格（和制表符）的优先级高于分号，首先执行任何纵向拼接，然后拼接结果。 另一方面，使用双分号进行水平连接时，先纵向拼接再横向拼接。
 
-<<<<<<< HEAD
-```jldoctest
-julia> [zeros(Int, 2, 2) ; [3 4] ;; [1; 2] ; 5]
-3×3 Matrix{Int64}:
- 0  0  1
- 0  0  2
- 3  4  5
-
-julia> [1:2; 4;; 1; 3:4]
-3×2 Matrix{Int64}:
- 1  1
- 2  3
- 4  4
-```
-=======
 | Syntax                 | Function         | Description                                                                                                |
 |:---------------------- |:---------------- |:---------------------------------------------------------------------------------------------------------- |
 |                        | [`cat`](@ref)    | concatenate input arrays along dimension(s) `k`                                                            |
@@ -395,7 +303,6 @@ julia> [1:2; 4;; 1; 3:4]
 | `[A; C;; B; D;;; ...]` | [`hvncat`](@ref) | simultaneous n-dimensional concatenation, where number of semicolons indicate the dimension to concatenate |
 
 ### [Typed array literals](@id man-array-typed-literal)
->>>>>>> cyhan/en-v1.10
 
 正如 `;` 和 `;;` 在第一维和第二维中拼接一样，使用更多的分号扩展了相同的通用方案。 分隔符中的分号数指定了特定的维度，因此`;;;` 在第三个维度中拼接，`;;;;` 在第四个维度中，依此类推。 较少的分号优先级高，因此较低的维度通常首先拼接。
 
@@ -719,17 +626,9 @@ A[I_1, I_2, ..., I_n] = X
 
 如果所有 `I_k` 都为整数，则数组 `A` 中 `I_1, I_2, ..., I_n` 位置的值将被 `X` 的值覆盖，必要时将 [`convert`](@ref) 为数组 `A` 的 [`eltype`](@ref)。
 
-
-<<<<<<< HEAD
-如果索引 `I_k` 本身就是一个数组，那么右侧的 `X` 也必须是一个与索引 `A[I_1, I_2, ..., I_n]` 的结果具有相同形状的数组或是具有相同数量元素的向量。 `A` 的位置 `I_1[i_1], I_2[i_2], ..., I_n[i_n]` 中的值被值 `X[I_1, I_2, ..., I_n]` 覆盖，如果必要也会进行类型转换。 元素分配运算符 `.=` 可以用于沿着所选区域 [广播](@ref Broadcasting) `X`：
-=======
-If any index `I_k` is itself an array, then the right hand side `X` must also be an
-array with the same shape as the result of indexing `A[I_1, I_2, ..., I_n]` or a vector with
-the same number of elements. The value in location `I_1[i_1], I_2[i_2], ..., I_n[i_n]` of
-`A` is overwritten with the value `X[I_1, I_2, ..., I_n]`, converting if necessary. The
-element-wise assignment operator `.=` may be used to [broadcast](@ref Broadcasting) `X`
-across the selected locations:
->>>>>>> cyhan/en-v1.10
+如果索引 `I_k` 本身就是一个数组，那么右侧的 `X` 也必须是一个与索引 `A[I_1, I_2, ..., I_n]` 的结果具有相同形状的数组或是具有相同数量元素的向量。
+`A` 的位置 `I_1[i_1], I_2[i_2], ..., I_n[i_n]` 中的值被值 `X[I_1, I_2, ..., I_n]` 覆盖，如果必要也会进行类型转换。
+元素分配运算符 `.=` 可以用于沿着所选区域 [广播](@ref Broadcasting) `X`：
 
 
 ```
@@ -766,33 +665,18 @@ julia> x
 
 在表达式 `A[I_1, I_2, ..., I_n]` 中，每个 `I_k` 可以是标量索引，标量索引数组，或者用 [`to_indices`](@ref) 转换成的表示标量索引数组的对象：
 
-<<<<<<< HEAD
 1. 标量索引。默认情况下，这包括：
     * 非布尔的整数
     * [`CartesianIndex{N}`](@ref) 用来表达多个维度的信息（详见下文），其内部实际为 N个整数组成的元组。
 2. 标量索引数组。这包括：
     * 整数向量和多维整数数组
-    * 像 `[]` 这样的空数组，它不选择任何元素
+    * 像 `[]` 这样的空数组，它不选择任何元素。e.g. `A[[]]` (not to be confused with `A[]`)
     * 如 `a:c` 或 `a:b:c` 的范围，从 `a` 到 `c`（包括）选择连续或间隔的部分元素
     * 任何自定义标量索引数组，它是 `AbstractArray` 的子类型
     * `CartesianIndex{N}` 数组（详见下文）
 3. 一个表示标量索引数组的对象，可以通过[`to_indices`](@ref)转换为这样的对象。 默认情况下，这包括：
     * [`Colon()`](@ref) (`:`)，表示整个维度内或整个数组中的所有索引
     * 布尔数组，选择其中值为 `true` 的索引对应的元素（更多细节见下文）
-=======
-1. A scalar index. By default this includes:
-    * Non-boolean integers
-    * [`CartesianIndex{N}`](@ref)s, which behave like an `N`-tuple of integers spanning multiple dimensions (see below for more details)
-2. An array of scalar indices. This includes:
-    * Vectors and multidimensional arrays of integers
-    * Empty arrays like `[]`, which select no elements e.g. `A[[]]` (not to be confused with `A[]`)
-    * Ranges like `a:c` or `a:b:c`, which select contiguous or strided subsections from `a` to `c` (inclusive)
-    * Any custom array of scalar indices that is a subtype of `AbstractArray`
-    * Arrays of `CartesianIndex{N}` (see below for more details)
-3. An object that represents an array of scalar indices and can be converted to such by [`to_indices`](@ref). By default this includes:
-    * [`Colon()`](@ref) (`:`), which represents all indices within an entire dimension or across the entire array
-    * Arrays of booleans, which select elements at their `true` indices (see below for more details)
->>>>>>> cyhan/en-v1.10
 
 一些例子：
 ```jldoctest
@@ -972,18 +856,11 @@ julia> LinearIndices(A)[2, 2]
 5
 ```
 
-<<<<<<< HEAD
-需要注意的是，这些转换的性能存在很大的不对称性。 将线性索引转换为一组笛卡尔索引需要做除法取余数，而相反的转换只是相乘和相加。 在现代处理器中，整数除法比乘法慢 10-50 倍。 虽然一些数组——比如 [`Array`](@ref) 本身——是使用线性内存块实现的，并在它们的实现中直接使用线性索引，但其他数组——比如 [`Diagonal`](@ref)——需要完整的笛卡尔索引集进行查找（请参阅 [`IndexStyle`](@ref) 以仔细推敲）。 因此，当遍历整个数组时，最好遍历 [`eachindex(A)`](@ref) 而不是 `1:length(A)`。 在 `A` 是 `IndexCartesian` 的情况下，前者不仅会快得多，而且它还支持 OffsetArrays（译者注：OffsetArrays.jl是Julia的一个包，支持矩阵的下标不从1开始）。
-=======
-It's important to note that there's a very large asymmetry in the performance
-of these conversions. Converting a linear index to a set of cartesian indices
-requires dividing and taking the remainder, whereas going the other way is just
-multiplies and adds. In modern processors, integer division can be 10-50 times
-slower than multiplication. While some arrays — like [`Array`](@ref) itself —
-are implemented using a linear chunk of memory and directly use a linear index
-in their implementations, other arrays — like [`Diagonal`](@ref) — need the
-full set of cartesian indices to do their lookup (see [`IndexStyle`](@ref) to
-introspect which is which).
+需要注意的是，这些转换的性能存在很大的不对称性。
+将线性索引转换为一组笛卡尔索引需要做除法取余数，而相反的转换只是相乘和相加。在现代处理器中，整数除法比乘法慢 10-50 倍。
+虽然一些数组——比如 [`Array`](@ref) 本身——是使用线性内存块实现的，并在它们的实现中直接使用线性索引，但其他数组——比如 [`Diagonal`](@ref)——需要完整的笛卡尔索引集进行查找
+（请参阅 [`IndexStyle`](@ref) 以仔细推敲）。
+（译者注：OffsetArrays.jl是Julia的一个包，支持矩阵的下标不从1开始）。
 
 !!! warnings
 
@@ -992,7 +869,6 @@ introspect which is which).
     Not only will this be faster in cases where `A` is `IndexCartesian`,
     but it will also support arrays with custom indexing, such as [OffsetArrays](https://github.com/JuliaArrays/OffsetArrays.jl).
     If only the values are needed, then is better to just iterate the array directly, i.e. `for a in A`.
->>>>>>> cyhan/en-v1.10
 
 #### [省略和额外的索引](@id Omitted-and-extra-indices)
 
@@ -1070,15 +946,11 @@ i = CartesianIndex(2, 2)
 i = CartesianIndex(3, 2)
 ```
 
-<<<<<<< HEAD
-与 `for i = 1:length(A)` 相比，[`eachindex`](@ref) 提供了一种迭代任何数组类型的有效方法。
-=======
 !!! note
 
     In contrast with `for i = 1:length(A)`, iterating with [`eachindex`](@ref) provides an efficient way to
     iterate over any array type. Besides, this also supports generic arrays with custom indexing such as
     [OffsetArrays](https://github.com/JuliaArrays/OffsetArrays.jl).
->>>>>>> cyhan/en-v1.10
 
 ## Array traits
 
