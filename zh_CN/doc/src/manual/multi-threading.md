@@ -350,38 +350,20 @@ julia> acc[]
 ```
 
 
-## [Per-field atomics](@id man-atomics)
+## [field 粒度的原子操作](@id man-atomics)
 
-We can also use atomics on a more granular level using the [`@atomic`](@ref
-Base.@atomic), [`@atomicswap`](@ref Base.@atomicswap), and
-[`@atomicreplace`](@ref Base.@atomicreplace) macros.
+我们还可以使用[`@atomic`](@ref Base.@atomic)、[`@atomicswap`](@ref Base.@atomicswap)和
+[`@atomicreplace`](@ref Base.@atomicreplace) 宏在更细粒度的级别上使用原子。
 
-Specific details of the memory model and other details of the design are written
-in the [Julia Atomics
-Manifesto](https://gist.github.com/vtjnash/11b0031f2e2a66c9c24d33e810b34ec0),
-which will later be published formally.
+内存模型的具体细节和设计的其他细节写在
+[Julia Atomics Manifesto](https://gist.github.com/vtjnash/11b0031f2e2a66c9c24d33e810b34ec0)中，稍后将正式发布。
 
-Any field in a struct declaration can be decorated with `@atomic`, and then any
-write must be marked with `@atomic` also, and must use one of the defined atomic
-orderings (`:monotonic`, `:acquire`, `:release`, `:acquire_release`, or
-`:sequentially_consistent`). Any read of an atomic field can also be annotated
-with an atomic ordering constraint, or will be done with monotonic (relaxed)
-ordering if unspecified.
+结构体声明中的任何字段都可以用 `@atomic` 修饰，然后任何写入也必须用 `@atomic` 标记，
+并且必须使用定义的原子顺序之一（`:monotonic`, `:acquire`, `:release`, `:acquire_release`, 或 `:sequentially_consistent`)。
+ 对原子字段的任何读取也可以使用原子排序约束进行注释，或者如果未指定，将使用单调（宽松）排序完成。
 
 !!! compat "Julia 1.7"
-    Per-field atomics requires at least Julia 1.7.
-
-
-## [field粒度的原子操作](@id man-atomics)
-
-我们还可以使用[`@atomic`](@ref Base.@atomic)、[`@atomicswap`](@ref Base.@atomicswap)和[`@atomicreplace`](@ref Base.@atomicreplace) 宏在更细粒度的级别上使用原子。
-
-内存模型的具体细节和设计的其他细节写在[Julia Atomics Manifesto](https://gist.github.com/vtjnash/11b0031f2e2a66c9c24d33e810b34ec0)中，稍后将正式发布。
-
-struct 声明中的任何字段都可以用 `@atomic` 修饰，然后任何写入也必须用 `@atomic` 标记，并且必须使用定义的原子顺序之一（:monotonic、:acquire、:release、:acquire \_release 或 :sequentially\_consistent)。 对原子字段的任何读取也可以使用原子排序约束进行注释，或者如果未指定，将使用单调（宽松）排序完成。
-
-!!! compat "Julia 1.7"
-    field粒度的原子操作至少需要 Julia 1.7.
+    field 粒度的原子操作至少需要 Julia 1.7.
 
 
 ## 副作用和可变的函数参数
