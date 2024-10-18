@@ -113,11 +113,11 @@ Argument-type declarations **normally have no impact on performance**: regardles
 * **Correctness:** Type declarations can be useful if your function only returns correct results for certain argument types.  For example, if we omitted argument types and wrote `fib(n) = n ≤ 2 ? one(n) : fib(n-1) + fib(n-2)`, then `fib(1.5)` would silently give us the nonsensical answer `1.0`.
 * **Clarity:** Type declarations can serve as a form of documentation about the expected arguments.
 
-However, it is a **common mistake to overly restrict the argument types**, which can unnecessarily limit the applicability of the function and prevent it from being re-used in circumstances you did not anticipate.    For example, the `fib(n::Integer)` function above works equally well for `Int` arguments (machine integers) and `BigInt` arbitrary-precision integers (see [BigFloats and BigInts](@ref BigFloats-and-BigInts)), which is especially useful because Fibonacci numbers grow exponentially rapidly and will quickly overflow any fixed-precision type like `Int` (see [Overflow behavior](@ref)).  If we had declared our function as `fib(n::Int)`, however, the application to `BigInt` would have been prevented for no reason.   In general, you should use the most general applicable abstract types for arguments, and **when in doubt, omit the argument types**.  You can always add argument-type specifications later if they become necessary, and you don't sacrifice performance or functionality by omitting them.
+However, it is a **common mistake to overly restrict the argument types**, which can unnecessarily limit the applicability of the function and prevent it from being re-used in circumstances you did not anticipate.    For example, the `fib(n::Integer)` function above works equally well for `Int` arguments (machine integers) and `BigInt` arbitrary-precision integers (see [BigFloats and BigInts](@ref BigFloats-and-BigInts)), which is especially useful because Fibonacci numbers grow exponentially rapidly and will quickly overflow any fixed-precision type like `Int` (see [溢出行为](@ref)).  If we had declared our function as `fib(n::Int)`, however, the application to `BigInt` would have been prevented for no reason.   In general, you should use the most general applicable abstract types for arguments, and **when in doubt, omit the argument types**.  You can always add argument-type specifications later if they become necessary, and you don't sacrifice performance or functionality by omitting them.
 
 ## 参数类型声明
 
-您可以通过将 `::TypeName` 附加到参数名称来声明函数参数的类型，就像 Julia 中的 [类型声明](@ref Type-Declarations) 一样。
+您可以通过将 `::TypeName` 附加到参数名称来声明函数参数的类型，就像 Julia 中的 [类型声明](@ref) 一样。
 例如，以下函数递归计算 [斐波那契数列](https://en.wikipedia.org/wiki/Fibonacci_number)：
 ```
 fib(n::Integer) = n ≤ 2 ? one(n) : fib(n-1) + fib(n-2)
@@ -201,7 +201,7 @@ julia> typeof(g(1, 2))
 Int8
 ```
 
-这个函数将忽略 `x` 和 `y` 的类型，返回 `Int8` 类型的值。有关返回类型的更多信息，请参见[类型声明](@ref Type-Declarations)。
+这个函数将忽略 `x` 和 `y` 的类型，返回 `Int8` 类型的值。有关返回类型的更多信息，请参见[类型声明](@ref)。
 
 返回类型声明在 Julia 中**很少使用**：通常，你应该编写“类型稳定”的函数，Julia 的编译器可以在其中自动推断返回类型。更多信息请参阅 [性能提示](@ref man-performance-tips) 一章。
 
