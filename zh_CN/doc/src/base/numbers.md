@@ -1,6 +1,4 @@
-# [Numbers](@id lib-numbers)
-
-## 标准数值类型
+# [标准数值类型](@id lib-numbers)
 
 A type tree for all subtypes of `Number` in `Base` is shown below.
 Abstract types have been marked, the rest are concrete types.
