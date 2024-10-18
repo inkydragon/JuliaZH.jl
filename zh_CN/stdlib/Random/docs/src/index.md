@@ -1,4 +1,4 @@
-# 随机数
+# [随机数](@id Random-Numbers)
 
 ```@meta
 DocTestSetup = :(using Random)
