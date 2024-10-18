@@ -22,12 +22,12 @@ jobs:
         with:
           version: '1'
           show-versioninfo: true
-      - name: Install dependencies
+      - name: Configure doc environment
+        shell: julia --project=docs --color=yes {0}
         run: |
-          julia --project=docs/ -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()'
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
