@@ -548,10 +548,6 @@ julia> b
 
 ## [Argument destructuring](@id man-argument-destructuring)
 
-julia> d
-4
-```
-
 其他有效的左侧表达式可以用作赋值列表的元素，它们将调用 [`setindex!`](@ref) 或 [`setproperty!`](@ref)，或者递归地解构迭代器的各个元素：
 
 ```jldoctest
