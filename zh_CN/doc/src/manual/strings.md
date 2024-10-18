@@ -911,8 +911,6 @@ together with string interpolation, since the interpolated string might itself c
 the `\E` sequence, unexpectedly terminating literal matching. User inputs need to be sanitized
 before inclusion in a regex.
 
-## [Byte Array Literals](@id man-byte-array-literals)
-
 ## [字节数组字面量](@id man-byte-array-literals)
 
 另一个有用的非标准字符串字面量是字节数组字面量：`b"..."`。这种形式使你能够用字符串表示法来表达只读字面量字节数组，也即 [`UInt8`](@ref) 值的数组。字节数组字面量的规则如下：
