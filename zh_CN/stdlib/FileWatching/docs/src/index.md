@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-# 文件相关事件
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/FileWatching/docs/src/index.md"
-```
-
-# [File Events](@id lib-filewatching)
->>>>>>> cyhan/en-v1.10
+# [文件相关事件](@id lib-filewatching)
 
 ```@docs
 FileWatching.poll_fd

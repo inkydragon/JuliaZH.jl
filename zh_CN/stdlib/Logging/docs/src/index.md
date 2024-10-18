@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-# 日志记录
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Logging/docs/src/index.md"
-```
-
-# [Logging](@id man-logging)
->>>>>>> cyhan/en-v1.10
+# [日志记录](@id man-logging)
 
 [`Logging`](@ref Logging.Logging) 模块提供了一个将历史和计算进度记录为事件的日志。事件通过在源代码里插入日志语句产生，例如：
 
@@ -225,12 +217,9 @@ julia> foo()
 
 ```
 
-<<<<<<< HEAD
-=======
 Use a comma separator to enable debug for multiple
 modules: `JULIA_DEBUG=loading,Main`.
 
->>>>>>> cyhan/en-v1.10
 ## Examples
 
 ### Example: Writing log events to a file

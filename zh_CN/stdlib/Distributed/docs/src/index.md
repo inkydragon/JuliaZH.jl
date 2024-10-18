@@ -1,8 +1,5 @@
 # [Distributed Computing](@id man-distributed)
-<<<<<<< HEAD
-=======
 Tools for distributed parallel processing.
->>>>>>> cyhan/en-v1.10
 
 ```@docs
 Distributed.addprocs

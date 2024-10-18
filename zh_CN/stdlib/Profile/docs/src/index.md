@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # [性能分析](@id lib-profiling)
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Profile/docs/src/index.md"
-```
-
-# [Profiling](@id lib-profiling)
->>>>>>> cyhan/en-v1.10
 
 ## CPU Profiling
 

@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # 日期
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Dates/docs/src/index.md"
-```
-
-# Dates
->>>>>>> cyhan/en-v1.10
 
 ```@meta
 DocTestSetup = :(using Dates)
@@ -147,16 +139,6 @@ an optional third argument of type `DateFormat` specifying the format; for examp
 `parse(Date, "06.23.2013", dateformat"m.d.y")`, or
 `tryparse(DateTime, "1999-12-31T23:59:59")` which uses the default format.
 The notable difference between the functions is that with [`tryparse`](@ref),
-<<<<<<< HEAD
-an error is not thrown if the string is in an invalid format;
-instead `nothing` is returned.  Note however that as with the constructors
-above, empty date and time parts assume
-default values and consequently an empty string (`""`) is valid
-for _any_ `DateFormat`, giving for example a `Date` of `0001-01-01`.  Code
-relying on `parse` or `tryparse` for `Date` and `DateTime` parsing should
-therefore also check whether parsed strings are empty before using the
-result.
-=======
 an error is not thrown if the string is empty or in an invalid format;
 instead `nothing` is returned.
 
@@ -164,7 +146,6 @@ instead `nothing` is returned.
     Before Julia 1.9, empty strings could be passed to constructors and `parse`
     without error, returning as appropriate `DateTime(1)`, `Date(1)` or `Time(0)`.
     Likewise, `tryparse` did not return `nothing`.
->>>>>>> cyhan/en-v1.10
 
 A full suite of parsing and formatting tests and examples is available in [`stdlib/Dates/test/io.jl`](https://github.com/JuliaLang/julia/blob/master/stdlib/Dates/test/io.jl).
 

@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # 随机数
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Random/docs/src/index.md"
-```
-
-# Random Numbers
->>>>>>> cyhan/en-v1.10
 
 ```@meta
 DocTestSetup = :(using Random)
@@ -16,19 +8,6 @@ Random number generation in Julia uses the [Xoshiro256++](https://prng.di.unimi.
 by default, with per-`Task` state.
 Other RNG types can be plugged in by inheriting the `AbstractRNG` type; they can then be used to
 obtain multiple streams of random numbers.
-<<<<<<< HEAD
-Besides the default `TaskLocalRNG` type, the `Random` package also provides `MersenneTwister`,
-`RandomDevice` (which exposes OS-provided entropy), and `Xoshiro` (for explicitly-managed
-Xoshiro256++ streams).
-
-Most functions related to random generation accept an optional `AbstractRNG` object as first argument.
-Some also accept dimension specifications `dims...` (which can also be given as a tuple) to generate
-arrays of random values.
-In a multi-threaded program, you should generally use different RNG objects from different threads
-or tasks in order to be thread-safe. However, the default RNG is thread-safe as of Julia 1.3
-(using a per-thread RNG up to version 1.6, and per-task thereafter).
-
-=======
 
 The PRNGs (pseudorandom number generators) exported by the `Random` package are:
 * `TaskLocalRNG`: a token that represents use of the currently active Task-local stream, deterministically seeded from the parent task, or by `RandomDevice` (with system randomness) at program start
@@ -43,7 +22,6 @@ In a multi-threaded program, you should generally use different RNG objects from
 or tasks in order to be thread-safe. However, the default RNG is thread-safe as of Julia 1.3
 (using a per-thread RNG up to version 1.6, and per-task thereafter).
 
->>>>>>> cyhan/en-v1.10
 The provided RNGs can generate uniform random numbers of the following types:
 [`Float16`](@ref), [`Float32`](@ref), [`Float64`](@ref), [`BigFloat`](@ref), [`Bool`](@ref),
 [`Int8`](@ref), [`UInt8`](@ref), [`Int16`](@ref), [`UInt16`](@ref), [`Int32`](@ref),
@@ -178,28 +156,13 @@ Scalar and array methods for `Die` now work as expected:
 
 ```jldoctest Die; setup = :(Random.seed!(1))
 julia> rand(Die)
-<<<<<<< HEAD
-Die(7)
-=======
 Die(5)
->>>>>>> cyhan/en-v1.10
 
 julia> rand(MersenneTwister(0), Die)
 Die(11)
 
 julia> rand(Die, 3)
 3-element Vector{Die}:
-<<<<<<< HEAD
- Die(13)
- Die(8)
- Die(20)
-
-julia> a = Vector{Die}(undef, 3); rand!(a)
-3-element Vector{Die}:
- Die(4)
- Die(14)
- Die(10)
-=======
  Die(9)
  Die(15)
  Die(14)
@@ -209,7 +172,6 @@ julia> a = Vector{Die}(undef, 3); rand!(a)
  Die(19)
  Die(7)
  Die(17)
->>>>>>> cyhan/en-v1.10
 ```
 
 #### A simple sampler without pre-computed data
@@ -226,15 +188,9 @@ julia> rand(Die(4))
 
 julia> rand(Die(4), 3)
 3-element Vector{Any}:
-<<<<<<< HEAD
- 3
- 2
- 4
-=======
  2
  3
  3
->>>>>>> cyhan/en-v1.10
 ```
 
 Given a collection type `S`, it's currently assumed that if `rand(::S)` is defined, an object of type `eltype(S)` will be produced. In the last example, a `Vector{Any}` is produced; the reason is that `eltype(Die) == Any`. The remedy is to define `Base.eltype(::Type{Die}) = Int`.

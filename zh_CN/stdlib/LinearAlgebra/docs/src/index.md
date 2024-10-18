@@ -144,14 +144,7 @@ julia> sB\x
  -1.1086956521739126
  -1.4565217391304346
 ```
-<<<<<<< HEAD
 `\` 运算在这里执行线性求解。左除运算符相当强大，很容易写出紧凑、可读的代码，它足够灵活，可以求解各种线性方程组。
-=======
-
-The `\` operation here performs the linear solution. The left-division operator is pretty
-powerful and it's easy to write compact, readable code that is flexible enough to solve all
-sorts of systems of linear equations.
->>>>>>> cyhan/en-v1.10
 
 ## 特殊矩阵
 
@@ -745,15 +738,6 @@ LinearAlgebra.BLAS.trmm!
 LinearAlgebra.BLAS.trmm
 LinearAlgebra.BLAS.trsm!
 LinearAlgebra.BLAS.trsm
-<<<<<<< HEAD
-LinearAlgebra.BLAS.trmv!
-LinearAlgebra.BLAS.trmv
-LinearAlgebra.BLAS.trsv!
-LinearAlgebra.BLAS.trsv
-LinearAlgebra.BLAS.set_num_threads
-LinearAlgebra.BLAS.get_num_threads
-=======
->>>>>>> cyhan/en-v1.10
 ```
 
 ## LAPACK functions

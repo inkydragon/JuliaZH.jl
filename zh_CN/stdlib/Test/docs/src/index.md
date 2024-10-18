@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # 单元测试
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Test/docs/src/index.md"
-```
-
-# Unit Testing
->>>>>>> cyhan/en-v1.10
 
 ```@meta
 DocTestSetup = :(using Test)
@@ -248,11 +240,6 @@ after the `≈` comparison:
 ```jldoctest
 julia> @test 1 ≈ 0.999999  rtol=1e-5
 Test Passed
-<<<<<<< HEAD
-  Expression: ≈(1, 0.999999, rtol = 1.0e-5)
-   Evaluated: ≈(1, 0.999999; rtol = 1.0e-5)
-=======
->>>>>>> cyhan/en-v1.10
 ```
 Note that this is not a specific feature of the `≈` but rather a general feature of the `@test` macro: `@test a <op> b key=val` is transformed by the macro into `@test op(a, b, key=val)`. It is, however, particularly useful for `≈` tests.
 
@@ -364,8 +351,6 @@ Test.detect_ambiguities
 Test.detect_unbound_args
 ```
 
-<<<<<<< HEAD
-=======
 ## Workflow for Testing Packages
 
 Using the tools available to us in the previous sections, here is a potential workflow of creating a package and adding tests to it.
@@ -508,7 +493,6 @@ Example tests |    9      9
 And if all went correctly, you should see a similar output as above.
 Using `Test.jl`, more complicated tests can be added for packages but this should ideally point developers in the direction of how to get started with testing their own created packages.
 
->>>>>>> cyhan/en-v1.10
 ```@meta
 DocTestSetup = nothing
 ```

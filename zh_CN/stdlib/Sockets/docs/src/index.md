@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 # 套接字
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/Sockets/docs/src/index.md"
-```
-
-# Sockets
->>>>>>> cyhan/en-v1.10
 
 ```@docs
 Sockets.Sockets

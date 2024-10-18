@@ -4,14 +4,9 @@
 DocTestSetup = :(using SparseArrays, LinearAlgebra)
 ```
 
-<<<<<<< HEAD
 Julia 在 `SparseArrays` 标准库模块中提供了对稀疏向量和[稀疏矩阵](https://en.wikipedia.org/wiki/Sparse_matrix)的支持。与稠密数组相比，包含足够多零值的稀疏数组在以特殊的数据结构存储时可以节省大量的空间和运算时间。
-=======
-Julia has support for sparse vectors and [sparse matrices](https://en.wikipedia.org/wiki/Sparse_matrix)
-in the `SparseArrays` stdlib module. Sparse arrays are arrays that contain enough zeros that storing them in a special data structure leads to savings in space and execution time, compared to dense arrays.
 
 External packages which implement different sparse storage types, multidimensional sparse arrays, and more can be found in [Noteworthy external packages](@ref man-csc)
->>>>>>> cyhan/en-v1.10
 
 ## [压缩稀疏列（CSC）稀疏矩阵存储](@id man-csc)
 
@@ -32,9 +27,6 @@ end
 All operations on sparse matrices are carefully implemented to exploit the CSC data structure
 for performance, and to avoid expensive operations.
 
-<<<<<<< HEAD
-如果你有来自不同应用或库的 CSC 格式数据，并且想要将它导入 Julia，确保使用基于 1 的索引。每个列中的行索引都要是有序的。如果你的 `SparseMatrixCSC` 对象包含无序的行索引，一个快速将它们排序的方法是做一次二重转置。
-=======
 If you have data in CSC format from a different application or
 library, and wish to import it in Julia, make sure that you use
 1-based indexing. The row indices in every column need to be sorted,
@@ -42,7 +34,6 @@ and if they are not, the matrix will display incorrectly.  If your
 `SparseMatrixCSC` object contains unsorted row indices, one quick way
 to sort them is by doing a double transpose. Since the transpose operation
 is lazy, make a copy to materialize each transpose.
->>>>>>> cyhan/en-v1.10
 
 In some applications, it is convenient to store explicit zero values in a `SparseMatrixCSC`. These
 *are* accepted by functions in `Base` (but there is no guarantee that they will be preserved in

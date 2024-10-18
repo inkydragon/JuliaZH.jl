@@ -14,13 +14,8 @@ end
 
 ## SHA functions
 
-<<<<<<< HEAD
 用法非常直接：
-```julia
-=======
-Usage is very straightforward:
 ```jldoctest
->>>>>>> cyhan/en-v1.10
 julia> using SHA
 
 julia> bytes2hex(sha256("test"))

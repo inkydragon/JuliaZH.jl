@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-# Julia REPL
-=======
-```@meta
-EditURL = "https://github.com/JuliaLang/julia/blob/master/stdlib/REPL/docs/src/index.md"
-```
-
 # The Julia REPL
->>>>>>> cyhan/en-v1.10
 
 Julia 附带了一个全功能的交互式命令行 REPL（read-eval-print loop），其内置于 `julia` 可执行文件中。它除了允许快速简便地执行 Julia 语句外，还具有可搜索的历史记录，tab 补全，许多有用的按键绑定以及专用的 help 和 shell 模式。只需不附带任何参数地调用 `julia` 或双击可执行文件即可启动 REPL：
 
@@ -34,13 +26,9 @@ julia> string(1 + 2)
 "3"
 ```
 
-<<<<<<< HEAD
-交互式运行有许多独特的实用功能。除了显示结果外，REPL 还将结果绑定到变量 `ans` 上。一行的尾随分号可用作禁止显示结果的标志。
-=======
 There are a number of useful features unique to interactive work. In addition to showing the result,
 the REPL also binds the result to the variable `ans`. A trailing semicolon on the line can be
 used as a flag to suppress showing the result.
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> string(3 * 4);
