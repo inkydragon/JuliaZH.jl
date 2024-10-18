@@ -56,6 +56,6 @@
 | [`===`](@ref) | triple equals sign is programmatically identical equality comparison                      |
 | [`=>`](@ref Pair) | right arrow using an equals sign defines a [`Pair`](@ref) typically used to populate [dictionaries](@ref 字典) |
 | `->`        | right arrow using a hyphen defines an [anonymous function](@ref man-anonymous-functions) on a single line |
-| [`\|>`](@ref)       | pipe operator passes output from the left argument to input of the right argument, usually a [function](@ref Function-composition-and-piping) |
-| `∘`         | function composition operator (typed with \circ{tab}) combines two functions as though they are a single larger [function](@ref Function-composition-and-piping) |
+| [`\|>`](@ref)       | pipe operator passes output from the left argument to input of the right argument, usually a [function](@ref 函数的复合与链式调用) |
+| `∘`         | function composition operator (typed with \circ{tab}) combines two functions as though they are a single larger [function](@ref 函数的复合与链式调用) |
 | `_`         | underscores may be assigned values which will not be saved, often used to ignore [multiple return values](@ref destructuring-assignment) or create repetitive [comprehensions](@ref man-comprehensions) |
