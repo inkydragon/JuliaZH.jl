@@ -282,7 +282,7 @@ during image compilation. Defaults to 0.
 ## REPL 格式化输出
 
 决定 REPL 应当如何格式化输出的环境变量。通常，这些变量应当被设置为 [ANSI 终端转义序列](https://en.wikipedia.org/wiki/ANSI_escape_code)。
-Julia 提供了具有相同功能的高级接口；请参阅 [Julia REPL](@ref) 章节。
+Julia 提供了具有相同功能的高级接口；请参阅 [Julia REPL](@ref The-Julia-REPL) 章节。
 
 ### `JULIA_ERROR_COLOR`
 
