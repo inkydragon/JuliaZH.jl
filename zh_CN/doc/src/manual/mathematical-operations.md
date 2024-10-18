@@ -6,7 +6,6 @@ Julia 为它所有的基础数值类型，提供了整套的基础算术和位�
 
 以下[算术运算符](https://en.wikipedia.org/wiki/Arithmetic#Arithmetic_operations)支持所有的原始数值类型：
 
-<<<<<<< HEAD
 | 表达式 | 名称           | 描述                             |
 |:---------- |:-------------- |:----------------------------------------|
 | `+x`       | 一元加法运算符     | 全等操作                  |
@@ -19,34 +18,14 @@ Julia 为它所有的基础数值类型，提供了整套的基础算术和位�
 | `x \ y`    | 反向除法 | 等价于 `y / x`                   |
 | `x ^ y`    | 幂操作符          | `x` 的 `y` 次幂           |
 | `x % y`    | 取余      | 等价于 `rem(x,y)`                |
-=======
-| Expression | Name           | Description                             |
-|:---------- |:-------------- |:----------------------------------------|
-| `+x`       | unary plus     | the identity operation                  |
-| `-x`       | unary minus    | maps values to their additive inverses  |
-| `x + y`    | binary plus    | performs addition                       |
-| `x - y`    | binary minus   | performs subtraction                    |
-| `x * y`    | times          | performs multiplication                 |
-| `x / y`    | divide         | performs division                       |
-| `x ÷ y`    | integer divide | x / y, truncated to an integer          |
-| `x \ y`    | inverse divide | equivalent to `y / x`                   |
-| `x ^ y`    | power          | raises `x` to the `y`th power           |
-| `x % y`    | remainder      | equivalent to `rem(x,y)`                |
->>>>>>> cyhan/en-v1.10
 
 除了优先级比二元操作符高以外，直接放在标识符或括号前的数字，如 `2x` 或 `2(x+y)` 还会被视为乘法。详见[数值字面量系数](@ref man-numeric-literal-coefficients)。
 
 Julia 的类型提升系统使得混合参数类型上的代数运算也能顺其自然的工作，请参考[类型提升系统](@ref conversion-and-promotion)来了解更多内容。
 
-<<<<<<< HEAD
 符号 ÷ 可以通过输入 `\div<tab>`  到 REPL 或 Julia IDE 的方式来打出. 更多信息参见 [Unicode 输入表](@ref Unicode-Input)。
 
 这里是使用算术运算符的一些简单例子：
-=======
-The ÷ sign can be conveniently typed by writing `\div<tab>` to the REPL or Julia IDE. See the [manual section on Unicode input](@ref Unicode-Input) for more information.
-
-Here are some simple examples using arithmetic operators:
->>>>>>> cyhan/en-v1.10
 
 ```jldoctest
 julia> 1 + 2 + 3
@@ -83,11 +62,7 @@ julia> false * Inf
 | `x && y`   | [短路与](@ref man-conditional-evaluation) |
 | `x \|\| y` | [短路或](@ref man-conditional-evaluation)  |
 
-<<<<<<< HEAD
 否定将 `true` 更改为 `false`，反之亦然。链接页面上解释了逻辑短路。
-=======
-Negation changes `true` to `false` and vice versa. The short-circuiting operations are explained on the linked page.
->>>>>>> cyhan/en-v1.10
 
 请注意，`Bool` 是一个整数类型，所有常用的类型提升规则和数字运算符仍然对它适用。
 
@@ -97,7 +72,6 @@ Negation changes `true` to `false` and vice versa. The short-circuiting operatio
 
 | 表达式 | 名称                                                                     |
 |:---------- |:------------------------------------------------------------------------ |
-<<<<<<< HEAD
 | `~x`       | 按位取反                                                              |
 | `x & y`    | 按位与                                                              |
 | `x \| y`   | 按位或                                                               |
@@ -107,17 +81,6 @@ Negation changes `true` to `false` and vice versa. The short-circuiting operatio
 | `x >>> y`  | [逻辑右移](https://en.wikipedia.org/wiki/Logical_shift)        |
 | `x >> y`   | [算术右移](https://en.wikipedia.org/wiki/Arithmetic_shift) |
 | `x << y`   | 逻辑/算术左移                                            |
-=======
-| `~x`       | bitwise not                                                              |
-| `x & y`    | bitwise and                                                              |
-| `x \| y`   | bitwise or                                                               |
-| `x ⊻ y`    | bitwise xor (exclusive or)                                               |
-| `x ⊼ y`    | bitwise nand (not and)                                                   |
-| `x ⊽ y`    | bitwise nor (not or)                                                     |
-| `x >>> y`  | [logical shift](https://en.wikipedia.org/wiki/Logical_shift) right       |
-| `x >> y`   | [arithmetic shift](https://en.wikipedia.org/wiki/Arithmetic_shift) right |
-| `x << y`   | logical/arithmetic shift left                                            |
->>>>>>> cyhan/en-v1.10
 
 以下是位运算符的一些示例：
 
@@ -203,22 +166,13 @@ julia> [1,2,3] .^ 3
  27
 ```
 
-<<<<<<< HEAD
-更确切地说，`a .^b` 被解析为 [“点运算” 调用](@ref man-vectorized) `(^).(a,b)`，这会执行 [广播](@ref Broadcasting) 操作：该操作能结合数组和标量、相同大小的数组（进行元素之间的运算），甚至不同形状的数组（例如行、列向量结合生成矩阵）。此外，就像所有向量化的点运算调用一样，这些点运算符是*融合*的。例如，在计算关于数组 `A` 的表达式 `2 .* A.^2 .+ sin.(A)`（或者等价地，使用[`@.`](@ref @__dot__) 宏，`@. 2A^2 + sin(A)`），Julia 只对 `A` 进行做*一次*循环，遍历 `A` 中的每个元素 `a` 并计算 `2a^2 + sin(a)`。特别的，类似 `f.(g.(x))` 的嵌套点运算调用也是融合的，并且“相邻的”二元运算符表达式 `x .+ 3 .* x.^2` 可以等价转换为嵌套 dot 调用：`(+).(x, (*).(3, (^).(x, 2)))`。
-=======
-More specifically, `a .^ b` is parsed as the ["dot" call](@ref man-vectorized)
-`(^).(a,b)`, which performs a [broadcast](@ref Broadcasting) operation:
-it can combine arrays and scalars, arrays of the same size (performing
-the operation elementwise), and even arrays of different shapes (e.g.
-combining row and column vectors to produce a matrix). Moreover, like
-all vectorized "dot calls," these "dot operators" are
-*fusing*. For example, if you compute `2 .* A.^2 .+ sin.(A)` (or
-equivalently `@. 2A^2 + sin(A)`, using the [`@.`](@ref @__dot__) macro) for
-an array `A`, it performs a *single* loop over `A`, computing `2a^2 + sin(a)`
-for each element `a` of `A`. In particular, nested dot calls like `f.(g.(x))`
-are fused, and "adjacent" binary operators like `x .+ 3 .* x.^2` are
-equivalent to nested dot calls `(+).(x, (*).(3, (^).(x, 2)))`.
->>>>>>> cyhan/en-v1.10
+更确切地说，`a .^b` 被解析为 [“点运算” 调用](@ref man-vectorized) `(^).(a,b)`，这会执行 [广播](@ref Broadcasting) 操作：
+该操作能结合数组和标量、相同大小的数组（进行元素之间的运算），甚至不同形状的数组（例如行、列向量结合生成矩阵）。
+此外，就像所有向量化的点运算调用一样，这些点运算符是*融合*的。
+例如，在计算关于数组 `A` 的表达式 `2 .* A.^2 .+ sin.(A)`（或者等价地，使用[`@.`](@ref @__dot__) 宏，`@. 2A^2 + sin(A)`），
+Julia 只对 `A` 进行做*一次*循环，遍历 `A` 中的每个元素 `a` 并计算 `2a^2 + sin(a)`。
+特别的，类似 `f.(g.(x))` 的嵌套点运算调用也是融合的，并且“相邻的”二元运算符表达式 `x .+ 3 .* x.^2` 可以等价转换为嵌套 dot 调用：
+`(+).(x, (*).(3, (^).(x, 2)))`。
 
 除了点运算符，我们还有逐点赋值运算符，类似 `a .+= b`（或者 `@. a += b`）会被解析成 `a .= a .+ b`，这里的 `.=` 是一个**融合**的 in-place 运算，更多信息请查看 [`dot` 文档](@ref man-vectorized)）。
 
@@ -517,11 +471,10 @@ Stacktrace:
 
 | 函数                  | 描述                                                                                               |
 |:------------------------- |:--------------------------------------------------------------------------------------------------------- |
-<<<<<<< HEAD
 | [`div(x,y)`](@ref), `x÷y` | 截断除法；商向零近似                                                         |
 | [`fld(x,y)`](@ref)        | 向下取整除法；商向 `-Inf` 近似                                                         |
 | [`cld(x,y)`](@ref)        | 向上取整除法；商向 `+Inf` 近似                                                         |
-| [`rem(x,y)`](@ref)        | 取余；满足 `x == div(x,y)*y + rem(x,y)`；符号与 `x` 一致                                       |
+| [`rem(x,y)`](@ref), `x%y` | 取余；满足 `x == div(x,y)*y + rem(x,y)`；符号与 `x` 一致                                       |
 | [`mod(x,y)`](@ref)        | 取模；满足 `x == fld(x,y)*y + mod(x,y)`；符号与 `y` 一致                                         |
 | [`mod1(x,y)`](@ref)       | 偏移 1 的 `mod`；若 `y>0`，则返回 `r∈(0,y]`，若 `y<0`，则 `r∈[y,0)` 且满足 `mod(r, y) == mod(x, y)`   |
 | [`mod2pi(x)`](@ref)       | 对 2pi 取模；`0 <= mod2pi(x) < 2pi`                                                      |
@@ -529,19 +482,6 @@ Stacktrace:
 | [`fldmod(x,y)`](@ref)     | 返回 `(fld(x,y),mod(x,y))`                                                                             |
 | [`gcd(x,y...)`](@ref)     | `x`, `y`,... 的最大公约数                                                          |
 | [`lcm(x,y...)`](@ref)     | `x`, `y`,... 的最小公倍数                                                            |
-=======
-| [`div(x,y)`](@ref), `x÷y` | truncated division; quotient rounded towards zero                                                         |
-| [`fld(x,y)`](@ref)        | floored division; quotient rounded towards `-Inf`                                                         |
-| [`cld(x,y)`](@ref)        | ceiling division; quotient rounded towards `+Inf`                                                         |
-| [`rem(x,y)`](@ref), `x%y` | remainder; satisfies `x == div(x,y)*y + rem(x,y)`; sign matches `x`                                       |
-| [`mod(x,y)`](@ref)        | modulus; satisfies `x == fld(x,y)*y + mod(x,y)`; sign matches `y`                                         |
-| [`mod1(x,y)`](@ref)       | `mod` with offset 1; returns `r∈(0,y]` for `y>0` or `r∈[y,0)` for `y<0`, where `mod(r, y) == mod(x, y)`   |
-| [`mod2pi(x)`](@ref)       | modulus with respect to 2pi;  `0 <= mod2pi(x) < 2pi`                                                      |
-| [`divrem(x,y)`](@ref)     | returns `(div(x,y),rem(x,y))`                                                                             |
-| [`fldmod(x,y)`](@ref)     | returns `(fld(x,y),mod(x,y))`                                                                             |
-| [`gcd(x,y...)`](@ref)     | greatest positive common divisor of `x`, `y`,...                                                          |
-| [`lcm(x,y...)`](@ref)     | least positive common multiple of `x`, `y`,...                                                            |
->>>>>>> cyhan/en-v1.10
 
 ### 符号和绝对值函数
 

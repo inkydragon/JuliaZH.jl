@@ -102,9 +102,6 @@ julia> print(stdout, 0x61)
 
 ## 使用文件
 
-<<<<<<< HEAD
-和其他环境一样，Julia 有 [`open`](@ref) 函数，它接收文件名并返回一个 [`IOStream`](@ref) 对象，你可以用该对象来对文件进行读取和写入。例如，如果我们有文件 `hello.txt`，其内容为 `Hello, World!`：
-=======
 You can write content to a file with the `write(filename::String, content)` method:
 
 ```julia-repl
@@ -129,7 +126,6 @@ The `read` and `write` methods above allow you to read and write file contents. 
 environments, Julia also has an [`open`](@ref) function, which takes a filename and
 returns an [`IOStream`](@ref) object that you can use to read and write things from the file. For example,
 if we have a file, `hello.txt`, whose contents are `Hello, World!`:
->>>>>>> cyhan/en-v1.10
 
 ```julia-repl
 julia> f = open("hello.txt")
