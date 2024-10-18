@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# gdb 调试提示
-=======
-# [gdb debugging tips](@id gdb-debugging-tips)
->>>>>>> cyhan/en-v1.10
+# [gdb 调试提示](@id gdb-debugging-tips)
 
 ## 显示 Julia 变量
 

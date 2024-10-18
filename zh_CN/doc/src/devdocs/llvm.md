@@ -60,11 +60,7 @@ The default version of LLVM is specified in `deps/llvm.version`. You can overrid
 a file called `Make.user` in the top-level directory and adding a line to it such as:
 
 ```
-<<<<<<< HEAD
-LLVM_VER = 12.0.1
-=======
 LLVM_VER = 13.0.0
->>>>>>> cyhan/en-v1.10
 ```
 
 Besides the LLVM release numerals, you can also use `DEPS_GIT = llvm` in combination with

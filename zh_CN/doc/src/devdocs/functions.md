@@ -8,11 +8,7 @@ Julia 中的每个函数都是泛型函数。泛型函数在概念上是单个�
 
 Julia 中的所有对象都可能是可调用的，因为每个对象都有类型，而类型又有 `TypeName`。
 
-<<<<<<< HEAD
-## 函数调用
-=======
-## [Function calls](@id Function-calls)
->>>>>>> cyhan/en-v1.10
+## [函数调用](@id Function-calls)
 
 给定调用 `f(x,y)`，会执行以下步骤：首先，用 `typeof(f).name.mt` 访问要使用的方法表。其次，生成一个参数元组类型 `Tuple{typeof(f), typeof(x), typeof(y)}`。请注意，函数本身的类型是第一个元素。这因为该类型可能有参数，所以需要参与派发。这个元组类型会在方法表中查找。
 
@@ -34,15 +30,11 @@ jl_value_t *jl_call(jl_function_t *f, jl_value_t **args, int32_t nargs);
 
 ## 添加方法
 
-<<<<<<< HEAD
-在上述派发过程中，添加一个新方法在概念上所需的只是（1）一个元组类型，以及（2）方法体的代码。`jl_method_def` 实现了此操作。`jl_first_argument_datatype` 会被调用，用来从第一个参数的类型中提取相关的方法表。这比派发期间的相应过程复杂得多，因为参数元组类型可能是抽象类型。例如，我们可以定义：
-=======
 Given the above dispatch process, conceptually all that is needed to add a new method is (1) a
 tuple type, and (2) code for the body of the method. `jl_method_def` implements this operation.
 `jl_method_table_for` is called to extract the relevant method table from what would be
 the type of the first argument. This is much more complicated than the corresponding procedure
 during dispatch, since the argument tuple type might be abstract. For example, we can define:
->>>>>>> cyhan/en-v1.10
 
 ```julia
 (::Union{Foo{Int},Foo{Int8}})(x) = 0
@@ -122,9 +114,6 @@ jl_value_t *(jl_value_t*, jl_value_t**, uint32_t)
 
 ## 关键字参数
 
-<<<<<<< HEAD
-关键字参数的工作方式是将每个具有关键字参数的方法表与一个特殊的隐藏函数对象相关联。该函数称为「keyword argument sorter」、「keyword sorter」或「kwsorter」，存储在 `MethodTable` 对象的 `kwsorter` 字段中。在 kwsorter 函数的每个定义与通常的方法表中的某个函数具有相同的参数，除了前面还有一个 `NamedTuple` 参数，该参数给出所传递关键字参数的名称和值。kwsorter 的作用是根据名称将关键字参数移到预先要求的位置，并对任何所需的默认值表达式进行求值和替换。其返回结果是一个通常的位置参数列表，接着会被传递给另一个由编译器生成的函数。
-=======
 Keyword arguments work by adding methods to the kwcall function. This function
 is usually the "keyword argument sorter" or "keyword sorter", which then calls
 the inner body of the function (defined anonymously).
@@ -134,7 +123,6 @@ the names and values of passed keyword arguments. The kwsorter's job is to move 
 into their canonical positions based on name, plus evaluate and substitute any needed default value
 expressions. The result is a normal positional argument list, which is then passed to yet another
 compiler-generated function.
->>>>>>> cyhan/en-v1.10
 
 理解该过程的最简单方法是查看关键字参数方法的定义的降低方式。代码：
 
@@ -197,16 +185,12 @@ circle((0,0), 1.0, color = red; other...)
 kwcall(merge((color = red,), other), circle, (0,0), 1.0)
 ```
 
-<<<<<<< HEAD
-`kwfunc`（也在 `Core` 中）可获取被调用函数的 kwsorter。关键字 splatting 函数（编写为 `other...`）调用具名元组 `merge` 函数。此函数进一步解包了 `other` 的每个*元素*，预期中每个元素包含两个值（一个符号和一个值）。当然，如果所有 splatted 参数都是具名元组，则可使用更高效的实现。请注意，原来的 `circle` 被传递，以处理闭包。
-=======
  `kwcall` (also in`Core`) denotes a kwcall signature and dispatch.
 The keyword splatting operation (written as `other...`) calls the named tuple `merge` function.
 This function further unpacks each *element* of `other`, expecting each one to contain two values
 (a symbol and a value).
 Naturally, a more efficient implementation is available if all splatted arguments are named tuples.
 Notice that the original `circle` function is passed through, to handle closures.
->>>>>>> cyhan/en-v1.10
 
 ## [Compiler efficiency issues](@id compiler-efficiency-issues)
 

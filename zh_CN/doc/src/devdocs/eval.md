@@ -24,11 +24,7 @@ flisp，AST，C++，LLVM，`eval`，`typeinf`，`macroexpand`，sysimg（或 sys
 1. 用户打开了 `julia`。
 2. The C function `main()` from `cli/loader_exe.c` gets called. This function processes the command line
    arguments, filling in the `jl_options` struct and setting the variable `ARGS`. It then initializes
-<<<<<<< HEAD
-   在 `ui/repl.c` 中的 C 语言的函数 `main()` 被调用。这个函数处理命令行参数，填充到 `jl_options` 结构图并且设置变了 `ARGS` 。接下来初始化 Julia (通过调用  [`julia_init` in `task.c`](https://github.com/JuliaLang/julia/blob/master/src/task.c)
-=======
    Julia (by calling [`julia_init` in `init.c`](https://github.com/JuliaLang/julia/blob/master/src/init.c),
->>>>>>> cyhan/en-v1.10
    which may load a previously compiled [sysimg](@ref dev-sysimg)). Finally, it passes off control to Julia
    by calling [`Base._start()`](https://github.com/JuliaLang/julia/blob/master/base/client.jl).
 3. When `_start()` takes over control, the subsequent sequence of commands depends on the command

@@ -22,14 +22,9 @@ end
 @inline getindex(A::MyArray, i::Real) = (@boundscheck checkbounds(A, i); A.data[to_index(i)])
 ```
 
-<<<<<<< HEAD
-当 `getindex` 被 `sum` 包裹时，对 `checkbounds(A,i)` 的调用会被忽略。如果存在多层包裹，最多只有一个 `@boundscheck` 被忽略。这个规则用来防止将来代码被改变时潜在的多余忽略。
-=======
-Then when `getindex` is inlined into `sum`, the call to `checkbounds(A, i)` will be elided. If
-your function contains multiple layers of inlining, only `@boundscheck` blocks at most one level
-of inlining deeper are eliminated. The rule prevents unintended changes in program behavior from
-code further up the stack.
->>>>>>> cyhan/en-v1.10
+当 `getindex` 内联到 `sum` 时，对 `checkbounds(A, i)` 的调用将被忽略。
+如果函数包含多层内联，那么只有最深一层内联的 `@boundscheck` 块才会被忽略。
+该规则可防止堆栈上层的代码对程序行为造成意外改变。
 
 ### Caution!
 
@@ -118,8 +113,4 @@ the last argument).
 
 ## Emit bounds checks
 
-<<<<<<< HEAD
-Julia can be launched with `--check-bounds={yes|no|auto}` to emit bounds checks always, never, or respect @inbounds declarations.
-=======
 Julia can be launched with `--check-bounds={yes|no|auto}` to emit bounds checks always, never, or respect `@inbounds` declarations.
->>>>>>> cyhan/en-v1.10

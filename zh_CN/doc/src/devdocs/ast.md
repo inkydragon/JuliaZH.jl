@@ -72,17 +72,10 @@ call. Finally, chains of comparisons have their own special expression structure
 | `[x y]`                  | `(hcat x y)`                                      |
 | `[x y; z t]`             | `(vcat (row x y) (row z t))`                      |
 | `[x;y;; z;t;;;]`         | `(ncat 3 (nrow 2 (nrow 1 x y) (nrow 1 z t)))`     |
-<<<<<<< HEAD
-| `[x for y in z, a in b]` | `(comprehension x (= y z) (= a b))`               |
-| `T[x for y in z]`        | `(typed_comprehension T x (= y z))`               |
-| `(a, b, c)`              | `(tuple a b c)`                                   |
-| `(a; b; c)`              | `(block a (block b c))`                           |
-=======
 | `[x for y in z, a in b]` | `(comprehension (generator x (= y z) (= a b)))`   |
 | `T[x for y in z]`        | `(typed_comprehension T (generator x (= y z)))`   |
 | `(a, b, c)`              | `(tuple a b c)`                                   |
 | `(a; b; c)`              | `(block a b c)`                                   |
->>>>>>> cyhan/en-v1.10
 
 ### Macros
 
@@ -254,14 +247,6 @@ types exist in lowered form:
 
   * `SlotNumber`
 
-<<<<<<< HEAD
-    Identifies arguments and local variables by consecutive numbering. `Slot` is an abstract type
-    with subtypes `SlotNumber` and `TypedSlot`. Both types have an integer-valued `id` field giving
-    the slot index. Most slots have the same type at all uses, and so are represented with `SlotNumber`.
-    The types of these slots are found in the `slottypes` field of their `CodeInfo` object.
-    Slots that require per-use type annotations are represented with `TypedSlot`, which has a `typ`
-    field.
-=======
     Identifies arguments and local variables by consecutive numbering. It has an
     integer-valued `id` field giving the slot index.
     The types of these slots can be found in the `slottypes` field of their `CodeInfo` object.
@@ -270,7 +255,6 @@ types exist in lowered form:
     additional `typ` field as well as the `id` field. Note that `Core.Compiler.TypedSlot`
     only appears in an unoptimized lowered form that is scheduled for optimization,
     and it never appears elsewhere.
->>>>>>> cyhan/en-v1.10
 
   * `Argument`
 
