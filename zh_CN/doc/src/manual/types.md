@@ -945,7 +945,7 @@ julia> isa(Float64, Type{Real})
 false
 ```
 
-换句话说，[`is(A, Type{B})`](@ref) 当且仅当 `A` 和 `B` 是同一个对象并且该对象是一个类型时才为真。
+换句话说，[`isa(A, Type{B})`](@ref) 当且仅当 `A` 和 `B` 是同一个对象并且该对象是一个类型时才为真。
 
 特别的，由于参数类型是 [不变量](@ref man-parametric-composite-types)，我们有
 

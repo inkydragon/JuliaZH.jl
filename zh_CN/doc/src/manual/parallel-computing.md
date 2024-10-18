@@ -5,7 +5,7 @@ Julia 支持这四类并发和并行编程：
 1. **异步“任务”或协程**：
 
    Julia Tasks 允许暂停和恢复 I/O、事件处理、生产者-消费者进程和类似模式的计算。
-   Tasks 可以通过 [`wail`](@ref) 和 [`fetch`](@ref) 等操作进行同步，并通过 [`Channel`](@ref) 进行通信。
+   Tasks 可以通过 [`wait`](@ref) 和 [`fetch`](@ref) 等操作进行同步，并通过 [`Channel`](@ref) 进行通信。
    虽然严格来说不是并行计算，但 Julia 允许在多个线程上调度 [`Task`](@ref)。
 
 2. **多线程**：
