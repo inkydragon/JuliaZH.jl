@@ -254,12 +254,12 @@ const format = if render_pdf
 else
     Documenter.HTML(
         prettyurls = is_deploy,
-        canonical = is_deploy ? "https://juliacn.github.io/JuliaZH.jl/latest/" : nothing,
+        canonical = is_deploy ? "https://inkydragon.github.io/JuliaZH.jl/latest/" : nothing,
         assets = [
             "assets/julia-manual.css",
             # "assets/julia.ico",
         ],
-        analytics = "UA-28835595-9",
+        # analytics = "UA-28835595-9",
         collapselevel = 1,
         sidebar_sitename = false,
         # ansicolor = true,
@@ -285,7 +285,7 @@ makedocs(
 
 if is_deploy
     deploydocs(
-        repo = "github.com/JuliaCN/JuliaZH.jl.git",
+        repo = "github.com/inkydragon/JuliaZH.jl.git",
         target = "build",
         deps = nothing,
         make = nothing,
